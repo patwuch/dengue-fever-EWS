@@ -1,9 +1,15 @@
+# torch/torchvision/torchaudio come from the base image
+# (pytorch/pytorch:2.5.1-cuda12.1-cudnn9-runtime) — do not add them here,
+# pip would reinstall a CPU or mismatched-CUDA build over the working one.
+
 # Core ML
-torch-geometric
-xgboost
-shap
+torch-geometric==2.6.1   # pinned: GATConv(residual=...) requires >=2.6; verified working on sm_86
+xgboost==3.0.2           # pinned: verified device="cuda" tree_method="hist" on sm_86
+shap>=0.46,<0.49
 scikit-learn
 matplotlib
+seaborn
+graphviz                 # python bindings; needs the `graphviz` system package (see Dockerfile)
 
 # Data engineering
 dask[complete]
@@ -11,12 +17,23 @@ netCDF4
 xarray
 numpy
 pandas
+pyarrow                  # Snakefile reads zonal-statistics/*.parquet — pandas needs an engine
+scipy
+joblib
+tqdm
+psutil
 
 # Geospatial
 geopandas
 shapely
 
 # Workflow + experiment tracking
-snakemake
-wandb
-optuna
+snakemake            # verified against this repo's checkpoint/script rules on 9.x — see Dockerfile smoke test
+wandb==0.20.1
+optuna==3.6.1
+
+# --- Optional: Indonesia/xgboost_mapper.py only (RAPIDS: cudf, cupy, pynvml) ---
+# Not installed by default — RAPIDS wheels are multi-GB and pull a matched
+# CUDA toolkit; only needed if you run the Indonesia regional mapper script.
+# See https://docs.rapids.ai/install/ for the correct wheel index for your
+# CUDA version, then: pip install cudf-cu12 cupy-cuda12x pynvml
