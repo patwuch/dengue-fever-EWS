@@ -400,11 +400,13 @@ for those nodes.  Loss masking excludes missing targets from the gradient.
 
 ## Bias Correction Note
 
-When running inference on current data (post-2018), a climate delta correction is
-applied before features are passed to the model.  The delta is computed as the
-difference between the AR6 SSP2-4.5 projected monthly climatology for the current
-year and the 2011–2018 training period climatology.  This shifts current observations
-back into the model's training feature distribution.  See
+When the climate-only model runs on current data (post-2018), a climate delta
+correction is applied before features are passed to the model.  The delta is
+observational: for each variable and calendar month, the 2019–2026 mean of the
+same ERA5-Land / CHIRPS / MODIS products minus the 2011–2018 training-period mean.
+This shifts current observations back into the model's training feature
+distribution, so the risk index reflects how unusual a month is for today's
+climate rather than the long-term shift itself.  See
 [site/scripts/apply_climate_delta.py](https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS/blob/main/site/scripts/apply_climate_delta.py)
 for implementation.
 

@@ -63,7 +63,7 @@ so the raw observation is shifted downward before model inference.
 ```{python}
 #| echo: false
 #| label: tbl-deltas
-#| tbl-cap: "Per-variable climate deltas (AR6 SSP2-4.5 projection minus 2011–2018 baseline) applied this month."
+#| tbl-cap: "Per-variable climate deltas (2019–2026 observed minus 2011–2018 baseline) applied this month."
 
 current_month = target_month[-2:] if len(target_month) >= 2 else "01"
 month_deltas = deltas.get(current_month, deltas.get("annual_mean", {}))

@@ -1,15 +1,17 @@
 name: Monthly site update
 
-# Two inference modes (see README "Monthly inference"):
-#   climate   — always runs; zonal stats + climate delta → risk index
-#   incidence — runs only if site/data/incidence/recent_incidence.csv exists
-#               and an incidence bundle has been published
+# Three models (see README "Monthly inference"):
+#   climate — always runs; zonal stats + climate delta → risk index
+#   ir_env  — IR + environment; runs when site/data/incidence/recent_incidence.csv
+#             exists and its bundle has been published
+#   ir_only — IR only, same conditions
 #
 # One-time setup:
 #   secrets.GEE_SERVICE_ACCOUNT   Earth Engine service-account key JSON
 #   release "inference-bundles"   (or vars.BUNDLE_RELEASE) with assets
 #       inference_bundle_climate.tar.gz   (required)
-#       inference_bundle_incidence.tar.gz (optional)
+#       inference_bundle_ir_env.tar.gz    (optional)
+#       inference_bundle_ir_only.tar.gz   (optional)
 #       regions.parquet                   (unless vars.GEE_REGIONS_ASSET is set)
 #   vars.GEE_REGIONS_ASSET        optional Earth Engine table asset of the regions
 
@@ -74,7 +76,7 @@ jobs:
           mkdir -p bundles
           gh release download "$BUNDLE_RELEASE" --dir bundles \
             --pattern 'inference_bundle_*.tar.gz' --pattern 'regions.parquet'
-          for mode in climate incidence; do
+          for mode in climate ir_env ir_only; do
             if [ -f "bundles/inference_bundle_${mode}.tar.gz" ]; then
               mkdir -p "bundles/${mode}"
               tar -xzf "bundles/inference_bundle_${mode}.tar.gz" -C "bundles/${mode}"
@@ -106,17 +108,21 @@ jobs:
           python site/scripts/run_inference.py --mode climate \
             --bundle bundles/climate/inference_bundle --last-month "$MONTH"
 
-      # ── Step 3: Mode 1 — with recent incidence, when available ────────────
-      - name: Run incidence-mode inference
+      # ── Step 3: IR + environment and IR-only, with recent incidence ───────
+      - name: Run incidence-model inference
         run: |
           if [ ! -f site/data/incidence/recent_incidence.csv ]; then
-            echo "No site/data/incidence/recent_incidence.csv — skipping incidence mode."
-          elif [ ! -f bundles/incidence/inference_bundle/bundle.json ]; then
-            echo "::warning::Incidence CSV present but no incidence bundle in release $BUNDLE_RELEASE — skipping."
-          else
-            python site/scripts/run_inference.py --mode incidence \
-              --bundle bundles/incidence/inference_bundle --last-month "$MONTH"
+            echo "No site/data/incidence/recent_incidence.csv — skipping ir_env and ir_only."
+            exit 0
           fi
+          for label in ir_env ir_only; do
+            if [ -f "bundles/${label}/inference_bundle/bundle.json" ]; then
+              python site/scripts/run_inference.py --mode incidence --label "$label" \
+                --bundle "bundles/${label}/inference_bundle" --last-month "$MONTH"
+            else
+              echo "::warning::Incidence CSV present but no ${label} bundle in release $BUNDLE_RELEASE — skipping."
+            fi
+          done
 
       # ── Step 4: Commit zonal stats + prediction archive to main ──────────
       # [skip ci] prevents deploy-on-push.yml from firing on this commit.

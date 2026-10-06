@@ -1,7 +1,8 @@
-# Recent incidence (incidence-mode inference)
+# Recent incidence (IR + environment and IR-only models)
 
-Put `recent_incidence.csv` here to enable incidence-mode (mode 1) inference
-in the monthly workflow. Without it, only climate-mode (mode 2) runs.
+Put `recent_incidence.csv` here to enable the two incidence-based models
+(`ir_env`, `ir_only`) in the monthly workflow. Without it, only the
+climate-only model runs.
 
 | column           | required | notes                                                           |
 |------------------|----------|-----------------------------------------------------------------|

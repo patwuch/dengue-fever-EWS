@@ -234,8 +234,8 @@ if config.get("best_params_source"):
 #       --configfile config/OpenDengue/<production config>.yaml --cores 4 --resources gpu=1
 #
 # Then publish it (see README "Monthly inference"):
-#   tar -czf inference_bundle_<mode>.tar.gz -C results/STGNN/<name> inference_bundle
-#   gh release upload inference-bundles inference_bundle_<mode>.tar.gz --clobber
+#   tar -czf inference_bundle_<climate|ir_env|ir_only>.tar.gz -C results/STGNN/<name> inference_bundle
+#   gh release upload inference-bundles inference_bundle_<...>.tar.gz --clobber
 # ---------------------------------------------------------------------------
 
 _bundle_params = (

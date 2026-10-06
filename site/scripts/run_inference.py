@@ -1,16 +1,21 @@
 """
 Monthly STGNN inference, in one of two modes.
 
-  --mode climate     (mode 2) Climate-only model (production_climate_risk). Inputs
-                     are the last window_size months of Earth Engine zonal stats,
+  --mode climate     Climate-only model (production_climate_risk). Inputs are the
+                     last window_size months of Earth Engine zonal stats,
                      delta-corrected to the 2011-2018 climate by default. Output is
                      a relative risk index only — no incidence estimate.
 
-  --mode incidence   (mode 1) Autoregressive model (production_logIR). Inputs also
-                     include the last window_size months of reported incidence for
-                     whichever provinces have it (--incidence CSV); provinces with
-                     no report get the same fill value the model saw for missing
-                     incidence in training. Output is predicted IR plus the risk index.
+  --mode incidence   Autoregressive models: production_logIR (IR + environment) and
+                     production_logIR_only (IR only). Inputs include the last
+                     window_size months of reported incidence for whichever provinces
+                     have it (--incidence CSV); provinces with no report get the same
+                     fill value the model saw for missing incidence in training.
+                     Output is predicted IR plus the risk index. IR-only needs no
+                     Earth Engine data.
+
+--label names the output (default: the mode), so the two incidence models can be
+published side by side, e.g. --label ir_env / --label ir_only.
 
 Both modes forecast one month ahead: inputs for months L-w+1..L predict month
 L+1, the same alignment as training (x[t-w:t] → y[t]).
@@ -31,9 +36,9 @@ Inputs:
         or dengue_total + population_sum. Optional adm_0_name.
 
 Outputs:
-    site/data/predictions/<mode>/<target>.json   archived per month
-    site/data/latest_predictions_<mode>.json
-    site/data/latest_predictions.json            climate mode only (site risk map)
+    site/data/predictions/<label>/<target>.json   archived per month
+    site/data/latest_predictions_<label>.json
+    site/data/latest_predictions.json             climate mode only (site risk map)
 """
 
 import argparse
@@ -267,6 +272,8 @@ def risk_index(z: np.ndarray, target_month: str, bundle: dict) -> np.ndarray:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mode", required=True, choices=["climate", "incidence"])
+    ap.add_argument("--label", default=None,
+                    help="Output name under site/data/predictions/ (default: the mode).")
     ap.add_argument("--bundle", required=True, type=pathlib.Path,
                     help="Directory with bundle.json, best_params.json, best_model.pt.")
     ap.add_argument("--incidence", type=pathlib.Path, default=DATA_DIR / "incidence/recent_incidence.csv",
@@ -289,7 +296,10 @@ def main() -> None:
     target_month = shift_month(last_month, 1)
     nodes        = bundle["nodes"]
     feats        = bundle["features"]
-    print(f"[{args.mode}] model {bundle['name']} (trained {bundle['train_period'][0]}–{bundle['train_period'][1]})")
+    label        = args.label or args.mode
+    # Models whose only env inputs are calendar features (IR-only) need no zonal stats.
+    needs_stats  = bool(feats["lulc_vars"]) or any(f not in DERIVED_FEATURES for f in feats["env_vars"])
+    print(f"[{label}] model {bundle['name']} (trained {bundle['train_period'][0]}–{bundle['train_period'][1]})")
     print(f"  inputs {months[0]} → {months[-1]}  ⇒  forecast {target_month}")
 
     # ── Climate delta ────────────────────────────────────────────────────────
@@ -298,18 +308,23 @@ def main() -> None:
     if use_delta and deltas is None:
         print("  WARNING: delta correction requested but site/data/climate_deltas.json is missing "
               "or empty — running on uncorrected observations.")
-    window = load_window_stats(months, deltas)
-    bias_corrected = all(s["bias_corrected"] for s in window)
+    if needs_stats:
+        window = load_window_stats(months, deltas)
+        bias_corrected = all(s["bias_corrected"] for s in window)
+        keys = match_nodes(nodes, window[-1]["regions"])
+        unmatched = [n["name"] for n, k in zip(nodes, keys) if k is None]
+        if unmatched:
+            print(f"  WARNING: {len(unmatched)} model provinces absent from zonal stats: {unmatched}")
+    else:
+        window = [{"target_month": m, "regions": {}} for m in months]
+        bias_corrected = None
+        keys = [None] * len(nodes)
 
     # ── Env + land use ───────────────────────────────────────────────────────
-    keys = match_nodes(nodes, window[-1]["regions"])
-    unmatched = [n["name"] for n, k in zip(nodes, keys) if k is None]
-    if unmatched:
-        print(f"  WARNING: {len(unmatched)} model provinces absent from zonal stats: {unmatched}")
-
     env_raw = stack_features(window, keys, feats["env_vars"])
     fetched = [f for f, name in enumerate(feats["env_vars"]) if name not in DERIVED_FEATURES]
-    no_env  = np.isnan(env_raw[:, :, fetched]).all(axis=(0, 2))
+    no_env  = (np.isnan(env_raw[:, :, fetched]).all(axis=(0, 2)) if fetched
+               else np.zeros(len(nodes), dtype=bool))
     if no_env.mean() > args.max_missing_nodes:
         raise RuntimeError(f"{no_env.sum()}/{len(nodes)} provinces have no env data — refusing to publish.")
 
@@ -358,7 +373,7 @@ def main() -> None:
         rec = {
             "country":           node["country"],
             "risk_index":        round(float(risk[i]), 4),
-            "has_data":          bool(not no_env[i]),
+            "has_data":          bool(not no_env[i]) if needs_stats else bool(observed[:, i].any()),
             "env_months_imputed": int(env_gaps[i]),
         }
         if bundle["incidence_input"]:
@@ -368,6 +383,7 @@ def main() -> None:
 
     output = {
         "mode":           args.mode,
+        "label":          label,
         "model":          bundle["name"],
         "train_period":   bundle["train_period"],
         "generated_at":   datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -381,10 +397,10 @@ def main() -> None:
         output["incidence_coverage"] = coverage
 
     payload = json.dumps(output, indent=2)
-    archive = ARCHIVE_DIR / args.mode / f"{target_month}.json"
+    archive = ARCHIVE_DIR / label / f"{target_month}.json"
     archive.parent.mkdir(parents=True, exist_ok=True)
     archive.write_text(payload)
-    (DATA_DIR / f"latest_predictions_{args.mode}.json").write_text(payload)
+    (DATA_DIR / f"latest_predictions_{label}.json").write_text(payload)
     if args.mode == "climate":
         (DATA_DIR / "latest_predictions.json").write_text(payload)
 
