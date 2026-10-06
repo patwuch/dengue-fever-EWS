@@ -11,7 +11,13 @@ def find_git_root(start: Path) -> Path:
 PROJECT_ROOT  = find_git_root(Path(workflow.basedir).resolve())
 PIPELINE_ROOT = PROJECT_ROOT / "machine-learning-module"
 
-ZONAL_STATS_DIR     = PROJECT_ROOT / "data" / "processed" / "zonal-statistics"
+# Root that data/ paths hang off. Defaults to the repo root for local runs. Remote runs with
+# no shared filesystem (e.g. --executor kubernetes with S3 default storage) set
+# `--config data_root=.` so paths stay relative and map to the same storage keys on the host
+# and in the job pod — the pod gets the sources without .git, so find_git_root differs there.
+DATA_ROOT = Path(config["data_root"]) if "data_root" in config else PROJECT_ROOT
+
+ZONAL_STATS_DIR     = DATA_ROOT / "data" / "processed" / "zonal-statistics"
 ERA5_PATH           = ZONAL_STATS_DIR / "ERA5_LAND_2011-01-01_to_2018-12-31.parquet"
 CHIRPS_PATH         = ZONAL_STATS_DIR / "CHIRPS_2011-01-01_to_2018-12-31.parquet"
 MODIS_LST_PATH      = ZONAL_STATS_DIR / "MODIS_LST_2011-01-01_to_2018-12-31.parquet"
@@ -27,9 +33,9 @@ MODIS_LULC_CALI_PATH = ZONAL_STATS_DIR / "MODIS_LULC_2019-01-01_to_2026-05-31.pa
 MODIS_NDVI_EVI_CALI_PATH = ZONAL_STATS_DIR / "MODIS_NDVI_EVI_2019-01-01_to_2026-05-31.parquet"
 # WORLDPOP_PATH     = ZONAL_STATS_DIR / "WorldPop_2019-01-01_to_2018-12-31.parquet"
 
-INFECTON_DATA      = PROJECT_ROOT / "data" / "processed" / "dengue-infection" / "filtered_sea_2011_2018_SLVC_imputed.csv"
-MERGED_DENGUE_ENV_DATA = PROJECT_ROOT / "data" / "interim"   / "machine-learning" / "SEA_dengue_env_monthly_2011-2018.csv"
-GEOM_PATH              = PROJECT_ROOT / "data" / "processed" / "dengue-infection" / "geoparquet" / "gaul_2024_sea_filtered.parquet"
+INFECTON_DATA      = DATA_ROOT / "data" / "processed" / "dengue-infection" / "filtered_sea_2011_2018_SLVC_imputed.csv"
+MERGED_DENGUE_ENV_DATA = DATA_ROOT / "data" / "interim"   / "machine-learning" / "SEA_dengue_env_monthly_2011-2018.csv"
+GEOM_PATH              = DATA_ROOT / "data" / "processed" / "dengue-infection" / "geoparquet" / "gaul_2024_sea_filtered.parquet"
 
 rule merge_env_infection:
     message:

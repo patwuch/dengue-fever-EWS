@@ -29,9 +29,10 @@ ARG GID=1000
 RUN (getent group "$GID" >/dev/null || groupadd -g "$GID" appgroup) && \
     (getent passwd "$UID" >/dev/null || useradd -u "$UID" -g "$GID" -m appuser)
 
-# Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Python dependencies. requirements-lock.txt pins exact versions (-c adds no packages, only
+# pins them), so the image built here matches one built on another machine.
+COPY requirements.txt requirements-lock.txt ./
+RUN pip install --no-cache-dir -r requirements.txt -c requirements-lock.txt
 
 # source code only — data and outputs mounted at runtime.
 # The whole machine-learning-module/ tree is copied (Snakefile, rules/,

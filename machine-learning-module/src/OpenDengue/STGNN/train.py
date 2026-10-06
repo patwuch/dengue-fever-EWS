@@ -105,7 +105,7 @@ def eval_with_metrics(
 def plot_loss_curves(
     train_losses: list[float],
     val_losses:   list[float],
-    out_dir:      Path,
+    path:         Path,
 ) -> Path:
     fig, ax = plt.subplots(figsize=(8, 4))
     epochs = range(1, len(train_losses) + 1)
@@ -117,7 +117,6 @@ def plot_loss_curves(
     ax.legend()
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
-    path = out_dir / "loss_curves.png"
     fig.savefig(path, dpi=150)
     plt.close(fig)
     return path
@@ -125,9 +124,27 @@ def plot_loss_curves(
 
 # ── Training ──────────────────────────────────────────────────────────────────
 
-def train(cfg: dict, params: dict, out_dir: Path):
-    """Full training run with the given hyperparameters."""
-    out_dir.mkdir(parents=True, exist_ok=True)
+def train(
+    cfg:             dict,
+    params:          dict,
+    out_dir:         Path,
+    tensors_path:    Path | None = None,
+    edge_index_path: Path | None = None,
+    model_path:      Path | None = None,
+    losses_path:     Path | None = None,
+    loss_curve_path: Path | None = None,
+):
+    """Full training run with the given hyperparameters.
+
+    The *_path arguments override the default locations (derived from cfg and
+    out_dir). Snakemake passes its staged input/output paths, which differ from
+    the defaults when files come from remote storage rather than local disk.
+    """
+    model_path      = Path(model_path      or out_dir / "best_model.pt")
+    losses_path     = Path(losses_path     or out_dir / "train_val_losses.json")
+    loss_curve_path = Path(loss_curve_path or out_dir / "loss_curves.png")
+    for p in (model_path, losses_path, loss_curve_path):
+        p.parent.mkdir(parents=True, exist_ok=True)
 
     run = wandb.init(
         project = cfg.get("wandb_project", "stgnn-dengue"),
@@ -143,7 +160,7 @@ def train(cfg: dict, params: dict, out_dir: Path):
     log_scale   = cfg.get("log_scale", True)
 
     # ── Data Pipeline ────────────────────────────────────────────────────────
-    tensors       = load_tensors(cfg, window_size)
+    tensors       = load_tensors(cfg, window_size, tensors_path)
     train_dataset = STGNNDataset(tensors, "train")
     val_dataset   = STGNNDataset(tensors, "val")
 
@@ -156,7 +173,7 @@ def train(cfg: dict, params: dict, out_dir: Path):
         pin_memory=True, num_workers=2, persistent_workers=True
     )
 
-    edge_index  = load_edge_index(cfg, device)
+    edge_index  = load_edge_index(cfg, device, edge_index_path)
     in_channels = train_dataset.x.shape[-1]
     n_nodes     = train_dataset.x.shape[2]
 
@@ -182,7 +199,6 @@ def train(cfg: dict, params: dict, out_dir: Path):
     best_val_loss    = float("inf")
     train_losses     = []
     val_losses       = []
-    best_model_path  = out_dir / "best_model.pt"
     patience_counter = 0
 
     for epoch in range(max_epochs):
@@ -221,7 +237,7 @@ def train(cfg: dict, params: dict, out_dir: Path):
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             patience_counter = 0
-            torch.save(model.state_dict(), best_model_path)
+            torch.save(model.state_dict(), model_path)
             wandb.run.summary["best_val_loss"] = best_val_loss
         else:
             patience_counter += 1
@@ -231,10 +247,10 @@ def train(cfg: dict, params: dict, out_dir: Path):
             break
 
     # ── Loss curves + raw losses ──────────────────────────────────────────────
-    loss_plot = plot_loss_curves(train_losses, val_losses, out_dir)
+    loss_plot = plot_loss_curves(train_losses, val_losses, loss_curve_path)
     wandb.log({"plots/loss_curves": wandb.Image(str(loss_plot))})
 
-    with open(out_dir / "train_val_losses.json", "w") as f:
+    with open(losses_path, "w") as f:
         json.dump(
             {
                 "train":         train_losses,
@@ -246,7 +262,7 @@ def train(cfg: dict, params: dict, out_dir: Path):
         )
 
     run.finish()
-    print(f"\nTraining complete. Best model saved to {best_model_path}")
+    print(f"\nTraining complete. Best model saved to {model_path}")
 
 
 # ── Entry point (Snakemake script mode or CLI) ────────────────────────────────
@@ -271,11 +287,21 @@ def _main_cli():
 
 if __name__ == "__main__":
     if "snakemake" in globals():
-        with open(snakemake.params.cfg) as f:            # noqa: F821
-            cfg = yaml.safe_load(f)
-        out_dir = Path(snakemake.params.results_dir)      # noqa: F821
-        with open(snakemake.params.best_params) as f:     # noqa: F821
+        # Read everything through snakemake.input/output rather than params:
+        # params are plain strings that Snakemake doesn't remap, so they point at
+        # the wrong place when inputs/outputs are staged from remote storage.
+        cfg = dict(snakemake.config)                      # noqa: F821
+        with open(snakemake.input.best_params) as f:      # noqa: F821
             params = json.load(f)
-        train(cfg, params, out_dir)
+        train(
+            cfg, params,
+            out_dir         = Path(snakemake.params.results_dir),       # noqa: F821
+            tensors_path    = Path(snakemake.input.tensors),            # noqa: F821
+            edge_index_path = (Path(snakemake.input.edge_index)         # noqa: F821
+                               if "edge_index" in snakemake.input.keys() else None),  # noqa: F821
+            model_path      = Path(snakemake.output.checkpoint),        # noqa: F821
+            losses_path     = Path(snakemake.output.losses),            # noqa: F821
+            loss_curve_path = Path(snakemake.output.loss_curve),        # noqa: F821
+        )
     else:
         _main_cli()

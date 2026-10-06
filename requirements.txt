@@ -29,6 +29,8 @@ shapely
 
 # Workflow + experiment tracking
 snakemake            # verified against this repo's checkpoint/script rules on 9.x — see Dockerfile smoke test
+snakemake-storage-plugin-s3           # kubernetes jobs stage inputs/outputs via S3 (MinIO) default storage
+snakemake-executor-plugin-kubernetes  # --executor kubernetes; baked in so pods don't pip-install at startup
 wandb==0.20.1
 optuna==3.6.1
 

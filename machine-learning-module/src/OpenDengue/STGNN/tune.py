@@ -48,13 +48,15 @@ def _sweep_id_path(cfg: dict) -> Path:
     return Path("results/STGNN") / cfg["name"] / "sweep_id.txt"
 
 
-def load_tensors(cfg: dict, window_size: int) -> dict:
-    path = _processed_dir(cfg) / f"window_{window_size}" / "tensors.pt"
+def load_tensors(cfg: dict, window_size: int, path: Path | None = None) -> dict:
+    # Pass `path` (e.g. snakemake.input.tensors) to load the file Snakemake staged;
+    # it differs from the git-root path when inputs come from remote storage.
+    path = path or _processed_dir(cfg) / f"window_{window_size}" / "tensors.pt"
     return torch.load(path, weights_only=True)
 
 
-def load_edge_index(cfg: dict, device: torch.device) -> torch.Tensor:
-    path = _processed_dir(cfg) / "edge_index.pt"
+def load_edge_index(cfg: dict, device: torch.device, path: Path | None = None) -> torch.Tensor:
+    path = path or _processed_dir(cfg) / "edge_index.pt"
     return torch.load(path, weights_only=True).to(device)
 
 

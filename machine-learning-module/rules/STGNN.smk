@@ -22,7 +22,7 @@ _window_sizes = (
           .get("choices", [0])
 )
 
-_ML_PROCESSED = PROJECT_ROOT / "data" / "processed" / "machine-learning"
+_ML_PROCESSED = DATA_ROOT / "data" / "processed" / "machine-learning"
 _RESULTS      = f"results/STGNN/{_name}"
 
 
@@ -38,6 +38,7 @@ rule preprocess_stgnn:
             w=_window_sizes,
         ),
         scaler  = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
+        edge_index = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     params:
         cfg = lambda wc: workflow.configfiles[-1],
     script:
@@ -74,9 +75,15 @@ def _tensors_for_best_window(wildcards):
 def _tensors_for_production_window(wildcards):
     """Same as above, but for train_stgnn_production: best_params.json comes
     from a previously completed experiment (_params_source), not one produced
-    within this workflow run, so no checkpoint indirection is needed."""
-    with open(f"results/STGNN/{_params_source}/best_params.json") as f:
-        window = json.load(f)["window_size"]
+    within this workflow run, so no checkpoint indirection is needed.
+
+    Prefer `window_size` from the config: this function runs while the DAG is
+    built, before any inputs are staged, so on an executor without a shared
+    filesystem (e.g. kubernetes + S3) best_params.json isn't on local disk yet."""
+    window = config.get("window_size")
+    if window is None:
+        with open(f"results/STGNN/{_params_source}/best_params.json") as f:
+            window = json.load(f)["window_size"]
     return str(_ML_PROCESSED / f"STGNN/{_name}/window_{window}/tensors.pt")
 
 
@@ -190,10 +197,15 @@ rule explain_shap_stgnn:
 if config.get("best_params_source"):
     _params_source = config["best_params_source"]
 
+    # Both rules produce {_RESULTS}/best_model.pt; without this Snakemake raises
+    # AmbiguousRuleException whenever both are viable.
+    ruleorder: train_stgnn_production > train_stgnn
+
     rule train_stgnn_production:
         input:
             best_params = f"results/STGNN/{_params_source}/best_params.json",
             tensors     = _tensors_for_production_window,
+            edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
             scaler      = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
         output:
             checkpoint = f"{_RESULTS}/best_model.pt",
@@ -205,5 +217,10 @@ if config.get("best_params_source"):
             best_params = f"results/STGNN/{_params_source}/best_params.json",
         resources:
             gpu = 1,
+            # Read by the kubernetes executor: gpu_manufacturer maps gpu to
+            # nvidia.com/gpu, and scale=False sets limits alongside requests,
+            # which the API server requires for extended resources.
+            gpu_manufacturer = "nvidia",
+            scale = False,
         script:
             "../src/OpenDengue/STGNN/train.py"

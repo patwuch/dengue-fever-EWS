@@ -19,6 +19,11 @@ wandb_project: stgnn-dengue
 
 # Reuse best hyperparameters found during baseline tuning — no new sweep.
 best_params_source: baseline_logIR
+# Must match window_size in results/STGNN/baseline_logIR/best_params.json. Required for runs
+# without a shared filesystem (kubernetes + S3), where that file can't be read at DAG-build
+# time; when unset, the rule reads it from local disk instead.
+# window_size: <n>
+
 
 # ---------------------------------------------------------------------------
 # Data
