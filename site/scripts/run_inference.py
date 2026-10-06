@@ -139,16 +139,30 @@ def match_nodes(nodes: list[dict], regions: dict) -> list[str | None]:
     return keys
 
 
+# Calendar features computed in preprocessing (features.add_cyclical_month_features),
+# not fetched from Earth Engine.
+DERIVED_FEATURES = {
+    "month_sin": lambda month: np.sin(2 * np.pi * month / 12),
+    "month_cos": lambda month: np.cos(2 * np.pi * month / 12),
+}
+
+
 def stack_features(window: list[dict], keys: list[str | None], features: list[str]) -> np.ndarray:
     """(T, N, F) raw feature array, NaN where a value is missing."""
     arr = np.full((len(window), len(keys), len(features)), np.nan, dtype=np.float64)
     for t, stats in enumerate(window):
+        month = int(stats["target_month"][5:7])
+        for f, feat in enumerate(features):
+            if feat in DERIVED_FEATURES:
+                arr[t, :, f] = DERIVED_FEATURES[feat](month)
         regions = stats["regions"]
         for n, key in enumerate(keys):
             if key is None:
                 continue
             vals = regions[key]
             for f, feat in enumerate(features):
+                if feat in DERIVED_FEATURES:
+                    continue
                 v = vals.get(feat)
                 if isinstance(v, (int, float)):
                     arr[t, n, f] = v
@@ -294,7 +308,8 @@ def main() -> None:
         print(f"  WARNING: {len(unmatched)} model provinces absent from zonal stats: {unmatched}")
 
     env_raw = stack_features(window, keys, feats["env_vars"])
-    no_env  = np.isnan(env_raw).all(axis=(0, 2))
+    fetched = [f for f, name in enumerate(feats["env_vars"]) if name not in DERIVED_FEATURES]
+    no_env  = np.isnan(env_raw[:, :, fetched]).all(axis=(0, 2))
     if no_env.mean() > args.max_missing_nodes:
         raise RuntimeError(f"{no_env.sum()}/{len(nodes)} provinces have no env data — refusing to publish.")
 

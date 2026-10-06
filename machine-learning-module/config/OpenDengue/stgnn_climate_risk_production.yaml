@@ -26,12 +26,12 @@ task:    regressor
 scope:   multi-country
 wandb_project: stgnn-dengue
 
-# Reuse best hyperparameters found during baseline tuning — no new sweep.
-best_params_source: baseline_logIR
-# Must match window_size in results/STGNN/baseline_logIR/best_params.json. Required for runs
+# Reuse best hyperparameters from the cyclical_seasonal sweep (stgnn_logIR_cyclical.yaml) — no new sweep.
+best_params_source: cyclical_seasonal
+# Must match window_size in results/STGNN/cyclical_seasonal/best_params.json. Required for runs
 # without a shared filesystem (kubernetes + S3), where that file can't be read at DAG-build
 # time; when unset, the rule reads it from local disk instead.
-# window_size: <n>
+window_size: 12
 
 
 # ---------------------------------------------------------------------------
@@ -53,18 +53,19 @@ data:
 target_column: IR
 
 # ---------------------------------------------------------------------------
-# Preprocessing  (target transforms match baseline_logIR)
+# Preprocessing  (target transforms match cyclical_seasonal)
 # ---------------------------------------------------------------------------
 preprocessing:
   incidence_input: false  # climate/land-use inputs only (mode 2)
   log_transform:  true
-  deseasonalise:  true
+  deseasonalise:  false
+  cyclical_month_features: true
   scale_target:   true
   add_lag_target: false
   lag_steps:      []
 
 # ---------------------------------------------------------------------------
-# Features  (baseline_logIR minus incidence-related inputs)
+# Features  (cyclical_seasonal minus incidence-related inputs)
 # ---------------------------------------------------------------------------
 features:
   use_landuse: true
@@ -84,6 +85,8 @@ features:
     - LST_Night_1km_mean
     - NDVI_mean
     - EVI_mean
+    - month_sin
+    - month_cos
   climate_vars:  []
   epidemic_vars: []
   land_use_vars:
