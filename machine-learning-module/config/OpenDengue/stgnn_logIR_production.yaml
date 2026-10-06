@@ -42,7 +42,7 @@ data:
   split:
     strategy:     month
     test_months:  0      # no holdout — all data used for training
-    val_fraction: 0.1    # small slice for early-stopping monitoring only
+    val_fraction: 0.2    # early-stopping slice; must exceed window_size months (0.2 × 96 = 19 > 12), as in cyclical_seasonal
 
 # ---------------------------------------------------------------------------
 # Target
