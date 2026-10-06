@@ -33,7 +33,7 @@ This project combines two complementary prediction models targeting different ge
 
 ::: {.g-col-6}
 ### Arm 1 — Southeast Asia Provinces
-A spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin-1 provinces across 10 SEA countries (2011–2018). It captures international dengue risk dynamics using province-level historical infection data, monthly climatological data (ERA5-Land, MODIS, CHIRPS), and Shared Socioeconomic Pathways. Inference runs monthly and is bias-corrected to account for post-2018 climate shift (AR6 SSP2-4.5).
+A spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin-1 provinces across 10 SEA countries (2011–2018). It captures international dengue risk dynamics using province-level historical infection data, monthly climatological data (ERA5-Land, MODIS, CHIRPS), and Shared Socioeconomic Pathways. Inference runs monthly; the climate-only risk map is bias-corrected for the observed post-2018 climate shift.
 
 [View SEA Provinces Results →](sea-provinces-study-results.qmd)
 :::
@@ -57,7 +57,7 @@ Values > 1 indicate elevated risk relative to the 2011–2018 training baseline.
 ```{python}
 #| echo: false
 #| label: fig-risk-map
-#| fig-cap: "Predicted relative dengue risk index. Delta bias correction applied to account for 2018–2026 climate shift (AR6 SSP2-4.5)."
+#| fig-cap: "Predicted relative dengue risk index (climate-only model). Inputs are corrected for the observed shift between 2011–2018 and 2019–2026 climate."
 
 import json, pathlib
 import plotly.express as px
@@ -91,6 +91,42 @@ else:
     )
     fig.update_layout(margin=dict(l=0, r=0, t=40, b=0), height=480)
     fig.show()
+```
+
+## SEA Provinces — Incidence-based Forecasts
+
+The two study models, IR + environment (`cyclical_seasonal`) and IR only (`logIR_only`), share one architecture and forecast next month's incidence rate from the past 12 months of reported incidence. They appear here when recent case data is supplied.
+
+```{python}
+#| echo: false
+#| label: tbl-incidence-forecasts
+#| tbl-cap: "Predicted incidence rate (cases per 100,000) and risk index from the two incidence-based models, highest predicted IR first."
+
+import json, pathlib
+import pandas as pd
+
+data_dir = pathlib.Path("data")
+models = {"ir_env": "IR + environment", "ir_only": "IR only"}
+loaded = {k: json.loads((data_dir / f"latest_predictions_{k}.json").read_text())
+          for k in models if (data_dir / f"latest_predictions_{k}.json").exists()}
+
+if not loaded:
+    print("No incidence-based forecasts yet — they need site/data/incidence/recent_incidence.csv "
+          "(see site/data/incidence/README.md).")
+else:
+    frames = []
+    for key, preds in loaded.items():
+        frames.append(pd.DataFrame([
+            {"Province": name, "Country": r["country"],
+             f"Predicted IR ({models[key]})": r["predicted_ir"],
+             f"Risk index ({models[key]})": r["risk_index"]}
+            for name, r in preds["regions"].items()
+        ]).set_index(["Province", "Country"]))
+    table = pd.concat(frames, axis=1)
+    table = table.sort_values(table.columns[0], ascending=False).reset_index()
+    months = {models[k]: p["target_month"] for k, p in loaded.items()}
+    print("Forecast month: " + ", ".join(f"{m} ({name})" for name, m in months.items()))
+    display(table.head(20).round(2))
 ```
 
 ## SEA Provinces — Risk Index Trends
@@ -175,7 +211,7 @@ predicts based on individual case report, clinical diagnosis, demographic data, 
 ::: {.g-col-6}
 ### SEA Provinces Pipeline
 1. Monthly zonal statistics fetched from Google Earth Engine
-2. Climate delta correction applied (AR6 SSP2-4.5) to adjust for post-2018 climate shift
+2. Observational climate delta (2019–2026 vs 2011–2018) applied to adjust for post-2018 climate shift
 3. STGNN inference run on adjusted features
 4. Results published automatically via GitHub Actions
 

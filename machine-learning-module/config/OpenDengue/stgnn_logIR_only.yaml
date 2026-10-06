@@ -1,13 +1,14 @@
 # ============================================================
 # OpenDengue SEA — STGNN Regressor (IR only, no env features)
 #
-# Uses only past incidence (IR) as input — no climate, no LULC,
-# no quality flags. Acts as a purely temporal autoregressive
-# baseline to quantify how much the env features contribute
-# over and above the signal already in lagged IR.
+# Mirror of stgnn_logIR_cyclical.yaml (cyclical_seasonal) with the
+# climate and land-use inputs removed: past incidence (IR), data_quality
+# flags and the sin/cos month encoding only. Same preprocessing, split
+# and search space, so comparing the two isolates what the environmental
+# inputs add over lagged IR.
 #
-# Invoke: snakemake results/STGNN/{name}/metrics.json \
-#             --configfile config/OpenDengue/stgnn_IR_only.yaml \
+# Invoke: snakemake results/STGNN/logIR_only/metrics.json \
+#             --configfile config/OpenDengue/stgnn_logIR_only.yaml \
 #             --cores 4 --resources gpu=1
 # ============================================================
 
@@ -53,7 +54,7 @@ preprocessing:
 features:
   use_landuse:   false
   quality_vars:  ['data_quality']
-  env_vars:      []
+  env_vars:      [month_sin, month_cos]   # calendar encoding, as in cyclical_seasonal
   climate_vars:  []
   epidemic_vars: []
   land_use_vars: []
@@ -69,9 +70,13 @@ tune:
   patience:     15
   search_space:
     stgnn:
-      learning_rate:   {type: log_uniform, low: 1.0e-4, high: 5.0e-1}
+      # Lowered ceiling: 5e-1 is too aggressive for a model learning the full
+      # seasonal cycle — it skips over the flat seasonal basin in loss landscape.
+      learning_rate:   {type: log_uniform, low: 1.0e-4, high: 5.0e-2}
       batch_size:      {type: categorical, choices: [2, 4]}
-      window_size:     {type: categorical, choices: [1, 3, 6, 12]}
+      # Short windows can't see a full seasonal cycle without deseasonalisation.
+      # Minimum 6 months; 12 is strongly preferred.
+      window_size:     {type: categorical, choices: [6, 12]}
       gat1_hidden:     {type: categorical, choices: [16, 32, 64]}
       gat1_heads:      {type: categorical, choices: [2, 4]}
       mlp_hidden:      {type: categorical, choices: [32, 64]}
@@ -79,3 +84,7 @@ tune:
       gat2_heads:      {type: categorical, choices: [2, 4]}
       mlp_layers:      {type: categorical, choices: [1, 2]}
       dropout:         {type: categorical, choices: [0.0, 0.2, 0.4]}
+      # Decoupled from gat2_hidden — seasonal memory needs more capacity than
+      # the spatial bottleneck. Larger values give the GRU more room to encode
+      # where in the seasonal cycle a node is.
+      gru_hidden:      {type: categorical, choices: [64, 128, 256]}

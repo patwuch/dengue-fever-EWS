@@ -58,19 +58,21 @@ The server loads `.env` on startup (same file as above) and passes `WANDB_API_KE
 
 This binds to localhost by design — it shells out to `docker run` with no auth, so don't expose it beyond your own machine without adding one.
 
-### Monthly inference (two modes)
+### Monthly inference
 
-`.github/workflows/monthly-update.yml` runs on the 1st of each month on a CPU GitHub runner. It fetches the latest Earth Engine zonal statistics, runs one or both models, commits the predictions under `site/data/`, and redeploys the site.
+`.github/workflows/monthly-update.yml` runs on the 1st of each month on a CPU GitHub runner. It fetches the latest Earth Engine zonal statistics, runs the models below, commits the predictions under `site/data/`, and redeploys the site.
 
-| | **Climate mode** (mode 2) | **Incidence mode** (mode 1) |
-|---|---|---|
-| Config | `stgnn_climate_risk_production.yaml` | `stgnn_logIR_production.yaml` |
-| Model inputs | last `window_size` months of weather + land use | the same, plus last `window_size` months of reported incidence |
-| Climate delta correction | on by default | off by default (`--delta on` to enable) |
-| Output | relative risk index | predicted IR + relative risk index |
-| Runs when | every month | `site/data/incidence/recent_incidence.csv` exists (format: `site/data/incidence/README.md`) |
+The two models presented in the study share the cyclical design (sin/cos month encoding, 12-month window) and the same architecture. They differ only in whether environmental inputs are included. Both need recent incidence to forecast. A third, climate-only model keeps the live map updating without case data.
 
-Both forecast one month ahead of the last input month. Risk index = (1 + predicted IR) / (1 + the province's 2011–2018 mean IR for that calendar month), so values above 1 mean above that province's usual level for the time of year.
+| | **IR + environment** (`ir_env`) | **IR only** (`ir_only`) | **Climate only** (`climate`) |
+|---|---|---|---|
+| Experiment / production config | `cyclical_seasonal` / `stgnn_logIR_production.yaml` | `logIR_only` / `stgnn_logIR_only_production.yaml` | — / `stgnn_climate_risk_production.yaml` |
+| Model inputs | past IR, weather, land use, month encoding | past IR, month encoding | weather, land use, month encoding |
+| Needs | recent incidence + Earth Engine | recent incidence | Earth Engine |
+| Output | predicted IR + risk index | predicted IR + risk index | risk index |
+| Runs when | `site/data/incidence/recent_incidence.csv` exists (format: `site/data/incidence/README.md`) | same | every month (delta-corrected by default) |
+
+All three forecast one month ahead of the last input month. Risk index = (1 + predicted IR) / (1 + the province's 2011–2018 mean IR for that calendar month), so values above 1 mean above that province's usual level for the time of year.
 
 **Producing a bundle.** Each model is shipped as an *inference bundle*: `best_model.pt`, `best_params.json`, and `bundle.json`, which holds the node order, scalers, seasonal means and risk baselines the runner needs instead of the training CSV.
 
@@ -82,8 +84,14 @@ tar -czf inference_bundle_climate.tar.gz -C results/STGNN/production_climate_ris
 
 snakemake results/STGNN/production_logIR/inference_bundle \
     --configfile config/OpenDengue/stgnn_logIR_production.yaml --cores 4 --resources gpu=1
-tar -czf inference_bundle_incidence.tar.gz -C results/STGNN/production_logIR inference_bundle
+tar -czf inference_bundle_ir_env.tar.gz -C results/STGNN/production_logIR inference_bundle
+
+snakemake results/STGNN/production_logIR_only/inference_bundle \
+    --configfile config/OpenDengue/stgnn_logIR_only_production.yaml --cores 4 --resources gpu=1
+tar -czf inference_bundle_ir_only.tar.gz -C results/STGNN/production_logIR_only inference_bundle
 ```
+
+`logIR_only` gained the month encoding to mirror `cyclical_seasonal`, so its committed `best_params.json` predates the change. Re-sweep it before building its bundle: `snakemake results/STGNN/logIR_only/metrics.json --configfile config/OpenDengue/stgnn_logIR_only.yaml --forcerun tune_stgnn --cores 4 --resources gpu=1`.
 
 **One-time setup:**
 
@@ -91,7 +99,8 @@ tar -czf inference_bundle_incidence.tar.gz -C results/STGNN/production_logIR inf
    ```bash
    cp data/processed/dengue-infection/geoparquet/gaul_2024_sea_filtered.parquet regions.parquet
    gh release create inference-bundles --title "Inference bundles" --notes "Model bundles for monthly inference"
-   gh release upload inference-bundles inference_bundle_climate.tar.gz inference_bundle_incidence.tar.gz \
+   gh release upload inference-bundles inference_bundle_climate.tar.gz \
+       inference_bundle_ir_env.tar.gz inference_bundle_ir_only.tar.gz \
        regions.parquet --clobber
    ```
    Instead of `regions.parquet`, you can upload the regions as an Earth Engine table and set the repository variable `GEE_REGIONS_ASSET`.
