@@ -13,9 +13,13 @@ artifact (~5 KB) that the monthly CI runner reads without needing the parquets.
 Usage:
     python compute_climate_delta.py \\
         --era5    data/runs/sea_2019_2026/results/ERA5_LAND/ERA5_LAND_2019-01-01_to_2026-12-31.parquet \\
+        --chirps  data/runs/sea_2019_2026/results/CHIRPS/CHIRPS_2019-01-01_to_2026-12-31.parquet \\
         --lst     data/runs/sea_2019_2026/results/MODIS_LST/MODIS_LST_2019-01-01_to_2026-12-31.parquet \\
         --ndvi    data/runs/sea_2019_2026/results/MODIS_NDVI_EVI/MODIS_NDVI_EVI_2019-01-01_to_2026-12-31.parquet \\
         --output  ../site/data/climate_deltas.json
+
+    Add --bundle <inference_bundle dir or bundle.json> to take the 2011–2018
+    baseline from the model's inference bundle instead of the training CSV.
 
 Column naming note:
     The offline app names wide-parquet columns as {band}_{stat_lower}, e.g.:
@@ -33,24 +37,22 @@ import pandas as pd
 import geopandas as gpd
 
 ROOT         = pathlib.Path(__file__).parent.parent
-TRAINING_CSV = ROOT / "machine-learning-module/data/interim/SEA_dengue_env_monthly_2011-2018.csv"
+TRAINING_CSV = ROOT / "data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv"
 DEFAULT_OUT  = ROOT / "site/data/climate_deltas.json"
 
 # ---------------------------------------------------------------------------
 # Column mapping: parquet column name → STGNN feature name
 #
-# The offline app names columns {band}_{stat_lower}.  Most STGNN features
-# match directly; only precipitation diverges because the ERA5-Land band is
-# already named "total_precipitation_sum" and the stat applied is SUM, which
-# would produce "total_precipitation_sum_sum".  Adjust here if your batch
-# used different stat selections or the merge script uses a different naming
-# convention.
+# The offline app names columns {band}_{stat_lower}, which is also how the
+# STGNN features are named. precipitation_sum is CHIRPS "precipitation" with
+# a spatial SUM (merge_data.py takes it from the CHIRPS parquet), so it needs
+# the CHIRPS batch, not ERA5-Land total precipitation, whose units differ.
 # ---------------------------------------------------------------------------
 
 PARQUET_TO_STGNN: dict[str, str] = {
+    # CHIRPS
+    "precipitation_sum":             "precipitation_sum",
     # ERA5-Land
-    "total_precipitation_sum_sum":   "precipitation_sum",
-    "total_precipitation_sum_mean":  "precipitation_sum",   # fallback if SUM unavailable
     "temperature_2m_mean":           "temperature_2m_mean",
     "temperature_2m_max_mean":       "temperature_2m_max_mean",
     "temperature_2m_min_mean":       "temperature_2m_min_mean",
@@ -116,6 +118,14 @@ def regional_monthly_mean(
     return grouped
 
 
+def bundle_climatology(bundle_path: pathlib.Path, features: list[str]) -> pd.DataFrame:
+    """Per-calendar-month training means stored in an STGNN inference bundle."""
+    if bundle_path.is_dir():
+        bundle_path = bundle_path / "bundle.json"
+    clim = json.loads(bundle_path.read_text())["env_climatology"]
+    return pd.DataFrame({f: clim[f] for f in features if f in clim})
+
+
 def training_climatology(features: list[str]) -> pd.DataFrame:
     """
     Compute per-calendar-month means from the 2011-2018 training CSV.
@@ -153,6 +163,7 @@ def inspect_parquets(paths: list[pathlib.Path]) -> None:
 def compute_deltas(
     parquet_paths: list[pathlib.Path],
     output_path:   pathlib.Path,
+    bundle_path:   pathlib.Path | None = None,
 ) -> None:
     # ── Load and merge all batch parquets ────────────────────────────────────
     frames: list[pd.DataFrame] = []
@@ -171,7 +182,9 @@ def compute_deltas(
     # combinations from any product survive even if another product has gaps.
     batch = frames[0]
     for other in frames[1:]:
-        join_cols = [c for c in ("ADM1_NAME", "ADM0_NAME", "Date") if c in batch.columns and c in other.columns]
+        # The SEA region table uses admin/name (filter_shp_convert_parquet.py);
+        # joining on Date alone would cross-join every region with every other.
+        join_cols = [c for c in ("ADM1_NAME", "ADM0_NAME", "admin", "name", "Date") if c in batch.columns and c in other.columns]
         if not join_cols:
             print("  WARNING: no common join columns found — concatenating instead of merging.")
             batch = pd.concat([batch, other], axis=1)
@@ -186,7 +199,7 @@ def compute_deltas(
     batch = batch.rename(columns=rename_map)
     print(f"Mapped {len(rename_map)} columns to STGNN feature names.")
 
-    unmapped = [c for c in batch.columns if c not in ("ADM1_NAME", "ADM0_NAME", "Date", "calendar_month") and c not in REQUIRED_FEATURES]
+    unmapped = [c for c in batch.columns if c not in ("ADM1_NAME", "ADM0_NAME", "admin", "name", "Date", "calendar_month") and c not in REQUIRED_FEATURES]
     if unmapped:
         print(f"  Unmapped columns (ignored): {unmapped}")
 
@@ -196,8 +209,12 @@ def compute_deltas(
     print(f"  Months with data: {sorted(batch_clim.index.tolist())}")
 
     # ── Compute training climatology (2011-2018) ──────────────────────────────
-    print("\nComputing training climatology from training CSV ...")
-    train_clim = training_climatology(REQUIRED_FEATURES)
+    if bundle_path is not None:
+        print(f"\nReading training climatology from {bundle_path} ...")
+        train_clim = bundle_climatology(bundle_path, REQUIRED_FEATURES)
+    else:
+        print("\nComputing training climatology from training CSV ...")
+        train_clim = training_climatology(REQUIRED_FEATURES)
     print(f"  Months with data: {sorted(train_clim.index.tolist())}")
 
     # ── Compute deltas ────────────────────────────────────────────────────────
@@ -245,22 +262,25 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--era5",   type=pathlib.Path, default=None, help="ERA5-Land wide parquet")
+    parser.add_argument("--chirps", type=pathlib.Path, default=None, help="CHIRPS wide parquet (precipitation_sum)")
     parser.add_argument("--lst",    type=pathlib.Path, default=None, help="MODIS LST wide parquet")
     parser.add_argument("--ndvi",   type=pathlib.Path, default=None, help="MODIS NDVI/EVI wide parquet")
     parser.add_argument("--output", type=pathlib.Path, default=DEFAULT_OUT, help="Output JSON path")
+    parser.add_argument("--bundle", type=pathlib.Path, default=None,
+                        help="STGNN inference bundle (dir or bundle.json) to use as the 2011-2018 baseline.")
     parser.add_argument("--inspect", action="store_true",
                         help="Print column names of input parquets and exit (no delta computed).")
     args = parser.parse_args()
 
-    paths = [p for p in (args.era5, args.lst, args.ndvi) if p is not None]
+    paths = [p for p in (args.era5, args.chirps, args.lst, args.ndvi) if p is not None]
     if not paths:
-        parser.error("Provide at least one of --era5 / --lst / --ndvi")
+        parser.error("Provide at least one of --era5 / --chirps / --lst / --ndvi")
 
     if args.inspect:
         inspect_parquets(paths)
         sys.exit(0)
 
-    compute_deltas(paths, args.output)
+    compute_deltas(paths, args.output, args.bundle)
 
 
 if __name__ == "__main__":

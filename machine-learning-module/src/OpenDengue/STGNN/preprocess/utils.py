@@ -34,6 +34,10 @@ def save_preprocessing_params(scaler_inc, seasonal_means: dict, cfg: dict) -> No
         json.dump(data, f, indent=2)
 
 
+def inference_bundle_path(cfg: dict) -> Path:
+    return _output_dir(cfg) / "inference_bundle.json"
+
+
 def load_preprocessing_params(cfg: dict) -> dict:
     """Load incidence scaler params and seasonal means saved by preprocessing."""
     path = _output_dir(cfg) / "preprocessing_params.json"

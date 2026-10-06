@@ -39,6 +39,7 @@ rule preprocess_stgnn:
         ),
         scaler  = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
         edge_index = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
+        bundle  = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
     params:
         cfg = lambda wc: workflow.configfiles[-1],
     script:
@@ -224,3 +225,33 @@ if config.get("best_params_source"):
             scale = False,
         script:
             "../src/OpenDengue/STGNN/train.py"
+
+
+# ---------------------------------------------------------------------------
+# Inference bundle — what the monthly GitHub Actions run downloads.
+#
+#   snakemake results/STGNN/<name>/inference_bundle \
+#       --configfile config/OpenDengue/<production config>.yaml --cores 4 --resources gpu=1
+#
+# Then publish it (see README "Monthly inference"):
+#   tar -czf inference_bundle_<mode>.tar.gz -C results/STGNN/<name> inference_bundle
+#   gh release upload inference-bundles inference_bundle_<mode>.tar.gz --clobber
+# ---------------------------------------------------------------------------
+
+_bundle_params = (
+    f"results/STGNN/{config['best_params_source']}/best_params.json"
+    if config.get("best_params_source") else f"{_RESULTS}/best_params.json"
+)
+
+rule export_inference_bundle:
+    input:
+        model       = f"{_RESULTS}/best_model.pt",
+        best_params = _bundle_params,
+        bundle      = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
+    output:
+        directory(f"{_RESULTS}/inference_bundle"),
+    shell:
+        "mkdir -p {output} && "
+        "cp {input.model} {output}/best_model.pt && "
+        "cp {input.best_params} {output}/best_params.json && "
+        "cp {input.bundle} {output}/bundle.json"

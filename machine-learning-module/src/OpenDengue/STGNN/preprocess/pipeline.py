@@ -2,6 +2,8 @@ import argparse
 import pandas as pd
 import torch
 from utils import load_config, save_tensors, save_preprocessing_params, save_edge_index, get_window_sizes
+from utils import inference_bundle_path
+from bundle import node_table, target_baselines, env_climatology, missing_quality_pattern, save_inference_bundle
 from dataset import load_data, build_node_index
 from features import log_transform, separate_sources, build_masks, fill_missing_inc, reshape_all
 from features import add_cyclical_month_features
@@ -91,6 +93,18 @@ def main(config_path: str, data_path: str | None = None):
 
     train_df, val_df, test_df = temporal_split(df, cfg)
 
+    # ── Inference-bundle statistics (raw, pre-deseasonalisation) ─────────────
+    # Taken from train+val: the risk-index baseline and env climatology describe
+    # the whole training period and are never fed back into training.
+    history_df     = pd.concat([train_df, val_df])
+    env_vars       = cfg.get("features", {}).get("env_vars", [])
+    baselines      = target_baselines(history_df, node_index, cfg)
+    climatology    = env_climatology(history_df, env_vars, cfg)
+    missing_q      = missing_quality_pattern(
+        train_df, cfg.get("features", {}).get("quality_dummy_vars", []), cfg
+    )
+    train_period   = (str(history_df[time_col].min())[:7], str(history_df[time_col].max())[:7])
+
     # ── Deseasonalise: fit on train only, apply to all splits ────────────────
     # Monthly means are computed from train_df while NaNs are still present,
     # so missing positions are correctly excluded from the mean. The same
@@ -100,7 +114,8 @@ def main(config_path: str, data_path: str | None = None):
         seasonal_means = fit_seasonal_means(train_df, cfg)
         train_df = apply_seasonal_means(train_df, seasonal_means, cfg)
         val_df   = apply_seasonal_means(val_df,   seasonal_means, cfg)
-        test_df  = apply_seasonal_means(test_df,  seasonal_means, cfg)
+        if not test_df.empty:
+            test_df = apply_seasonal_means(test_df, seasonal_means, cfg)
         print("Deseasonalisation applied (fitted on train only).")
 
     sources = separate_sources(train_df, val_df, test_df, cfg)
@@ -116,8 +131,9 @@ def main(config_path: str, data_path: str | None = None):
 
     # Write scaled values back into the DataFrames so reshape_all sees scaled data.
     # scale_sources operates on flat numpy arrays; we put them back in place here.
-    env_vars = cfg.get("features", {}).get("env_vars", [])
-    for df_obj, split_key in [(train_df, "train"), (val_df, "val"), (test_df, "test")]:
+    split_dfs = {"train": train_df, "val": val_df, "test": test_df}
+    for split_key in scaled["inc"]:
+        df_obj = split_dfs[split_key]
         df_obj[target]   = scaled["inc"][split_key].reshape(-1)
         df_obj[env_vars] = scaled["env"][split_key]
 
@@ -141,11 +157,11 @@ def main(config_path: str, data_path: str | None = None):
 
     # ── Month indices per split (needed for inverse deseasonalisation) ────────
     date_col = cfg["data"]["time_column"]
-    import pandas as pd
     split_months = {
-        split: [pd.to_datetime(d).month for d in sorted(df_obj[date_col].unique())]
-        for split, df_obj in [("train", train_df), ("val", val_df), ("test", test_df)]
+        split: [pd.to_datetime(d).month for d in sorted(split_dfs[split][date_col].unique())]
+        for split in tensors
     }
+    include_incidence = prep.get("incidence_input", True)
 
     # ── Window creation ──────────────────────────────────────────────────────
     window_sizes = get_window_sizes(cfg)
@@ -159,14 +175,29 @@ def main(config_path: str, data_path: str | None = None):
         # month has a prediction.  The month list is padded with window_size
         # zeros so that save_tensors' [window_size:] slice yields the 14
         # test-month numbers correctly.
-        snapshots["inference"] = create_inference_windows(tensors, window_size)
-        inference_months = {
-            **split_months,
-            "inference": [0] * window_size + split_months["test"],
-        }
+        # Production runs (test_months: 0) have no test split to cover.
+        if "test" in tensors:
+            snapshots["inference"] = create_inference_windows(tensors, window_size, include_incidence)
+            inference_months = {
+                **split_months,
+                "inference": [0] * window_size + split_months["test"],
+            }
+        else:
+            inference_months = split_months
         save_tensors(snapshots, cfg, window_size, split_months=inference_months)
 
     save_preprocessing_params(scaled["scalers"]["inc"], seasonal_means, cfg)
+    save_inference_bundle(
+        inference_bundle_path(cfg),
+        cfg,
+        nodes           = node_table(df, node_index, cfg),
+        scalers         = scaled["scalers"],
+        seasonal_means  = seasonal_means,
+        baselines       = baselines,
+        climatology     = climatology,
+        missing_quality = missing_q,
+        train_period    = train_period,
+    )
 
 if "snakemake" in dir():
     main(config_path=snakemake.params.cfg, data_path=str(snakemake.input[0]))
