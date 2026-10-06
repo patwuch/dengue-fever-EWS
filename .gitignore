@@ -32,6 +32,16 @@
 # ── Shared data root (all pipeline data lives here) ──────────────────────────
 data/
 
+# ── Monthly pipeline inputs/outputs committed by GitHub Actions ──────────────
+# "data/" above matches at any depth, so site/data/ has to be re-included
+# before the files inside it can be.
+!site/data/
+!site/data/**/
+!site/data/**/*.json
+!site/data/incidence/*.csv
+# local inspection output of apply_climate_delta.py
+site/data/delta_corrected_stats.json
+
 # ── Module-local outputs ──────────────────────────────────────────────────────
 climate-projection-module/data/
 climate-projection-module/report/

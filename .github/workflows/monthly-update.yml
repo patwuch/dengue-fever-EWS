@@ -1,14 +1,26 @@
 name: Monthly site update
 
+# Two inference modes (see README "Monthly inference"):
+#   climate   — always runs; zonal stats + climate delta → risk index
+#   incidence — runs only if site/data/incidence/recent_incidence.csv exists
+#               and an incidence bundle has been published
+#
+# One-time setup:
+#   secrets.GEE_SERVICE_ACCOUNT   Earth Engine service-account key JSON
+#   release "inference-bundles"   (or vars.BUNDLE_RELEASE) with assets
+#       inference_bundle_climate.tar.gz   (required)
+#       inference_bundle_incidence.tar.gz (optional)
+#       regions.parquet                   (unless vars.GEE_REGIONS_ASSET is set)
+#   vars.GEE_REGIONS_ASSET        optional Earth Engine table asset of the regions
+
 on:
   schedule:
     # 02:00 UTC on the 1st of each month
     - cron: '0 2 1 * *'
-  # Allow manual trigger from the Actions tab (useful for testing)
   workflow_dispatch:
     inputs:
       month:
-        description: 'Target month (YYYY-MM). Leave blank to use default (2 months ago).'
+        description: 'Last input month (YYYY-MM). Blank = two months ago. The forecast is the month after.'
         required: false
         default: ''
 
@@ -16,7 +28,12 @@ jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed by peaceiris/actions-gh-pages to push docs/
+      contents: write   # commit predictions + push docs/
+      issues: write     # open an issue when a scheduled run fails
+    env:
+      BUNDLE_RELEASE: ${{ vars.BUNDLE_RELEASE || 'inference-bundles' }}
+      GEE_REGIONS_ASSET: ${{ vars.GEE_REGIONS_ASSET }}
+      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Checkout repository
@@ -51,35 +68,69 @@ jobs:
           # step (including quarto-actions/setup) sees the correct interpreter.
           echo "QUARTO_PYTHON=$pythonLocation/bin/python3" >> $GITHUB_ENV
 
-      # ── Step 1: Fetch zonal statistics from GEE ──────────────────────────
+      # ── Model bundles (best_model.pt etc. are git-ignored) ───────────────
+      - name: Download inference bundles
+        run: |
+          mkdir -p bundles
+          gh release download "$BUNDLE_RELEASE" --dir bundles \
+            --pattern 'inference_bundle_*.tar.gz' --pattern 'regions.parquet'
+          for mode in climate incidence; do
+            if [ -f "bundles/inference_bundle_${mode}.tar.gz" ]; then
+              mkdir -p "bundles/${mode}"
+              tar -xzf "bundles/inference_bundle_${mode}.tar.gz" -C "bundles/${mode}"
+            fi
+          done
+          test -f bundles/climate/inference_bundle/bundle.json \
+            || { echo "::error::inference_bundle_climate.tar.gz missing from release $BUNDLE_RELEASE"; exit 1; }
+
+      - name: Resolve month and window
+        run: |
+          MONTH="${{ github.event.inputs.month }}"
+          [ -z "$MONTH" ] && MONTH=$(date -u -d "$(date -u +%Y-%m-01) -2 month" +%Y-%m)
+          WINDOW=$(python -c "import json,glob; print(max(json.load(open(p))['window_size'] for p in glob.glob('bundles/*/inference_bundle/best_params.json')))")
+          echo "MONTH=$MONTH"   >> $GITHUB_ENV
+          echo "WINDOW=$WINDOW" >> $GITHUB_ENV
+          echo "Last input month $MONTH, window $WINDOW"
+
+      # ── Step 1: Fetch zonal statistics from GEE (backfills the window) ───
       - name: Fetch monthly zonal statistics
         env:
           GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
         run: |
-          MONTH_ARG=""
-          if [ -n "${{ github.event.inputs.month }}" ]; then
-            MONTH_ARG="--month ${{ github.event.inputs.month }}"
+          python site/scripts/fetch_zonal_stats.py \
+            --month "$MONTH" --backfill "$WINDOW" --regions bundles/regions.parquet
+
+      # ── Step 2: Mode 2 — climate-only risk index (delta-corrected) ────────
+      - name: Run climate-mode inference
+        run: |
+          python site/scripts/run_inference.py --mode climate \
+            --bundle bundles/climate/inference_bundle --last-month "$MONTH"
+
+      # ── Step 3: Mode 1 — with recent incidence, when available ────────────
+      - name: Run incidence-mode inference
+        run: |
+          if [ ! -f site/data/incidence/recent_incidence.csv ]; then
+            echo "No site/data/incidence/recent_incidence.csv — skipping incidence mode."
+          elif [ ! -f bundles/incidence/inference_bundle/bundle.json ]; then
+            echo "::warning::Incidence CSV present but no incidence bundle in release $BUNDLE_RELEASE — skipping."
+          else
+            python site/scripts/run_inference.py --mode incidence \
+              --bundle bundles/incidence/inference_bundle --last-month "$MONTH"
           fi
-          python site/scripts/fetch_zonal_stats.py $MONTH_ARG
 
-      # ── Step 2: Apply climate delta bias correction ───────────────────────
-      - name: Apply climate delta correction
-        run: python site/scripts/apply_climate_delta.py
-
-      # ── Step 3: Run STGNN inference (CPU) ────────────────────────────────
-      - name: Run STGNN inference
-        run: python site/scripts/run_inference.py
-
-      # ── Step 4: Commit monthly prediction archive to main ────────────────
-      # This persists the per-month file permanently in the repo.
+      # ── Step 4: Commit zonal stats + prediction archive to main ──────────
       # [skip ci] prevents deploy-on-push.yml from firing on this commit.
       - name: Commit prediction archive
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add site/data/predictions/ site/data/latest_predictions.json site/data/climate_deltas.json
-          git diff --cached --quiet || git commit -m "data: predictions for $(cat site/data/latest_predictions.json | python -c 'import sys,json; print(json.load(sys.stdin)[\"target_month\"])') [skip ci]"
-          git push origin main
+          git add site/data/zonal_stats site/data/predictions site/data/latest_*.json
+          if ! git diff --cached --quiet; then
+            TARGET=$(python -c "import json; print(json.load(open('site/data/latest_predictions.json'))['target_month'])")
+            git commit -m "data: predictions for $TARGET [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       # ── Step 5: Render Quarto site ────────────────────────────────────────
       - name: Set up Quarto
@@ -89,12 +140,18 @@ jobs:
         working-directory: site
         run: quarto render .
 
-      # ── Step 5: Deploy to GitHub Pages ────────────────────────────────────
+      # ── Step 6: Deploy to GitHub Pages ────────────────────────────────────
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          # Keeps gh-pages history lean — one commit per month
           force_orphan: false
           commit_message: "chore: monthly site update ${{ github.run_id }}"
+
+      - name: Open an issue on failure
+        if: failure() && github.event_name == 'schedule'
+        run: |
+          gh issue create \
+            --title "Monthly site update failed ($MONTH)" \
+            --body "Scheduled run failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

@@ -105,7 +105,7 @@ Mean risk index across all SEA admin-1 regions over every month predictions have
 import json, pathlib
 import plotly.graph_objects as go
 
-archive_dir = pathlib.Path("data/predictions")
+archive_dir = pathlib.Path("data/predictions/climate")
 records = []
 for f in sorted(archive_dir.glob("*.json")):
     data = json.loads(f.read_text())
