@@ -258,7 +258,8 @@ def morans_i(
 
 # ── Test / evaluation ─────────────────────────────────────────────────────────
 
-def test(cfg: dict, params: dict, model_path, out_dir: Path, split: str = "test"):
+def test(cfg: dict, params: dict, model_path, out_dir: Path, split: str = "test",
+         tensors_path: Path | None = None, edge_index_path: Path | None = None):
     """Load a trained model and evaluate it on the given split."""
     model_path = Path(model_path)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -267,7 +268,7 @@ def test(cfg: dict, params: dict, model_path, out_dir: Path, split: str = "test"
     window_size = params["window_size"]
 
     # ── Data ─────────────────────────────────────────────────────────────────
-    tensors = load_tensors(cfg, window_size)
+    tensors = load_tensors(cfg, window_size, tensors_path)
 
     # Prefer the inference split when available — it covers all test months
     # by borrowing context from the train/val tail (see preprocess/temporal.py).
@@ -278,7 +279,7 @@ def test(cfg: dict, params: dict, model_path, out_dir: Path, split: str = "test"
 
     dataset     = STGNNDataset(tensors, split)
     dataloader  = DataLoader(dataset, batch_size=32, shuffle=False, pin_memory=True)
-    edge_index  = load_edge_index(cfg, device)
+    edge_index  = load_edge_index(cfg, device, edge_index_path)
     in_channels = dataset.x.shape[-1]
 
     # ── Preprocessing params for inverse transform ────────────────────────────
@@ -445,6 +446,8 @@ if __name__ == "__main__":
             params = json.load(f)
         model_path = getattr(snakemake.input, "model", None)  # noqa: F821
         model_path = Path(model_path) if model_path else out_dir / "best_model.pt"
-        test(cfg, params, model_path, out_dir, split="test")
+        test(cfg, params, model_path, out_dir, split="test",
+             tensors_path    = Path(snakemake.input.tensors),     # noqa: F821
+             edge_index_path = Path(snakemake.input.edge_index))  # noqa: F821
     else:
         _main_cli()

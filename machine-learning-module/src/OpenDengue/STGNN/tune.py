@@ -48,15 +48,29 @@ def _sweep_id_path(cfg: dict) -> Path:
     return Path("results/STGNN") / cfg["name"] / "sweep_id.txt"
 
 
+# Paths Snakemake staged for this job (set via stage_inputs). The git-root fallback
+# below breaks when the script runs from Snakemake's source cache (no .git there).
+_STAGED: dict = {"tensors": {}, "edge_index": None}
+
+
+def stage_inputs(tensors=(), edge_index=None) -> None:
+    """Register snakemake.input paths so wandb-agent callbacks can find them."""
+    _STAGED["tensors"] = {
+        int(Path(p).parent.name.removeprefix("window_")): Path(p) for p in tensors
+    }
+    _STAGED["edge_index"] = Path(edge_index) if edge_index else None
+
+
 def load_tensors(cfg: dict, window_size: int, path: Path | None = None) -> dict:
     # Pass `path` (e.g. snakemake.input.tensors) to load the file Snakemake staged;
     # it differs from the git-root path when inputs come from remote storage.
-    path = path or _processed_dir(cfg) / f"window_{window_size}" / "tensors.pt"
+    path = path or _STAGED["tensors"].get(window_size) \
+        or _processed_dir(cfg) / f"window_{window_size}" / "tensors.pt"
     return torch.load(path, weights_only=True)
 
 
 def load_edge_index(cfg: dict, device: torch.device, path: Path | None = None) -> torch.Tensor:
-    path = path or _processed_dir(cfg) / "edge_index.pt"
+    path = path or _STAGED["edge_index"] or _processed_dir(cfg) / "edge_index.pt"
     return torch.load(path, weights_only=True).to(device)
 
 
@@ -499,4 +513,8 @@ def run_sweep(cfg: dict, out_path: str | Path = None):
 if __name__ == "__main__":
     with open(snakemake.params.cfg) as f: # noqa: F821
         cfg = yaml.safe_load(f)
+    stage_inputs(
+        tensors    = snakemake.input.tensors,  # noqa: F821
+        edge_index = snakemake.input.edge_index,  # noqa: F821
+    )
     run_sweep(cfg, out_path=snakemake.output.best_params) # noqa: F821

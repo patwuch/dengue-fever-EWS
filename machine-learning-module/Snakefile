@@ -55,6 +55,9 @@ rule merge_env_infection:
     script:
         "src/OpenDengue/merge_data.py"
 
-include: "rules/XGBoost.smk"
-include: "rules/RandomForest.smk"
+# XGBoost and RandomForest are retired from the k8s-first workflow for now: their rules build
+# paths from PROJECT_ROOT/PIPELINE_ROOT (breaks without .git in the job pod) and the RF rules
+# point at scripts that don't exist. Re-enable after porting them to DATA_ROOT-relative paths.
+# include: "rules/XGBoost.smk"
+# include: "rules/RandomForest.smk"
 include: "rules/STGNN.smk"

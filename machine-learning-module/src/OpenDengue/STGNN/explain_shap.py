@@ -142,21 +142,23 @@ def plot_node_time_heatmap(attrs: np.ndarray, node_names: list, out_path: Path,
 
 def explain_shap(cfg: dict, params: dict, model_path, out_dir: Path,
                   csv_path: str, split: str = "test", n_background: int = 20,
-                  n_explain: int = 5, seed: int = 0) -> None:
+                  n_explain: int = 5, seed: int = 0,
+                  tensors_path: Path | None = None,
+                  edge_index_path: Path | None = None) -> None:
     model_path = Path(model_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     device      = torch.device(cfg.get("device", "cpu"))
     window_size = params["window_size"]
 
-    tensors = load_tensors(cfg, window_size)
+    tensors = load_tensors(cfg, window_size, tensors_path)
     if split == "test" and "inference_x" in tensors:
         split = "inference"
         print("INFO: using inference split — explained windows cover all test months.")
 
     explain_dataset = STGNNDataset(tensors, split)
     train_dataset   = STGNNDataset(tensors, "train")
-    edge_index      = load_edge_index(cfg, device)
+    edge_index      = load_edge_index(cfg, device, edge_index_path)
     in_channels     = explain_dataset.x.shape[-1]
 
     model = STGATGRU(
@@ -295,6 +297,8 @@ if __name__ == "__main__":
             split="test",
             n_background = explain_cfg.get("n_background", 20),
             n_explain    = explain_cfg.get("n_explain_windows", 5),
+            tensors_path    = Path(snakemake.input.tensors),     # noqa: F821
+            edge_index_path = Path(snakemake.input.edge_index),  # noqa: F821
         )
     else:
         _main_cli()

@@ -53,6 +53,7 @@ checkpoint tune_stgnn:
             w    = _window_sizes,
         ),
         scaler  = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
+        edge_index = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
@@ -92,6 +93,7 @@ rule train_stgnn:
     input:
         best_params = f"{_RESULTS}/best_params.json",
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         checkpoint = f"{_RESULTS}/best_model.pt",
         losses     = f"{_RESULTS}/train_val_losses.json",
@@ -111,6 +113,7 @@ rule test_stgnn:
         model       = f"{_RESULTS}/best_model.pt",
         best_params = f"{_RESULTS}/best_params.json",
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         predictions = f"{_RESULTS}/test_predictions.npz",
         metrics     = f"{_RESULTS}/metrics.json",
@@ -152,6 +155,7 @@ rule explain_attention_stgnn:
         geom        = str(GEOM_PATH),
         csv_data    = str(MERGED_DENGUE_ENV_DATA),
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         weights       = f"{_RESULTS}/attention_weights.npz",
         graph         = f"{_RESULTS}/attention_graph.png",
@@ -176,6 +180,7 @@ rule explain_shap_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
         csv_data    = str(MERGED_DENGUE_ENV_DATA),
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         attributions = f"{_RESULTS}/shap_attributions.npz",
         feature_plot = f"{_RESULTS}/shap_feature_importance.png",
