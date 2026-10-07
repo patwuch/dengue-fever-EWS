@@ -95,18 +95,18 @@ else:
 
 ## SEA Provinces — Incidence-based Forecasts
 
-The two study models, IR + environment (`cyclical_seasonal`) and IR only (`logIR_only`), share one architecture and forecast next month's incidence rate from the past 12 months of reported incidence. They appear here when recent case data is supplied.
+The study model, IR + environment (`cyclical_seasonal`), shares its architecture with the climate-only model above and forecasts next month's incidence rate from the past 12 months of reported incidence plus climate and land use. It appears here when recent case data is supplied.
 
 ```{python}
 #| echo: false
 #| label: tbl-incidence-forecasts
-#| tbl-cap: "Predicted incidence rate (cases per 100,000) and risk index from the two incidence-based models, highest predicted IR first."
+#| tbl-cap: "Predicted incidence rate (cases per 100,000) and risk index from the IR + environment model, highest predicted IR first."
 
 import json, pathlib
 import pandas as pd
 
 data_dir = pathlib.Path("data")
-models = {"ir_env": "IR + environment", "ir_only": "IR only"}
+models = {"ir_env": "IR + environment"}
 loaded = {k: json.loads((data_dir / f"latest_predictions_{k}.json").read_text())
           for k in models if (data_dir / f"latest_predictions_{k}.json").exists()}
 

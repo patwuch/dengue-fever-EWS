@@ -6,16 +6,15 @@ Monthly STGNN inference, in one of two modes.
                      delta-corrected to the 2011-2018 climate by default. Output is
                      a relative risk index only — no incidence estimate.
 
-  --mode incidence   Autoregressive models: production_logIR (IR + environment) and
-                     production_logIR_only (IR only). Inputs include the last
+  --mode incidence   Autoregressive model production_logIR (IR + environment).
+                     Inputs include the last
                      window_size months of reported incidence for whichever provinces
                      have it (--incidence CSV); provinces with no report get the same
                      fill value the model saw for missing incidence in training.
-                     Output is predicted IR plus the risk index. IR-only needs no
-                     Earth Engine data.
+                     Output is predicted IR plus the risk index.
 
---label names the output (default: the mode), so the two incidence models can be
-published side by side, e.g. --label ir_env / --label ir_only.
+--label names the output (default: the mode); the monthly workflow uses
+--label ir_env.
 
 Both modes forecast one month ahead: inputs for months L-w+1..L predict month
 L+1, the same alignment as training (x[t-w:t] → y[t]).

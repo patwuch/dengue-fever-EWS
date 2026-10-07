@@ -1,8 +1,8 @@
-# Recent incidence (IR + environment and IR-only models)
+# Recent incidence (IR + environment model)
 
-Put `recent_incidence.csv` here to enable the two incidence-based models
-(`ir_env`, `ir_only`) in the monthly workflow. Without it, only the
-climate-only model runs.
+Put `recent_incidence.csv` here to enable the incidence-based model
+(`ir_env`) in the monthly workflow. Without it, only the climate-only model
+(the live risk map) runs.
 
 | column           | required | notes                                                           |
 |------------------|----------|-----------------------------------------------------------------|

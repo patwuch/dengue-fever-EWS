@@ -16,12 +16,10 @@ import pandas as pd
 import plotly.graph_objects as go
 
 stgnn_dir = pathlib.Path("../machine-learning-module/results/STGNN")
-# Only surface the two experiments we stand behind for this study: both predict
-# log IR and both use the cyclical (sin/cos) month encoding rather than naive
-# per-month deseasonalisation; the only difference is whether environmental/
-# land-use covariates are included (cyclical_seasonal) or the model sees IR
-# alone (logIR_only). See the "Which experiments are shown" note below.
-experiment_names = [n for n in ["cyclical_seasonal", "logIR_only"] if (stgnn_dir / n).is_dir()]
+# Only surface the experiment we stand behind for this study: it predicts log IR
+# from lagged IR plus climate and land-use covariates, with the cyclical (sin/cos)
+# month encoding rather than naive per-month deseasonalisation.
+experiment_names = [n for n in ["cyclical_seasonal"] if (stgnn_dir / n).is_dir()]
 
 # test.py only ever writes raw (W, N) arrays to test_predictions.npz — no node
 # names, countries, or dates attached. Reconstruct those from the merged
@@ -412,24 +410,19 @@ for implementation.
 
 ## Experiment Results
 
-We show two experiments here: **`cyclical_seasonal`** and **`logIR_only`**.
-Both predict log incidence rate (log IR), both encode calendar month with the
-sin/cos cyclical encoding (rather than subtracting a fixed per-month training
-baseline — see the [Bias Correction Note](#bias-correction-note) above for why
-that matters beyond the training window), and both give missing admin-1 nodes
-a learned trainable embedding rather than zeroed-out features (see
-[Architecture](#architecture) above). The only substantive difference between them
-is input features: `cyclical_seasonal` includes climate and land-use
-covariates alongside lagged IR, while `logIR_only` is a purely autoregressive
-baseline that sees IR (plus the month encoding) and nothing else — it exists
-to quantify how much the environmental features actually buy us over and
-above the signal already present in lagged incidence.
+We show one experiment here: **`cyclical_seasonal`**. It predicts log
+incidence rate (log IR) from lagged IR plus climate and land-use covariates,
+encodes calendar month with the sin/cos cyclical encoding (rather than
+subtracting a fixed per-month training baseline — see the
+[Bias Correction Note](#bias-correction-note) above for why that matters beyond
+the training window), and gives missing admin-1 nodes a learned trainable
+embedding rather than zeroed-out features (see [Architecture](#architecture)
+above). Its hyperparameters are also the ones the climate-only model behind the
+live risk map is trained with.
 
-Each experiment below is a distinct config/training run under
-`machine-learning-module/results/STGNN/`. Pick one to see its metrics,
-hyperparameters, training curves, and available plots — sections a given
-experiment's artifacts don't include (e.g. attention plots, per-country
-breakdown) are omitted for that experiment.
+The results below come from its config/training run under
+`machine-learning-module/results/STGNN/`: metrics, hyperparameters, training
+curves, and available plots.
 
 ```{python}
 #| echo: false
