@@ -112,7 +112,6 @@ tune:
   n_trials:     0
   metric:       masked_huber_loss
   device:       cuda
-  num_epochs:   50
   patience:     15
   search_space:
     stgnn:

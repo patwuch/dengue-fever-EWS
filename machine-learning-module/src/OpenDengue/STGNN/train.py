@@ -154,7 +154,7 @@ def train(
 
     device      = torch.device(cfg["tune"].get("device", "cpu"))
     window_size = params["window_size"]
-    max_epochs  = 1000
+    max_epochs  = cfg["tune"].get("num_epochs", 1000)   # early stopping usually ends sooner
     patience    = cfg["tune"].get("patience", 15)
     batch_size  = params.get("batch_size", 32)
     log_scale   = cfg.get("log_scale", True)

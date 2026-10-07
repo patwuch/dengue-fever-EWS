@@ -101,7 +101,7 @@ tune:
   n_trials:     40
   metric:       masked_huber_loss
   device:       cuda
-  num_epochs:   50
+  num_epochs:   100   # per-trial cap; best final run needed 69 epochs
   patience:     15
   search_space:
     stgnn:
