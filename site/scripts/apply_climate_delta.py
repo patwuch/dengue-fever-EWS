@@ -8,7 +8,7 @@ per-variable, per-calendar-month delta (current climatology minus the
 2011-2018 training climatology) from each observation before inference.
 
 Deltas come from site/data/climate_deltas.json, written offline by
-zonal-statistics-module/compute_climate_delta.py:
+site/scripts/compute_climate_delta.py:
     {"01": {"temperature_2m_mean": 0.41, ...}, ..., "12": {...}}
 
 If that file is missing, no correction is applied (and bias_corrected stays
@@ -78,7 +78,7 @@ def main() -> None:
     deltas = load_deltas()
     if deltas is None:
         print(f"No usable {DELTAS_PATH.name} — writing uncorrected stats. "
-              "Run zonal-statistics-module/compute_climate_delta.py to produce it.")
+              "Run site/scripts/compute_climate_delta.py to produce it.")
     corrected = correct_stats(stats, deltas)
     OUTPUT_PATH.write_text(json.dumps(corrected, indent=2))
     print(f"→ {OUTPUT_PATH} (bias_corrected={corrected['bias_corrected']})")

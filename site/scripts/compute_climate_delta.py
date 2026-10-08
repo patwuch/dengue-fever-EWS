@@ -10,14 +10,13 @@ Run once offline on the lab machine after the batch GEE fetch completes.
 Commit the output (climate_deltas.json) to the repo — it is a small static
 artifact (~5 KB) that the monthly CI runner reads without needing the parquets.
 
-Usage:
-    python compute_climate_delta.py \\
-        --era5    data/runs/sea_2019_2026/results/ERA5_LAND/ERA5_LAND_2019-01-01_to_2026-12-31.parquet \\
-        --chirps  data/runs/sea_2019_2026/results/CHIRPS/CHIRPS_2019-01-01_to_2026-12-31.parquet \\
-        --lst     data/runs/sea_2019_2026/results/MODIS_LST/MODIS_LST_2019-01-01_to_2026-12-31.parquet \\
-        --ndvi    data/runs/sea_2019_2026/results/MODIS_NDVI_EVI/MODIS_NDVI_EVI_2019-01-01_to_2026-12-31.parquet \\
-        --end     2025-12 \\
-        --output  ../site/data/climate_deltas.json
+Usage (from the repo root):
+    python site/scripts/compute_climate_delta.py \\
+        --era5    data/processed/zonal-statistics/ERA5_LAND_2019-01-01_to_2026-05-31.parquet \\
+        --chirps  data/processed/zonal-statistics/CHIRPS_2019-01-01_to_2026-05-31.parquet \\
+        --lst     data/processed/zonal-statistics/MODIS_LST_2019-01-01_to_2026-05-31.parquet \\
+        --ndvi    data/processed/zonal-statistics/MODIS_NDVI_EVI_2019-01-01_to_2026-05-31.parquet \\
+        --end     2025-12
 
     --start / --end (YYYY-MM, inclusive) restrict the batch. End at a December
     so every calendar month averages the same full years, and before the months
@@ -41,7 +40,7 @@ import sys
 import pandas as pd
 import geopandas as gpd
 
-ROOT         = pathlib.Path(__file__).parent.parent
+ROOT         = pathlib.Path(__file__).parent.parent.parent
 TRAINING_CSV = ROOT / "data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv"
 DEFAULT_OUT  = ROOT / "site/data/climate_deltas.json"
 

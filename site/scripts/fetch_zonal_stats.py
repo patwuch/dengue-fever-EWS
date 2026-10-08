@@ -47,8 +47,8 @@ import tempfile
 import ee
 
 ROOT        = pathlib.Path(__file__).parent.parent.parent
-ZSM_ROOT    = ROOT / "zonal-statistics-module"
-sys.path.insert(0, str(ZSM_ROOT))
+ZSM_ROOT    = ROOT / "zonal-statistics-module"          # EZGEE submodule
+sys.path.insert(0, str(ZSM_ROOT / "workflow"))
 
 from gee_ops import apply_qa_mask                            # noqa: E402
 from products import PRODUCT_REGISTRY                        # noqa: E402
