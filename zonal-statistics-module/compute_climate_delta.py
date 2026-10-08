@@ -16,7 +16,12 @@ Usage:
         --chirps  data/runs/sea_2019_2026/results/CHIRPS/CHIRPS_2019-01-01_to_2026-12-31.parquet \\
         --lst     data/runs/sea_2019_2026/results/MODIS_LST/MODIS_LST_2019-01-01_to_2026-12-31.parquet \\
         --ndvi    data/runs/sea_2019_2026/results/MODIS_NDVI_EVI/MODIS_NDVI_EVI_2019-01-01_to_2026-12-31.parquet \\
+        --end     2025-12 \\
         --output  ../site/data/climate_deltas.json
+
+    --start / --end (YYYY-MM, inclusive) restrict the batch. End at a December
+    so every calendar month averages the same full years, and before the months
+    the monthly runner corrects, so recent anomalies don't feed their own baseline.
 
     Add --bundle <inference_bundle dir or bundle.json> to take the 2011–2018
     baseline from the model's inference bundle instead of the training CSV.
@@ -164,6 +169,8 @@ def compute_deltas(
     parquet_paths: list[pathlib.Path],
     output_path:   pathlib.Path,
     bundle_path:   pathlib.Path | None = None,
+    start:         str | None = None,
+    end:           str | None = None,
 ) -> None:
     # ── Load and merge all batch parquets ────────────────────────────────────
     frames: list[pd.DataFrame] = []
@@ -193,6 +200,23 @@ def compute_deltas(
             batch = batch.merge(other_new, on=join_cols, how="outer")
 
     print(f"\nMerged batch: {len(batch)} rows, {len(batch.columns)} columns")
+
+    # ── Restrict to [start, end] (whole months, inclusive) ───────────────────
+    batch["Date"] = pd.to_datetime(batch["Date"], errors="coerce")
+    if start:
+        batch = batch[batch["Date"] >= pd.Period(start, "M").start_time]
+    if end:
+        batch = batch[batch["Date"] <= pd.Period(end, "M").end_time]
+    if batch.empty:
+        raise RuntimeError(f"No batch rows between {start or 'start'} and {end or 'end'}.")
+    print(f"Using {batch['Date'].min():%Y-%m} → {batch['Date'].max():%Y-%m} ({len(batch)} rows)")
+
+    # A partial final year gives some calendar months one more year than others,
+    # so their baselines average different years (see --end).
+    years_per_month = batch.groupby(batch["Date"].dt.month)["Date"].agg(lambda d: d.dt.year.nunique())
+    if years_per_month.nunique() > 1:
+        print(f"  WARNING: calendar months cover unequal numbers of years: "
+              f"{years_per_month.to_dict()} — consider --end at a December.")
 
     # Rename parquet columns to STGNN feature names
     rename_map = {k: v for k, v in PARQUET_TO_STGNN.items() if k in batch.columns}
@@ -268,6 +292,11 @@ def main() -> None:
     parser.add_argument("--output", type=pathlib.Path, default=DEFAULT_OUT, help="Output JSON path")
     parser.add_argument("--bundle", type=pathlib.Path, default=None,
                         help="STGNN inference bundle (dir or bundle.json) to use as the 2011-2018 baseline.")
+    parser.add_argument("--start", default=None, metavar="YYYY-MM",
+                        help="First month of the batch to use (inclusive). Default: all.")
+    parser.add_argument("--end", default=None, metavar="YYYY-MM",
+                        help="Last month of the batch to use (inclusive), e.g. 2025-12 so every "
+                             "calendar month covers the same full years. Default: all.")
     parser.add_argument("--inspect", action="store_true",
                         help="Print column names of input parquets and exit (no delta computed).")
     args = parser.parse_args()
@@ -280,7 +309,7 @@ def main() -> None:
         inspect_parquets(paths)
         sys.exit(0)
 
-    compute_deltas(paths, args.output, args.bundle)
+    compute_deltas(paths, args.output, args.bundle, args.start, args.end)
 
 
 if __name__ == "__main__":

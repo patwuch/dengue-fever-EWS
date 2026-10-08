@@ -102,7 +102,7 @@ The tarballs land in S3 under the same paths (`s3://dengue-ews/results/STGNN/<na
    ```
    Instead of `regions.parquet`, you can upload the regions as an Earth Engine table and set the repository variable `GEE_REGIONS_ASSET`.
 2. Add the `GEE_SERVICE_ACCOUNT` secret: a service-account key JSON for an Earth Engine–registered Cloud project.
-3. Produce `site/data/climate_deltas.json` offline with `zonal-statistics-module/compute_climate_delta.py` (pass `--bundle` to use the climate bundle as the 2011–2018 baseline) and commit it. Without it, climate mode runs uncorrected and records `bias_corrected: false`.
+3. Produce `site/data/climate_deltas.json` offline with `zonal-statistics-module/compute_climate_delta.py` (pass `--bundle` to use the climate bundle as the 2011–2018 baseline, and `--end` at a December, e.g. `--end 2025-12`, so every calendar month covers the same full years) and commit it. Without it, climate mode runs uncorrected and records `bias_corrected: false`.
 
 ## Specs
 
