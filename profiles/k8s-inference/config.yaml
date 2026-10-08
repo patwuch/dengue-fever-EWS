@@ -1,0 +1,27 @@
+# Snakemake profile for the monthly inference workflow (repo-root Snakefile) on the tmu k3s cluster.
+# Same cluster and S3 store as machine-learning-module/profiles/k8s, but CPU only.
+#
+#   snakemake <target> --profile profiles/k8s-inference      (from the repo root)
+#
+# Needs SNAKEMAKE_STORAGE_S3_ACCESS_KEY / SNAKEMAKE_STORAGE_S3_SECRET_KEY in the environment and a
+# kube context with the snakemake ServiceAccount from k8s/rbac.yaml.
+
+executor: kubernetes
+kubernetes-namespace: dengue-ews
+# The GPU worker image until the CPU inference image exists; these rules don't request a GPU.
+container-image: dengue-ews:k8s-v1
+
+default-storage-provider: s3
+default-storage-prefix: s3://dengue-ews
+# The NUC's Tailscale IP: the one address both the controller and the job pods can reach.
+storage-s3-endpoint-url: http://100.100.41.64:30900
+
+# Keep data/ paths relative so they map to the same S3 keys on the controller and in the pod.
+config:
+  - data_root=.
+
+jobs: 4
+default-resources:
+  - mem_mb=4000
+retries: 1
+printshellcmds: true
