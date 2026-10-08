@@ -74,18 +74,21 @@ Both models share the cyclical design (sin/cos month encoding, 12-month window) 
 
 Both forecast one month ahead of the last input month. Risk index = (1 + predicted IR) / (1 + the province's 2011–2018 mean IR for that calendar month), so values above 1 mean above that province's usual level for the time of year.
 
-**Producing a bundle.** Each model is shipped as an *inference bundle*: `best_model.pt`, `best_params.json`, and `bundle.json`, which holds the node order, scalers, seasonal means and risk baselines the runner needs instead of the training CSV.
+**Producing a bundle.** Each model is shipped as an *inference bundle*: `best_model.pt`, `best_params.json`, and `bundle.json`, which holds the node order, scalers, seasonal means and risk baselines the runner needs instead of the training CSV. `export_inference_bundle` packs them into `inference_bundle_<bundle_label>.tar.gz`, named like the release asset.
+
+Bundles are built on the k3s cluster with the `profiles/k8s` profile. Every rule runs as a Job in `dengue-ews` and reads and writes the S3 store from `k8s/storage.yaml`. The store needs only two author-supplied inputs: `data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv` and `results/STGNN/cyclical_seasonal/best_params.json`.
 
 ```bash
 cd machine-learning-module
-snakemake results/STGNN/production_climate_risk/inference_bundle \
-    --configfile config/OpenDengue/stgnn_climate_risk_production.yaml --cores 4 --resources gpu=1
-tar -czf inference_bundle_climate.tar.gz -C results/STGNN/production_climate_risk inference_bundle
-
-snakemake results/STGNN/production_logIR/inference_bundle \
-    --configfile config/OpenDengue/stgnn_logIR_production.yaml --cores 4 --resources gpu=1
-tar -czf inference_bundle_ir_env.tar.gz -C results/STGNN/production_logIR inference_bundle
+# S3 credentials (SNAKEMAKE_STORAGE_S3_ACCESS_KEY / _SECRET_KEY) in the environment,
+# kube context = the snakemake ServiceAccount from k8s/rbac.yaml
+snakemake results/STGNN/production_climate_risk/inference_bundle_climate.tar.gz \
+    --configfile config/OpenDengue/stgnn_climate_risk_production.yaml --profile profiles/k8s
+snakemake results/STGNN/production_logIR/inference_bundle_ir_env.tar.gz \
+    --configfile config/OpenDengue/stgnn_logIR_production.yaml --profile profiles/k8s
 ```
+
+The tarballs land in S3 under the same paths (`s3://dengue-ews/results/STGNN/<name>/`); download them from there before uploading to the release.
 
 **One-time setup:**
 

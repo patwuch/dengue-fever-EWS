@@ -243,12 +243,13 @@ if config.get("best_params_source"):
 # ---------------------------------------------------------------------------
 # Inference bundle — what the monthly GitHub Actions run downloads.
 #
-#   snakemake results/STGNN/<name>/inference_bundle \
-#       --configfile config/OpenDengue/<production config>.yaml --cores 4 --resources gpu=1
+#   snakemake results/STGNN/<name>/inference_bundle_<bundle_label>.tar.gz \
+#       --configfile config/OpenDengue/<production config>.yaml --profile profiles/k8s
 #
-# Then publish it (see README "Monthly inference"):
-#   tar -czf inference_bundle_<climate|ir_env>.tar.gz -C results/STGNN/<name> inference_bundle
-#   gh release upload inference-bundles inference_bundle_<...>.tar.gz --clobber
+# The tarball holds inference_bundle/{best_model.pt,best_params.json,bundle.json} and is named
+# like the release asset, so it uploads as-is (see README "Monthly inference"). A single file
+# rather than a directory() output: S3 has no directory objects, so Snakemake can't confirm a
+# directory output exists in remote storage.
 # ---------------------------------------------------------------------------
 
 _bundle_params = (
@@ -262,9 +263,10 @@ rule export_inference_bundle:
         best_params = _bundle_params,
         bundle      = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
     output:
-        directory(f"{_RESULTS}/inference_bundle"),
+        f"{_RESULTS}/inference_bundle_{config.get('bundle_label', _name)}.tar.gz",
     shell:
-        "mkdir -p {output} && "
-        "cp {input.model} {output}/best_model.pt && "
-        "cp {input.best_params} {output}/best_params.json && "
-        "cp {input.bundle} {output}/bundle.json"
+        "staging=$(mktemp -d) && mkdir $staging/inference_bundle && "
+        "cp {input.model} $staging/inference_bundle/best_model.pt && "
+        "cp {input.best_params} $staging/inference_bundle/best_params.json && "
+        "cp {input.bundle} $staging/inference_bundle/bundle.json && "
+        "tar -czf {output} -C $staging inference_bundle && rm -rf $staging"

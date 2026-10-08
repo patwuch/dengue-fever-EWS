@@ -11,12 +11,13 @@
 # The climate-only counterpart (mode 2) is stgnn_climate_risk_production.yaml.
 #
 # Invoke:
-#   snakemake results/STGNN/production_logIR/inference_bundle \
+#   snakemake results/STGNN/production_logIR/inference_bundle_ir_env.tar.gz \
 #       --configfile config/OpenDengue/stgnn_logIR_production.yaml \
 #       --cores 4 --resources gpu=1
 # ============================================================
 
 name:    production_logIR
+bundle_label: ir_env   # release asset: inference_bundle_ir_env.tar.gz
 dataset: opendengue
 model:   stgnn
 task:    regressor
@@ -42,7 +43,7 @@ data:
   split:
     strategy:     month
     test_months:  0      # no holdout — all data used for training
-    val_fraction: 0.1    # small slice for early-stopping monitoring only
+    val_fraction: 0.2    # early-stopping slice; must exceed window_size (0.1 = 9 months < 12)
 
 # ---------------------------------------------------------------------------
 # Target

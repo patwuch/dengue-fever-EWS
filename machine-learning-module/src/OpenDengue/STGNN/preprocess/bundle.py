@@ -3,9 +3,9 @@ Inference bundle — everything site/scripts/run_inference.py needs to rebuild
 the model's input tensor and invert its output, without the training CSV.
 
 Written by pipeline.py next to preprocessing_params.json. Snakemake's
-export_inference_bundle rule then copies it, best_model.pt and best_params.json
-into results/STGNN/<name>/inference_bundle/, which is what the monthly
-GitHub Actions run downloads.
+export_inference_bundle rule then packs it, best_model.pt and best_params.json
+into results/STGNN/<name>/inference_bundle_<label>.tar.gz (inference_bundle/
+inside), which is what the monthly GitHub Actions run downloads.
 """
 from __future__ import annotations
 

@@ -27,7 +27,7 @@ provinces with no reported cases in training.
 
 Inputs:
     <bundle>/bundle.json, best_params.json, best_model.pt
-        from `snakemake results/STGNN/<name>/inference_bundle`
+        the extracted inference_bundle/ of `snakemake results/STGNN/<name>/inference_bundle_<label>.tar.gz`
     site/data/zonal_stats/<YYYY-MM>.json      from fetch_zonal_stats.py --backfill
     site/data/climate_deltas.json             from compute_climate_delta.py (optional)
     --incidence CSV (mode 1 only), columns:
