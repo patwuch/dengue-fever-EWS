@@ -80,15 +80,25 @@ Both forecast one month ahead of the last input month. Risk index = (1 + predict
 
 Bundles are built on the k3s cluster with the `profiles/k8s` profile. Every rule runs as a Job in `dengue-ews` and reads and writes the S3 store from `k8s/storage.yaml`. The store needs only two author-supplied inputs: `data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv` and `results/STGNN/cyclical_seasonal/best_params.json`.
 
+The Snakemake controller runs from `dengue-ews-controller`, a small image that holds only Snakemake and its Kubernetes and S3 plugins ([k8s/controller.Dockerfile](k8s/controller.Dockerfile)). It submits the Jobs, and the pods run the rules in `dengue-ews:k8s-v1`. It needs an env file with `SNAKEMAKE_STORAGE_S3_ACCESS_KEY` / `_SECRET_KEY` (no `export`), and a kubeconfig whose current context is the `snakemake` ServiceAccount from `k8s/rbac.yaml`.
+
 ```bash
-cd machine-learning-module
-# S3 credentials (SNAKEMAKE_STORAGE_S3_ACCESS_KEY / _SECRET_KEY) in the environment,
-# kube context = the snakemake ServiceAccount from k8s/rbac.yaml
-snakemake results/STGNN/production_climate_risk/inference_bundle_climate.tar.gz \
+docker build -f k8s/controller.Dockerfile -t dengue-ews-controller:v1 k8s/
+ews() {   # ews <dir inside the repo> <snakemake args...>
+  local dir=$1; shift
+  docker run --rm -it --user $(id -u):$(id -g) \
+    --env-file ~/.config/dengue-ews/s3.docker.env \
+    -e KUBECONFIG=/kube/config -v ~/.config/dengue-ews/kubeconfig:/kube/config:ro \
+    -v "$PWD":/workspace -w /workspace/$dir dengue-ews-controller:v1 "$@"
+}
+# from the repo root
+ews machine-learning-module results/STGNN/production_climate_risk/inference_bundle_climate.tar.gz \
     --configfile config/OpenDengue/stgnn_climate_risk_production.yaml --profile profiles/k8s
-snakemake results/STGNN/production_logIR/inference_bundle_ir_env.tar.gz \
+ews machine-learning-module results/STGNN/production_logIR/inference_bundle_ir_env.tar.gz \
     --configfile config/OpenDengue/stgnn_logIR_production.yaml --profile profiles/k8s
 ```
+
+The ServiceAccount token expires. On `401 Unauthorized`, mint a new one with an admin context and set it on the kubeconfig's `snakemake` user: `kubectl -n dengue-ews create token snakemake --duration=720h`.
 
 The tarballs land in S3 under the same paths (`s3://dengue-ews/results/STGNN/<name>/`); download them from there before uploading to the release.
 

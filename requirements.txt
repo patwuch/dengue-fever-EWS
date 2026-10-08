@@ -28,6 +28,7 @@ geopandas
 shapely
 
 # Workflow + experiment tracking
+# The three snakemake pins in requirements-lock.txt must match k8s/controller.Dockerfile.
 snakemake            # verified against this repo's checkpoint/script rules on 9.x — see Dockerfile smoke test
 snakemake-storage-plugin-s3           # kubernetes jobs stage inputs/outputs via S3 (MinIO) default storage
 snakemake-executor-plugin-kubernetes  # --executor kubernetes; baked in so pods don't pip-install at startup
