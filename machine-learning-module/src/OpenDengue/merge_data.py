@@ -1,6 +1,9 @@
+import sys
 import pandas as pd
 from pathlib import Path
-import json
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from env_features import build_monthly_env, read_product
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
@@ -14,34 +17,6 @@ POP_PATH      = Path(snakemake.input.worldpop)
 DENGUE_PATH   = Path(snakemake.input.dengue)
 
 MERGED_PATH   = Path(snakemake.output.merged)
-
-JOIN_KEYS = ["admin", "name", "year_month"]
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
-def to_monthly(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    df["year_month"] = pd.to_datetime(df["Date"]).dt.to_period("M").dt.to_timestamp()
-    return df
-
-
-def expand_annual_to_monthly(df: pd.DataFrame, value_cols: list[str]) -> pd.DataFrame:
-    """Repeat annual rows for each month of the year."""
-    df = df.copy()
-    df["year"] = pd.to_datetime(df["Date"]).dt.year
-    df = df.merge(pd.DataFrame({"month": range(1, 13)}), how="cross")
-    df["year_month"] = pd.to_datetime(df[["year", "month"]].assign(day=1))
-    return df[["admin", "name", "year_month"] + value_cols]
-
-
-def histogram_to_pct(hist) -> dict:
-    """Convert a pixel-count histogram dict/string to fractional percentages."""
-    if isinstance(hist, str):
-        hist = json.loads(hist)
-    if not isinstance(hist, dict) or not hist or sum(hist.values()) == 0:
-        return {}
-    total = sum(hist.values())
-    return {int(k): v / total for k, v in hist.items()}
-
 
 # ── Name mappings ─────────────────────────────────────────────────────────────
 COUNTRY_MAP = {
@@ -127,62 +102,15 @@ def resolve_shp_name(admin_key: str, adm1_upper: str) -> str:
 
 
 # ── Build env dataset ─────────────────────────────────────────────────────────
-print("Processing ERA5_LAND...")
-era5      = to_monthly(pd.read_parquet(ERA5_PATH))
-era5_cols = [c for c in era5.columns if c.endswith(("_sum", "_mean"))]
-era_monthly = era5.groupby(JOIN_KEYS)[era5_cols].mean().reset_index()
-print(f"  ERA5 shape: {era_monthly.shape}")
-
-print("Processing CHIRPS...")
-chirps         = to_monthly(pd.read_parquet(CHIRPS_PATH))
-chirps_monthly = chirps.groupby(JOIN_KEYS)["precipitation_sum"].mean().reset_index()
-print(f"  CHIRPS shape: {chirps_monthly.shape}")
-
-print("Processing MODIS_LST...")
-lst         = to_monthly(pd.read_parquet(LST_PATH))
-lst_monthly = lst.groupby(JOIN_KEYS)[["LST_Day_1km_mean", "LST_Night_1km_mean"]].mean().reset_index()
-print(f"  MODIS_LST shape: {lst_monthly.shape}")
-
-print("Processing MODIS_NDVI_EVI...")
-ndvi         = to_monthly(pd.read_parquet(NDVI_EVI_PATH))
-ndvi_monthly = ndvi.groupby(JOIN_KEYS)[["NDVI_mean", "EVI_mean"]].mean().reset_index()
-print(f"  MODIS_NDVI_EVI shape: {ndvi_monthly.shape}")
-
-print("Processing MODIS_LULC...")
-lulc         = pd.read_parquet(LULC_PATH)
-hist_expanded = (
-    lulc["LC_Type1_histogram"]
-    .apply(histogram_to_pct)
-    .apply(pd.Series)
+print("Aggregating env products to province × month...")
+combined_env = build_monthly_env(
+    era5     = read_product(ERA5_PATH),
+    chirps   = read_product(CHIRPS_PATH),
+    lst      = read_product(LST_PATH),
+    ndvi_evi = read_product(NDVI_EVI_PATH),
+    lulc     = read_product(LULC_PATH),
+    pop      = read_product(POP_PATH),
 )
-hist_expanded        = hist_expanded[sorted(hist_expanded.columns)]
-hist_expanded.columns = [f"LC_Type1_pct_class{c}" for c in hist_expanded.columns]
-hist_expanded        = hist_expanded.fillna(0)
-lulc_hist    = pd.concat([lulc[["admin", "name", "Date"]], hist_expanded], axis=1)
-lulc_monthly = expand_annual_to_monthly(lulc_hist, list(hist_expanded.columns))
-print(f"  MODIS_LULC shape: {lulc_monthly.shape}")
-
-print("Processing WorldPop...")
-pop         = pd.read_parquet(POP_PATH)
-pop_monthly = expand_annual_to_monthly(pop, ["population_sum"])
-print(f"  WorldPop shape: {pop_monthly.shape}")
-
-print("\nMerging env datasets...")
-combined_env = chirps_monthly.copy()
-for ds_name, ds_df in [
-    ("ERA5_LAND",      era_monthly),
-    ("MODIS_LST",      lst_monthly),
-    ("MODIS_NDVI_EVI", ndvi_monthly),
-    ("MODIS_LULC",     lulc_monthly),
-    ("WorldPop",       pop_monthly),
-]:
-    combined_env = combined_env.merge(ds_df, on=JOIN_KEYS, how="outer")
-    print(f"  after {ds_name}: {combined_env.shape}")
-
-combined_env.rename(columns={"year_month": "Date"}, inplace=True)
-id_cols   = ["admin", "name", "Date"]
-data_cols = [c for c in combined_env.columns if c not in id_cols]
-combined_env  = combined_env[id_cols + data_cols]
 print(f"\nCombined env columns: {combined_env.columns.tolist()}")
 # ── Load and normalise dengue ─────────────────────────────────────────────────
 env = combined_env.copy()
