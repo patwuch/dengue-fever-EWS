@@ -14,7 +14,19 @@ def _find_git_root(start: Path) -> Path:
     return start
 
 
+# Set by the Snakemake entry point to the directory of the rule's declared outputs. Job pods get
+# the sources without .git, so the git-root default would write where Snakemake never uploads from.
+_OUTPUT_DIR: Path | None = None
+
+
+def set_output_dir(path: Path) -> None:
+    global _OUTPUT_DIR
+    _OUTPUT_DIR = Path(path)
+
+
 def _output_dir(cfg: dict) -> Path:
+    if _OUTPUT_DIR is not None:
+        return _OUTPUT_DIR
     root = _find_git_root(Path(__file__).resolve())
     return root / "data" / "processed" / "machine-learning" / "STGNN" / cfg["name"]
 

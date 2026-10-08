@@ -1,0 +1,52 @@
+# Pins Snakemake job pods in dengue-ews to the workstation.
+#
+# The job image (dengue-ews:k8s-v1) is imported only into the workstation's containerd, so a
+# CPU-only rule scheduled onto the NUC fails with ErrImagePull. The executor plugin can't set a
+# node selector itself (its only knob, the machine_type resource, maps to
+# node.kubernetes.io/instance-type, which k3s sets to "k3s" on every node). Delete this once the
+# image comes from a registry both nodes can pull from.
+#
+# Apply:  KUBECONFIG=~/.kube/k3s-tmu.yaml kubectl --context tmu apply -f k8s/pin-jobs-to-workstation.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: pin-snakejobs-to-workstation
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    # The Job controller labels each pod with its Job's name; the plugin names Jobs snakejob-<uuid>.
+    - name: is-snakemake-job-pod
+      expression: >
+        has(object.metadata.labels) &&
+        'batch.kubernetes.io/job-name' in object.metadata.labels &&
+        object.metadata.labels['batch.kubernetes.io/job-name'].startsWith('snakejob-')
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    # JSONPatch, not ApplyConfiguration: nodeSelector is an atomic map, which ApplyConfiguration
+    # refuses to mutate, and the plugin always sets it (to {} when there's no machine_type).
+    # This replaces the whole map.
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >
+          [JSONPatch{
+            op: "add",
+            path: "/spec/nodeSelector",
+            value: {"kubernetes.io/hostname": "chuang-hp-z4-g4-workstation"}
+          }]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: pin-snakejobs-to-workstation
+spec:
+  policyName: pin-snakejobs-to-workstation
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: dengue-ews

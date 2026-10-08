@@ -1,7 +1,8 @@
 import argparse
+from pathlib import Path
 import pandas as pd
 import torch
-from utils import load_config, save_tensors, save_preprocessing_params, save_edge_index, get_window_sizes
+from utils import set_output_dir, load_config, save_tensors, save_preprocessing_params, save_edge_index, get_window_sizes
 from utils import inference_bundle_path
 from bundle import node_table, target_baselines, env_climatology, missing_quality_pattern, save_inference_bundle
 from dataset import load_data, build_node_index
@@ -26,8 +27,8 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def main(config_path: str, data_path: str | None = None):
-    cfg  = load_config(config_path)
+def main(config_path: str | None = None, data_path: str | None = None, cfg: dict | None = None):
+    cfg  = cfg if cfg is not None else load_config(config_path)
     if data_path is not None:
         cfg["data"]["path"] = data_path
     prep = cfg.get("preprocessing", {})
@@ -200,7 +201,9 @@ def main(config_path: str, data_path: str | None = None):
     )
 
 if "snakemake" in dir():
-    main(config_path=snakemake.params.cfg, data_path=str(snakemake.input[0]))
+    # All outputs share one directory; anchor it to the declared output so staged paths match.
+    set_output_dir(Path(snakemake.output.scaler).parent)
+    main(cfg=dict(snakemake.config), data_path=str(snakemake.input[0]))
 elif __name__ == "__main__":
     args = parse_args()
     main(config_path=args.config)

@@ -58,6 +58,8 @@ checkpoint tune_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     params:
         cfg = lambda wc: workflow.configfiles[-1],
     script:
@@ -104,6 +106,8 @@ rule train_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     script:
         "../src/OpenDengue/STGNN/train.py"
 
@@ -125,6 +129,8 @@ rule test_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     script:
         "../src/OpenDengue/STGNN/test.py"
 
@@ -192,6 +198,8 @@ rule explain_shap_stgnn:
         csv_path    = str(MERGED_DENGUE_ENV_DATA),
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     script:
         "../src/OpenDengue/STGNN/explain_shap.py"
 
