@@ -5,15 +5,19 @@
 # own Snakemake on the job it is sent. Change them together with requirements-lock.txt.
 #
 # build (nothing is copied in, so k8s/ is enough as context):
-#   docker build -f k8s/controller.Dockerfile -t dengue-ews-controller:v1 k8s/
+#   docker build -f k8s/controller.Dockerfile -t ghcr.io/patwuch/dengue-ews-controller:v1 k8s/
+#   docker push ghcr.io/patwuch/dengue-ews-controller:v1      (needs a token with write:packages)
 #
 # run from the repo root, as your own user so .snakemake/ and git stay yours:
 #   docker run --rm -it --user $(id -u):$(id -g) \
 #     --env-file ~/.config/dengue-ews/s3.docker.env \
 #     -e KUBECONFIG=/kube/config -v ~/.config/dengue-ews/kubeconfig:/kube/config:ro \
 #     -v $PWD:/workspace -w /workspace/machine-learning-module \
-#     dengue-ews-controller:v1 <target> --configfile <config> --profile profiles/k8s
+#     ghcr.io/patwuch/dengue-ews-controller:v1 <target> --configfile <config> --profile profiles/k8s
 FROM python:3.11-slim
+
+# Links the GHCR package to the repo (shown on the repo page, inherits its access).
+LABEL org.opencontainers.image.source=https://github.com/patwuch/dengue-fever-EWS
 
 # git: Snakemake packs the workflow sources for the pods with `git ls-files`.
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \

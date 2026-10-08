@@ -8,8 +8,8 @@
 
 executor: kubernetes
 kubernetes-namespace: dengue-ews
-# The GPU worker image until the CPU inference image exists; these rules don't request a GPU.
-container-image: dengue-ews:k8s-v1
+# CPU image (inference.Dockerfile), public on GHCR so any node can pull it.
+container-image: ghcr.io/patwuch/dengue-ews-inference:v2
 
 default-storage-provider: s3
 default-storage-prefix: s3://dengue-ews

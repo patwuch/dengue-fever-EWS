@@ -12,12 +12,16 @@
 #                   doesn't need to match ours.
 #
 # build (from the repo root; only the two pixi files are copied in):
-#   docker build -f inference.Dockerfile -t dengue-ews-inference:v2 .
+#   docker build -f inference.Dockerfile -t ghcr.io/patwuch/dengue-ews-inference:v2 .
+#   docker push ghcr.io/patwuch/dengue-ews-inference:v2       (needs a token with write:packages)
 #
 # local run, from the repo root:
-#   docker run --rm --user $(id -u):$(id -g) -v $PWD:/workspace dengue-ews-inference:v2 \
+#   docker run --rm --user $(id -u):$(id -g) -v $PWD:/workspace ghcr.io/patwuch/dengue-ews-inference:v2 \
 #     snakemake data/processed/env/SEA_env_monthly.csv --cores 2
 FROM python:3.11-slim
+
+# Links the GHCR package to the repo (shown on the repo page, inherits its access).
+LABEL org.opencontainers.image.source=https://github.com/patwuch/dengue-fever-EWS
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
