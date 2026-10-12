@@ -49,6 +49,11 @@ SELECTION = {
     "MODIS_NDVI_EVI": {"bands": ["NDVI", "EVI"], "stats": MODIS_STATS},
     "WorldPop":       {"bands": ["population"], "stats": ALL_STATS},
     "MODIS_LULC":     {"bands": ["LC_Type1"], "stats": ["histogram"]},
+    # Successor products, same statistics as the products they replace.
+    "CHIRPS_V3":       {"bands": ["precipitation"], "stats": ALL_STATS},
+    "VIIRS_LST_DAY":   {"bands": ["LST_1KM"], "stats": MODIS_STATS},
+    "VIIRS_LST_NIGHT": {"bands": ["LST_1KM"], "stats": MODIS_STATS},
+    "VIIRS_NDVI_EVI":  {"bands": ["NDVI", "EVI"], "stats": MODIS_STATS},
 }
 MONTHLY_PRODUCTS = ["CHIRPS", "ERA5_LAND", "MODIS_LST", "MODIS_NDVI_EVI"]
 
