@@ -37,9 +37,10 @@ MONTHLY_PRODUCTS = {"era5": "ERA5_LAND", "chirps": "CHIRPS", "lst": "MODIS_LST",
 AOI = ZS_DIR / "aoi" / "gaul_2024_sea_filtered.parquet"
 
 
-def previous_month(month):
+def shift_month(month, delta):
     year, mon = map(int, month.split("-"))
-    return f"{year - 1}-12" if mon == 1 else f"{year}-{mon - 1:02d}"
+    idx = year * 12 + mon - 1 + delta
+    return f"{idx // 12:04d}-{idx % 12 + 1:02d}"
 
 
 def batches(key):
@@ -60,7 +61,7 @@ rule zonal_stats:
     wildcard_constraints:
         month = r"\d{4}-\d{2}",
     params:
-        start           = lambda w: previous_month(w.month),
+        start           = lambda w: shift_month(w.month, -1),
         end             = lambda w: w.month,
         products        = MONTHLY_PRODUCTS,
         gee_concurrency = config.get("gee_concurrency", 10),
@@ -83,3 +84,62 @@ rule env_table:
         mem_mb = 8000,
     script:
         "site/scripts/build_env_table.py"
+
+
+# Climate-mode bundle from machine-learning-module/Snakefile (on S3 under the same key); point
+# bundle_climate at a downloaded release asset to run without the cluster.
+BUNDLE_CLIMATE = config.get("bundle_climate",
+                            "results/STGNN/production_climate_risk/inference_bundle_climate.tar.gz")
+SITE_DATA      = DATA_ROOT / "site" / "data"
+
+
+rule climate_deltas:
+    message:
+        "Climate deltas {params.start} → {params.end} vs the climate model's 2011–2018 baseline..."
+    input:
+        env    = rules.env_table.output.table,
+        bundle = BUNDLE_CLIMATE,
+    output:
+        deltas = str(SITE_DATA / "climate_deltas.json"),
+    params:
+        # End at a December, before any month being forecast (compute_climate_delta.py).
+        start = config.get("delta_start", "2019-01"),
+        end   = config.get("delta_end", "2025-12"),
+    shell:
+        "python site/scripts/compute_climate_delta.py --env {input.env} --bundle {input.bundle}"
+        " --start {params.start} --end {params.end} -o {output.deltas}"
+
+
+rule predict_climate:
+    message:
+        "Climate-model risk index for {wildcards.target}..."
+    input:
+        env    = rules.env_table.output.table,
+        bundle = BUNDLE_CLIMATE,
+        deltas = rules.climate_deltas.output.deltas,
+    output:
+        prediction = str(SITE_DATA / "predictions" / "climate" / "{target}.json"),
+    wildcard_constraints:
+        target = r"\d{4}-\d{2}",
+    params:
+        last_month = lambda w: shift_month(w.target, -1),
+    resources:
+        mem_mb = 4000,
+    shell:
+        "python site/scripts/run_inference.py --mode climate --bundle {input.bundle}"
+        " --env {input.env} --deltas {input.deltas} --last-month {params.last_month}"
+        " --out {output.prediction}"
+
+
+rule region_shapes:
+    message:
+        "Simplified province outlines for the site map..."
+    input:
+        aoi = str(AOI),
+    output:
+        shapes = str(SITE_DATA / "regions.json"),
+    params:
+        tolerance = 0.01,
+        grid      = 0.001,
+    script:
+        "site/scripts/make_region_shapes.py"

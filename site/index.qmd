@@ -10,11 +10,9 @@ page-layout: full
 import json, pathlib, datetime
 
 data_dir = pathlib.Path("data")
-preds_path = data_dir / "latest_predictions.json"
-stats_path = data_dir / "latest_zonal_stats.json"
-
-preds = json.loads(preds_path.read_text()) if preds_path.exists() else {}
-stats = json.loads(stats_path.read_text()) if stats_path.exists() else {}
+# The climate model's newest forecast drives the map.
+archive = sorted((data_dir / "predictions" / "climate").glob("????-??.json"))
+preds = json.loads(archive[-1].read_text()) if archive else {}
 
 updated = preds.get("generated_at", "—")
 target_month = preds.get("target_month", "—")
@@ -51,45 +49,57 @@ A Taiwan-specific counterpart operating at the finer granularity of the Basic St
 
 ## SEA Provinces — Current Risk Map
 
-Predicted dengue incidence rate (relative risk index) for admin-1 regions across Southeast Asia.
-Values > 1 indicate elevated risk relative to the 2011–2018 training baseline.
+Relative dengue risk index for next month, per admin-1 province, from the climate-only model.
+1 is the province's usual level for that calendar month in 2011–2018; 2 is twice it, 0.5 half.
 
 ```{python}
 #| echo: false
 #| label: fig-risk-map
-#| fig-cap: "Predicted relative dengue risk index (climate-only model). Inputs are corrected for the observed shift between 2011–2018 and 2019–2026 climate."
+#| fig-cap: "Predicted relative dengue risk index (climate-only model), on a log scale centred on 1. Inputs are corrected for the observed shift between 2011–2018 and 2019–2025 climate. Grey: no model for that province."
 
 import json, pathlib
-import plotly.express as px
+import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 
 data_dir = pathlib.Path("data")
-preds_path = data_dir / "latest_predictions.json"
+archive = sorted((data_dir / "predictions" / "climate").glob("????-??.json"))
+preds = json.loads(archive[-1].read_text()) if archive else {}
+shapes = json.loads((data_dir / "regions.json").read_text())
 
-preds = json.loads(preds_path.read_text()) if preds_path.exists() else {}
 regions = preds.get("regions", {})
 if not regions:
-    print("⚠️  No prediction data found — run site/scripts/run_inference.py first.")
+    print("⚠️  No prediction data found — run the predict_climate rule first.")
 else:
-    df = pd.DataFrame([
-        {"region": k, "country": v["country"], "risk_index": v["risk_index"]}
-        for k, v in regions.items()
-    ])
+    df = pd.DataFrame([{"name": k, "country": v["country"], "risk_index": v["risk_index"],
+                        "imputed": v["env_months_imputed"]} for k, v in regions.items()])
+    df["log_risk"] = np.log10(df["risk_index"].clip(0.1, 10))
+    all_names = [f["properties"]["name"] for f in shapes["features"]]
+    unmodelled = [n for n in all_names if n not in regions]
 
-    fig = px.choropleth(
-        df,
-        locations="country",
-        locationmode="country names",
-        color="risk_index",
-        hover_name="region",
-        hover_data={"risk_index": ":.2f", "country": True},
-        color_continuous_scale="RdYlGn_r",
-        range_color=[0, 3],
-        labels={"risk_index": "Risk Index"},
-        title=f"Dengue Risk Index — {preds.get('target_month', '')}",
-        scope="asia",
-    )
-    fig.update_layout(margin=dict(l=0, r=0, t=40, b=0), height=480)
+    ticks = [0.1, 0.25, 0.5, 1, 2, 4, 10]
+    fig = go.Figure()
+    if unmodelled:
+        fig.add_trace(go.Choropleth(
+            geojson=shapes, featureidkey="properties.name", locations=unmodelled,
+            z=[0] * len(unmodelled), colorscale=[[0, "#d9d9d9"], [1, "#d9d9d9"]],
+            showscale=False, marker_line_color="white", marker_line_width=0.4,
+            hovertemplate="%{location}<br>no model<extra></extra>",
+        ))
+    fig.add_trace(go.Choropleth(
+        geojson=shapes, featureidkey="properties.name", locations=df["name"],
+        z=df["log_risk"], zmin=-1, zmax=1, colorscale="RdBu_r",
+        customdata=df[["country", "risk_index", "imputed"]],
+        hovertemplate=("<b>%{location}</b>, %{customdata[0]}<br>"
+                       "Risk index %{customdata[1]:.2f}<br>"
+                       "Months of env data filled: %{customdata[2]}<extra></extra>"),
+        colorbar=dict(title="Risk index", tickvals=np.log10(ticks).tolist(),
+                      ticktext=[f"{t:g}" for t in ticks]),
+        marker_line_color="white", marker_line_width=0.4,
+    ))
+    fig.update_geos(fitbounds="locations", visible=False)
+    fig.update_layout(title=f"Dengue risk index — {preds['target_month']}",
+                      margin=dict(l=0, r=0, t=40, b=0), height=560)
     fig.show()
 ```
 
@@ -107,8 +117,8 @@ import pandas as pd
 
 data_dir = pathlib.Path("data")
 models = {"ir_env": "IR + environment"}
-loaded = {k: json.loads((data_dir / f"latest_predictions_{k}.json").read_text())
-          for k in models if (data_dir / f"latest_predictions_{k}.json").exists()}
+latest = {k: sorted((data_dir / "predictions" / k).glob("????-??.json")) for k in models}
+loaded = {k: json.loads(files[-1].read_text()) for k, files in latest.items() if files}
 
 if not loaded:
     print("No incidence-based forecasts yet — they need site/data/incidence/recent_incidence.csv "

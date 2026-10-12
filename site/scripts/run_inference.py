@@ -26,18 +26,18 @@ for that time of year. Falls back to the SEA-wide calendar-month baseline for
 provinces with no reported cases in training.
 
 Inputs:
-    <bundle>/bundle.json, best_params.json, best_model.pt
-        the extracted inference_bundle/ of `snakemake results/STGNN/<name>/inference_bundle_<label>.tar.gz`
-    site/data/zonal_stats/<YYYY-MM>.json      from fetch_zonal_stats.py --backfill
-    site/data/climate_deltas.json             from compute_climate_delta.py (optional)
-    --incidence CSV (mode 1 only), columns:
-        adm_1_name, year_month (YYYY-MM), and either IR (cases per 100,000)
-        or dengue_total + population_sum. Optional adm_0_name.
+    --bundle     inference_bundle_<label>.tar.gz (or its extracted inference_bundle/ directory):
+                 bundle.json, best_params.json, best_model.pt
+    --env        province × month env table, data/processed/env/SEA_env_monthly.csv
+                 (build_env_table.py)
+    --deltas     site/data/climate_deltas.json from compute_climate_delta.py (climate mode)
+    --incidence  CSV (incidence mode only), columns:
+                 adm_1_name, year_month (YYYY-MM), and either IR (cases per 100,000)
+                 or dengue_total + population_sum. Optional adm_0_name.
 
-Outputs:
-    site/data/predictions/<label>/<target>.json   archived per month
-    site/data/latest_predictions_<label>.json
-    site/data/latest_predictions.json             climate mode only (site risk map)
+Output:
+    --out        default site/data/predictions/<label>/<target>.json. The site shows the
+                 latest month in site/data/predictions/climate/.
 """
 
 import argparse
@@ -45,6 +45,8 @@ import datetime
 import json
 import pathlib
 import sys
+import tarfile
+import tempfile
 
 import numpy as np
 import pandas as pd
@@ -62,7 +64,6 @@ from graph import build_edge_index                               # noqa: E402
 from apply_climate_delta import load_deltas, correct_stats       # noqa: E402
 
 DATA_DIR    = SCRIPTS_DIR.parent / "data"
-STATS_DIR   = DATA_DIR / "zonal_stats"
 ARCHIVE_DIR = DATA_DIR / "predictions"
 
 
@@ -76,16 +77,25 @@ def shift_month(month: str, delta: int) -> str:
     return f"{idx // 12:04d}-{idx % 12 + 1:02d}"
 
 
-def latest_archived_month() -> str:
-    months = sorted(p.stem for p in STATS_DIR.glob("????-??.json"))
-    if not months:
-        raise FileNotFoundError(f"No zonal stats in {STATS_DIR} — run fetch_zonal_stats.py first.")
-    return months[-1]
+def read_env_table(path: pathlib.Path) -> pd.DataFrame:
+    env = pd.read_csv(path)
+    env["year_month"] = pd.to_datetime(env["year_month"]).dt.strftime("%Y-%m")
+    return env
 
 
 # ---------------------------------------------------------------------------
 # Bundle & model
 # ---------------------------------------------------------------------------
+
+def extract_bundle(path: pathlib.Path) -> pathlib.Path:
+    """Directory holding bundle.json; a .tar.gz is unpacked into a temporary directory."""
+    if path.is_dir():
+        return path
+    out = pathlib.Path(tempfile.mkdtemp(prefix="bundle-"))
+    with tarfile.open(path) as tar:
+        tar.extractall(out, filter="data")
+    return next(out.rglob("bundle.json")).parent
+
 
 def load_bundle(bundle_dir: pathlib.Path) -> tuple[dict, dict]:
     bundle = json.loads((bundle_dir / "bundle.json").read_text())
@@ -121,14 +131,19 @@ def load_model(bundle_dir: pathlib.Path, params: dict, n_features: int) -> STGAT
 # Feature construction — mirrors preprocess/pipeline.py
 # ---------------------------------------------------------------------------
 
-def load_window_stats(months: list[str], deltas: dict | None) -> list[dict]:
-    missing = [m for m in months if not (STATS_DIR / f"{m}.json").exists()]
+def load_window_stats(env: pd.DataFrame, months: list[str], deltas: dict | None) -> list[dict]:
+    """One {"target_month", "regions": {province: {"country", feature: value}}} per month."""
+    missing = [m for m in months if m not in set(env["year_month"])]
     if missing:
-        raise FileNotFoundError(
-            f"Zonal stats missing for {missing}. Run fetch_zonal_stats.py "
-            f"--month {months[-1]} --backfill {len(months)}."
-        )
-    return [correct_stats(json.loads((STATS_DIR / f"{m}.json").read_text()), deltas) for m in months]
+        raise ValueError(f"Env table has no rows for {missing}; it ends at {env['year_month'].max()}.")
+    features = [c for c in env.columns if c not in ("adm_0_name", "adm_1_name", "year_month")]
+    window = []
+    for m in months:
+        rows = env[env["year_month"] == m]
+        regions = {r["adm_1_name"]: {"country": r["adm_0_name"], **{f: r[f] for f in features}}
+                   for r in rows.to_dict("records")}
+        window.append(correct_stats({"target_month": m, "regions": regions}, deltas))
+    return window
 
 
 def match_nodes(nodes: list[dict], regions: dict) -> list[str | None]:
@@ -274,23 +289,32 @@ def main() -> None:
     ap.add_argument("--label", default=None,
                     help="Output name under site/data/predictions/ (default: the mode).")
     ap.add_argument("--bundle", required=True, type=pathlib.Path,
-                    help="Directory with bundle.json, best_params.json, best_model.pt.")
+                    help="inference_bundle_<label>.tar.gz, or a directory with bundle.json, "
+                         "best_params.json, best_model.pt.")
+    ap.add_argument("--env", required=True, type=pathlib.Path,
+                    help="Province × month env table (data/processed/env/SEA_env_monthly.csv).")
+    ap.add_argument("--deltas", type=pathlib.Path, default=DATA_DIR / "climate_deltas.json",
+                    help="Climate deltas from compute_climate_delta.py.")
+    ap.add_argument("--out", type=pathlib.Path, default=None,
+                    help="Output JSON (default site/data/predictions/<label>/<target>.json).")
     ap.add_argument("--incidence", type=pathlib.Path, default=DATA_DIR / "incidence/recent_incidence.csv",
                     help="Recent incidence CSV (incidence mode).")
     ap.add_argument("--last-month", default=None,
-                    help="Last input month YYYY-MM (default: latest archived zonal stats). Forecast is the month after.")
+                    help="Last input month YYYY-MM (default: the env table's last month). Forecast is the month after.")
     ap.add_argument("--delta", choices=["auto", "on", "off"], default="auto",
                     help="Climate delta correction. auto = on for climate mode, off for incidence mode.")
     ap.add_argument("--max-missing-nodes", type=float, default=0.2,
                     help="Fail if more than this fraction of provinces has no env data at all.")
     args = ap.parse_args()
 
-    bundle, params = load_bundle(args.bundle)
+    bundle_dir     = extract_bundle(args.bundle)
+    bundle, params = load_bundle(bundle_dir)
+    env            = read_env_table(args.env)
     if bundle["mode"] != args.mode:
         raise ValueError(f"--mode {args.mode} but bundle {bundle['name']!r} is a {bundle['mode']!r}-mode model.")
 
     window_size  = int(params["window_size"])
-    last_month   = args.last_month or latest_archived_month()
+    last_month   = args.last_month or env["year_month"].max()
     months       = [shift_month(last_month, -k) for k in reversed(range(window_size))]
     target_month = shift_month(last_month, 1)
     nodes        = bundle["nodes"]
@@ -303,12 +327,12 @@ def main() -> None:
 
     # ── Climate delta ────────────────────────────────────────────────────────
     use_delta = args.delta == "on" or (args.delta == "auto" and args.mode == "climate")
-    deltas = load_deltas() if use_delta else None
+    deltas = load_deltas(args.deltas) if use_delta else None
     if use_delta and deltas is None:
-        print("  WARNING: delta correction requested but site/data/climate_deltas.json is missing "
-              "or empty — running on uncorrected observations.")
+        raise FileNotFoundError(f"Delta correction is on but {args.deltas} is missing or empty; "
+                                "run compute_climate_delta.py, or pass --delta off.")
     if needs_stats:
-        window = load_window_stats(months, deltas)
+        window = load_window_stats(env, months, deltas)
         bias_corrected = all(s["bias_corrected"] for s in window)
         keys = match_nodes(nodes, window[-1]["regions"])
         unmatched = [n["name"] for n, k in zip(nodes, keys) if k is None]
@@ -354,7 +378,7 @@ def main() -> None:
         raise ValueError(f"Built {x.shape[-1]} features; bundle expects {len(feats['order'])}.")
 
     # ── Forward pass ─────────────────────────────────────────────────────────
-    model = load_model(args.bundle, params, x.shape[-1])
+    model = load_model(bundle_dir, params, x.shape[-1])
     x_t   = torch.tensor(x, dtype=torch.float32).unsqueeze(0)        # (1, T, N, F)
     # Training masked nodes whose *target* was unreported; every node is a
     # prediction target here, which is the mask=1 case.
@@ -395,13 +419,9 @@ def main() -> None:
     if coverage is not None:
         output["incidence_coverage"] = coverage
 
-    payload = json.dumps(output, indent=2)
-    archive = ARCHIVE_DIR / label / f"{target_month}.json"
+    archive = args.out or ARCHIVE_DIR / label / f"{target_month}.json"
     archive.parent.mkdir(parents=True, exist_ok=True)
-    archive.write_text(payload)
-    (DATA_DIR / f"latest_predictions_{label}.json").write_text(payload)
-    if args.mode == "climate":
-        (DATA_DIR / "latest_predictions.json").write_text(payload)
+    archive.write_text(json.dumps(output, indent=2))
 
     elevated = sum(r["risk_index"] > 1 for r in regions_out.values())
     print(f"\nArchived → {archive}")
