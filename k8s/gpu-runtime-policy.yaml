@@ -1,10 +1,11 @@
 # Workaround for the Snakemake Kubernetes executor never setting runtimeClassName.
 # Pods in the dengue-ews namespace that request an NVIDIA GPU get runtimeClassName: nvidia,
-# so the container actually sees the GPU. Not needed once the workstation's k3s agent runs
-# with `default-runtime: nvidia`; delete these objects then.
+# so the container actually sees the GPU. Needed on any k3s whose default runtime isn't
+# nvidia: the laptop's single-node cluster (training fallback) uses it; the workstation's
+# agent ran with `default-runtime: nvidia` and didn't. Also creates the namespace.
 #
-# Apply:  KUBECONFIG=/root/.kube/k3s-tmu.yaml kubectl apply -f k8s/gpu-runtime-policy.yaml
-# Remove: KUBECONFIG=/root/.kube/k3s-tmu.yaml kubectl delete -f k8s/gpu-runtime-policy.yaml
+# Apply (laptop):  sudo k3s kubectl apply -f k8s/gpu-runtime-policy.yaml
+# Remove:          sudo k3s kubectl delete -f k8s/gpu-runtime-policy.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
