@@ -1,4 +1,6 @@
-"""One monthly EZGEE run: zonal statistics for a month and the month before it (Snakemake script).
+"""One EZGEE run over params.start → params.end (YYYY-MM, inclusive) (Snakemake script).
+
+Used by zonal_stats (a month and the month before it) and zonal_batch (one product-year).
 
 Builds the EZGEE config with ezgee_config.build_payload, runs EZGEE's own Snakefile with
 $EZGEE_PYTHON as a separate local Snakemake (its Snakemake 7 never talks to the cluster), and
@@ -28,9 +30,8 @@ if not key or not Path(key).is_file():
     sys.exit("GOOGLE_APPLICATION_CREDENTIALS must be the path of the GEE service-account key "
              f"(got {key!r}).")
 
-month    = snakemake.wildcards.month
 products = snakemake.params.products            # output name → EZGEE product
-run_id   = f"m{month}"
+run_id   = snakemake.params.run_id
 app_dir  = Path(tempfile.mkdtemp(prefix="ezgee-"))
 run_dir  = app_dir / "data" / "runs" / run_id
 run_dir.mkdir(parents=True)

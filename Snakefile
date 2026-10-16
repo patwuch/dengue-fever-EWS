@@ -64,8 +64,53 @@ rule zonal_stats:
         start           = lambda w: shift_month(w.month, -1),
         end             = lambda w: w.month,
         products        = MONTHLY_PRODUCTS,
+        run_id          = lambda w: f"m{w.month}",
         gee_concurrency = config.get("gee_concurrency", 10),
     # Mostly waiting on Earth Engine; EZGEE runs up to gee_concurrency requests at once.
+    threads: 4
+    resources:
+        mem_mb = 8000,
+    script:
+        "site/scripts/run_ezgee.py"
+
+
+# One-off batches of the successor products (EZGEE registry), one Job per product-year so a
+# failure only reruns that year. Fetch everything with:  snakemake batches --profile ...
+BATCH_FIRST = {"CHIRPS_V3": 2011, "VIIRS_LST_DAY": 2012, "VIIRS_LST_NIGHT": 2012,
+               "VIIRS_NDVI_EVI": 2012}
+BATCH_END   = config.get("batch_end", "2026-08")      # last month of the final year
+BATCH_DIR   = ZS_DIR / "batch"
+
+
+def batch_months(year):
+    """First and last month of one batch year; the final year stops at BATCH_END."""
+    last = BATCH_END if int(year) == int(BATCH_END[:4]) else f"{year}-12"
+    return f"{year}-01", last
+
+
+rule batches:
+    input:
+        [str(BATCH_DIR / product / f"{year}.parquet")
+         for product, first in BATCH_FIRST.items()
+         for year in range(first, int(BATCH_END[:4]) + 1)],
+
+
+rule zonal_batch:
+    message:
+        "EZGEE batch {wildcards.product} {wildcards.year}..."
+    input:
+        aoi = str(AOI),
+    output:
+        out = str(BATCH_DIR / "{product}" / "{year}.parquet"),
+    wildcard_constraints:
+        product = "|".join(BATCH_FIRST),
+        year    = r"\d{4}",
+    params:
+        start           = lambda w: batch_months(w.year)[0],
+        end             = lambda w: batch_months(w.year)[1],
+        products        = lambda w: {"out": w.product},
+        run_id          = lambda w: f"b{w.product}_{w.year}",
+        gee_concurrency = config.get("gee_concurrency", 10),
     threads: 4
     resources:
         mem_mb = 8000,
