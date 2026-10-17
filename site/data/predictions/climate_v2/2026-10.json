@@ -1,0 +1,2959 @@
+{
+  "mode": "climate",
+  "label": "climate_v2",
+  "model": "climate_v2_production",
+  "train_period": [
+    "2011-01",
+    "2018-12"
+  ],
+  "generated_at": "2026-10-17T12:52:00.201852Z",
+  "target_month": "2026-10",
+  "input_months": [
+    "2025-10",
+    "2025-11",
+    "2025-12",
+    "2026-01",
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-06",
+    "2026-07",
+    "2026-08",
+    "2026-09"
+  ],
+  "bias_corrected": true,
+  "risk_index_definition": "(1 + predicted IR) / (1 + 2011-2018 mean IR for this province and calendar month)",
+  "regions": {
+    "Aceh": {
+      "country": "Indonesia",
+      "risk_index": 1.3531,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Amnat Charoen": {
+      "country": "Thailand",
+      "risk_index": 0.821,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Ang Thong": {
+      "country": "Thailand",
+      "risk_index": 0.7899,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Ayeyarwady": {
+      "country": "Myanmar",
+      "risk_index": 0.8902,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Bago (East)": {
+      "country": "Myanmar",
+      "risk_index": 1.0134,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Bago (West)": {
+      "country": "Myanmar",
+      "risk_index": 0.981,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Bali": {
+      "country": "Indonesia",
+      "risk_index": 0.5985,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Bangkok": {
+      "country": "Thailand",
+      "risk_index": 0.8996,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Banten": {
+      "country": "Indonesia",
+      "risk_index": 1.868,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Belait": {
+      "country": "Brunei Darussalam",
+      "risk_index": 1.2247,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Bengkulu": {
+      "country": "Indonesia",
+      "risk_index": 1.3746,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Brunei And Muara": {
+      "country": "Brunei Darussalam",
+      "risk_index": 1.8741,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Bueng Kan": {
+      "country": "Thailand",
+      "risk_index": 1.0509,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Buri Ram": {
+      "country": "Thailand",
+      "risk_index": 1.8285,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Cambodia": {
+      "country": "Cambodia",
+      "risk_index": 0.8423,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chachoengsao": {
+      "country": "Thailand",
+      "risk_index": 1.052,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chai Nat": {
+      "country": "Thailand",
+      "risk_index": 0.9861,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chaiyaphum": {
+      "country": "Thailand",
+      "risk_index": 0.8356,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chanthaburi": {
+      "country": "Thailand",
+      "risk_index": 1.1175,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chiang Mai": {
+      "country": "Thailand",
+      "risk_index": 0.4793,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chiang Rai": {
+      "country": "Thailand",
+      "risk_index": 0.6022,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chin": {
+      "country": "Myanmar",
+      "risk_index": 0.9858,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chon Buri": {
+      "country": "Thailand",
+      "risk_index": 1.9484,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Chumphon": {
+      "country": "Thailand",
+      "risk_index": 1.7575,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Cordillera Administrative Region (Car)": {
+      "country": "Philippines",
+      "risk_index": 0.0296,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Daerah Istimewa Yogyakarta": {
+      "country": "Indonesia",
+      "risk_index": 0.9084,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Dki Jakarta": {
+      "country": "Indonesia",
+      "risk_index": 1.0021,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Gorontalo": {
+      "country": "Indonesia",
+      "risk_index": 1.4326,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Jambi": {
+      "country": "Indonesia",
+      "risk_index": 1.4728,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Jawa Barat": {
+      "country": "Indonesia",
+      "risk_index": 1.2901,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Jawa Tengah": {
+      "country": "Indonesia",
+      "risk_index": 1.1735,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Jawa Timur": {
+      "country": "Indonesia",
+      "risk_index": 0.804,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Johor": {
+      "country": "Malaysia",
+      "risk_index": 0.9318,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kachin": {
+      "country": "Myanmar",
+      "risk_index": 0.9155,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kalasin": {
+      "country": "Thailand",
+      "risk_index": 0.7057,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kalimantan Barat": {
+      "country": "Indonesia",
+      "risk_index": 1.2729,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kalimantan Selatan": {
+      "country": "Indonesia",
+      "risk_index": 1.3302,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kalimantan Tengah": {
+      "country": "Indonesia",
+      "risk_index": 1.4294,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kalimantan Timur": {
+      "country": "Indonesia",
+      "risk_index": 0.5347,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kalimantan Utara": {
+      "country": "Indonesia",
+      "risk_index": 0.9558,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kamphaeng Phet": {
+      "country": "Thailand",
+      "risk_index": 0.7057,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kanchanaburi": {
+      "country": "Thailand",
+      "risk_index": 1.3715,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kayah": {
+      "country": "Myanmar",
+      "risk_index": 1.5726,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kayin": {
+      "country": "Myanmar",
+      "risk_index": 1.2505,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kedah": {
+      "country": "Malaysia",
+      "risk_index": 3.2574,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kelantan": {
+      "country": "Malaysia",
+      "risk_index": 0.9534,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kepulauan Bangka Belitung": {
+      "country": "Indonesia",
+      "risk_index": 0.9491,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Kepulauan Riau": {
+      "country": "Indonesia",
+      "risk_index": 1.1385,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Khon Kaen": {
+      "country": "Thailand",
+      "risk_index": 1.2731,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Krabi": {
+      "country": "Thailand",
+      "risk_index": 1.2505,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Lampang": {
+      "country": "Thailand",
+      "risk_index": 1.0077,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Lamphun": {
+      "country": "Thailand",
+      "risk_index": 1.2886,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Lampung": {
+      "country": "Indonesia",
+      "risk_index": 1.357,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Lao People's Democratic Republic": {
+      "country": "Lao People's Democratic Republic",
+      "risk_index": 0.6524,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Loei": {
+      "country": "Thailand",
+      "risk_index": 0.674,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Lop Buri": {
+      "country": "Thailand",
+      "risk_index": 0.7019,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Mae Hong Son": {
+      "country": "Thailand",
+      "risk_index": 0.2165,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Magway": {
+      "country": "Myanmar",
+      "risk_index": 0.9956,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Maha Sarakham": {
+      "country": "Thailand",
+      "risk_index": 1.1614,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Maluku": {
+      "country": "Indonesia",
+      "risk_index": 2.2436,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Maluku Utara": {
+      "country": "Indonesia",
+      "risk_index": 1.2911,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Mandalay": {
+      "country": "Myanmar",
+      "risk_index": 1.0827,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Melaka": {
+      "country": "Malaysia",
+      "risk_index": 1.3467,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Mon": {
+      "country": "Myanmar",
+      "risk_index": 1.0763,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Mukdahan": {
+      "country": "Thailand",
+      "risk_index": 1.207,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nakhon Nayok": {
+      "country": "Thailand",
+      "risk_index": 2.1378,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nakhon Pathom": {
+      "country": "Thailand",
+      "risk_index": 0.8583,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nakhon Phanom": {
+      "country": "Thailand",
+      "risk_index": 1.6065,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nakhon Ratchasima": {
+      "country": "Thailand",
+      "risk_index": 1.2998,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nakhon Sawan": {
+      "country": "Thailand",
+      "risk_index": 0.7653,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nakhon Si Thammarat": {
+      "country": "Thailand",
+      "risk_index": 1.6738,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nan": {
+      "country": "Thailand",
+      "risk_index": 2.4035,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Narathiwat": {
+      "country": "Thailand",
+      "risk_index": 2.0074,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "National Capital Region (Ncr)": {
+      "country": "Philippines",
+      "risk_index": 0.0793,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nay Pyi Taw": {
+      "country": "Myanmar",
+      "risk_index": 1.2561,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Negeri Sembilan": {
+      "country": "Malaysia",
+      "risk_index": 1.2163,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nong Bua Lam Phu": {
+      "country": "Thailand",
+      "risk_index": 1.6685,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nong Khai": {
+      "country": "Thailand",
+      "risk_index": 1.7202,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nonthaburi": {
+      "country": "Thailand",
+      "risk_index": 2.2709,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nusa Tenggara Barat": {
+      "country": "Indonesia",
+      "risk_index": 1.866,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Nusa Tenggara Timur": {
+      "country": "Indonesia",
+      "risk_index": 1.2249,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Pahang": {
+      "country": "Malaysia",
+      "risk_index": 1.6774,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Papua": {
+      "country": "Indonesia",
+      "risk_index": 2.4254,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Papua Barat": {
+      "country": "Indonesia",
+      "risk_index": 2.3755,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Pathum Thani": {
+      "country": "Thailand",
+      "risk_index": 2.593,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Pattani": {
+      "country": "Thailand",
+      "risk_index": 2.5453,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Perak": {
+      "country": "Malaysia",
+      "risk_index": 0.9611,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Perlis": {
+      "country": "Malaysia",
+      "risk_index": 2.6265,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phangnga": {
+      "country": "Thailand",
+      "risk_index": 0.9826,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phatthalung": {
+      "country": "Thailand",
+      "risk_index": 1.4374,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phayao": {
+      "country": "Thailand",
+      "risk_index": 1.6147,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phetchabun": {
+      "country": "Thailand",
+      "risk_index": 1.6773,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phetchaburi": {
+      "country": "Thailand",
+      "risk_index": 0.8585,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phichit": {
+      "country": "Thailand",
+      "risk_index": 0.7795,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phitsanulok": {
+      "country": "Thailand",
+      "risk_index": 1.0052,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phra Nakhon Si Ayutthaya": {
+      "country": "Thailand",
+      "risk_index": 1.5097,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phrae": {
+      "country": "Thailand",
+      "risk_index": 2.5881,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Phuket": {
+      "country": "Thailand",
+      "risk_index": 1.6797,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Prachin Buri": {
+      "country": "Thailand",
+      "risk_index": 1.2651,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Prachuap Khiri Khan": {
+      "country": "Thailand",
+      "risk_index": 1.7314,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Pulau Pinang": {
+      "country": "Malaysia",
+      "risk_index": 2.1543,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Rakhine": {
+      "country": "Myanmar",
+      "risk_index": 1.0496,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Ranong": {
+      "country": "Thailand",
+      "risk_index": 2.9866,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Ratchaburi": {
+      "country": "Thailand",
+      "risk_index": 0.6764,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Rayong": {
+      "country": "Thailand",
+      "risk_index": 1.6223,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region I (Ilocos Region)": {
+      "country": "Philippines",
+      "risk_index": 0.0195,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Iii (Central Luzon)": {
+      "country": "Philippines",
+      "risk_index": 0.1347,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Ix (Zamboanga Peninsula)": {
+      "country": "Philippines",
+      "risk_index": 0.0858,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Vi (Western Visayas)": {
+      "country": "Philippines",
+      "risk_index": 0.0295,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Vii (Central Visayas)": {
+      "country": "Philippines",
+      "risk_index": 0.1054,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Xi (Davao Region)": {
+      "country": "Philippines",
+      "risk_index": 0.0154,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Xii (Soccsksargen)": {
+      "country": "Philippines",
+      "risk_index": 0.0376,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Region Xiii (Caraga)": {
+      "country": "Philippines",
+      "risk_index": 0.4586,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Riau": {
+      "country": "Indonesia",
+      "risk_index": 1.4557,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Roi Et": {
+      "country": "Thailand",
+      "risk_index": 1.5166,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sa Kaeo": {
+      "country": "Thailand",
+      "risk_index": 1.7626,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sabah": {
+      "country": "Malaysia",
+      "risk_index": 1.358,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sagaing": {
+      "country": "Myanmar",
+      "risk_index": 1.0966,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sakon Nakhon": {
+      "country": "Thailand",
+      "risk_index": 1.7183,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Samut Prakan": {
+      "country": "Thailand",
+      "risk_index": 1.1708,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Samut Sakhon": {
+      "country": "Thailand",
+      "risk_index": 0.7422,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Samut Songkhram": {
+      "country": "Thailand",
+      "risk_index": 1.3159,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Saraburi": {
+      "country": "Thailand",
+      "risk_index": 1.6636,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sarawak": {
+      "country": "Malaysia",
+      "risk_index": 1.887,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Satun": {
+      "country": "Thailand",
+      "risk_index": 2.0593,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Selangor": {
+      "country": "Malaysia",
+      "risk_index": 0.6258,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Shan (East)": {
+      "country": "Myanmar",
+      "risk_index": 1.9653,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Shan (North)": {
+      "country": "Myanmar",
+      "risk_index": 0.9307,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Shan (South)": {
+      "country": "Myanmar",
+      "risk_index": 0.8436,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Si Sa Ket": {
+      "country": "Thailand",
+      "risk_index": 0.5488,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sing Buri": {
+      "country": "Thailand",
+      "risk_index": 3.4609,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Singapore": {
+      "country": "Singapore",
+      "risk_index": 1.0604,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Songkhla": {
+      "country": "Thailand",
+      "risk_index": 2.0284,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sukhothai": {
+      "country": "Thailand",
+      "risk_index": 0.9058,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sulawesi Barat": {
+      "country": "Indonesia",
+      "risk_index": 2.1905,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sulawesi Selatan": {
+      "country": "Indonesia",
+      "risk_index": 1.1303,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sulawesi Tengah": {
+      "country": "Indonesia",
+      "risk_index": 0.6981,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sulawesi Tenggara": {
+      "country": "Indonesia",
+      "risk_index": 1.4896,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sulawesi Utara": {
+      "country": "Indonesia",
+      "risk_index": 0.9031,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sumatera Barat": {
+      "country": "Indonesia",
+      "risk_index": 1.0405,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sumatera Selatan": {
+      "country": "Indonesia",
+      "risk_index": 1.1608,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Sumatera Utara": {
+      "country": "Indonesia",
+      "risk_index": 1.0296,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Suphan Buri": {
+      "country": "Thailand",
+      "risk_index": 1.661,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Surat Thani": {
+      "country": "Thailand",
+      "risk_index": 1.847,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Surin": {
+      "country": "Thailand",
+      "risk_index": 0.6783,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Tak": {
+      "country": "Thailand",
+      "risk_index": 0.4335,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Tanintharyi": {
+      "country": "Myanmar",
+      "risk_index": 1.3483,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Temburong": {
+      "country": "Brunei Darussalam",
+      "risk_index": 0.7142,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Terengganu": {
+      "country": "Malaysia",
+      "risk_index": 1.6001,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Trang": {
+      "country": "Thailand",
+      "risk_index": 2.362,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Trat": {
+      "country": "Thailand",
+      "risk_index": 1.6573,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Tutong": {
+      "country": "Brunei Darussalam",
+      "risk_index": 1.0849,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Ubon Ratchathani": {
+      "country": "Thailand",
+      "risk_index": 0.7481,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Udon Thani": {
+      "country": "Thailand",
+      "risk_index": 3.0753,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Uthai Thani": {
+      "country": "Thailand",
+      "risk_index": 1.0989,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Uttaradit": {
+      "country": "Thailand",
+      "risk_index": 1.2741,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Viet Nam": {
+      "country": "Viet Nam",
+      "risk_index": 1.1206,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "W.P. Kuala Lumpur": {
+      "country": "Malaysia",
+      "risk_index": 1.5557,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "W.P. Labuan": {
+      "country": "Malaysia",
+      "risk_index": 1.9321,
+      "has_data": true,
+      "env_months_imputed": 12
+    },
+    "Yala": {
+      "country": "Thailand",
+      "risk_index": 1.8569,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Yangon": {
+      "country": "Myanmar",
+      "risk_index": 1.0194,
+      "has_data": true,
+      "env_months_imputed": 0
+    },
+    "Yasothon": {
+      "country": "Thailand",
+      "risk_index": 1.2472,
+      "has_data": true,
+      "env_months_imputed": 0
+    }
+  },
+  "leads": [
+    {
+      "lead": 1,
+      "target_month": "2026-10",
+      "regions": {
+        "Aceh": {
+          "country": "Indonesia",
+          "risk_index": 1.3531,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Amnat Charoen": {
+          "country": "Thailand",
+          "risk_index": 0.821,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ang Thong": {
+          "country": "Thailand",
+          "risk_index": 0.7899,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ayeyarwady": {
+          "country": "Myanmar",
+          "risk_index": 0.8902,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bago (East)": {
+          "country": "Myanmar",
+          "risk_index": 1.0134,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bago (West)": {
+          "country": "Myanmar",
+          "risk_index": 0.981,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bali": {
+          "country": "Indonesia",
+          "risk_index": 0.5985,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bangkok": {
+          "country": "Thailand",
+          "risk_index": 0.8996,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Banten": {
+          "country": "Indonesia",
+          "risk_index": 1.868,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Belait": {
+          "country": "Brunei Darussalam",
+          "risk_index": 1.2247,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bengkulu": {
+          "country": "Indonesia",
+          "risk_index": 1.3746,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Brunei And Muara": {
+          "country": "Brunei Darussalam",
+          "risk_index": 1.8741,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bueng Kan": {
+          "country": "Thailand",
+          "risk_index": 1.0509,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Buri Ram": {
+          "country": "Thailand",
+          "risk_index": 1.8285,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Cambodia": {
+          "country": "Cambodia",
+          "risk_index": 0.8423,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chachoengsao": {
+          "country": "Thailand",
+          "risk_index": 1.052,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chai Nat": {
+          "country": "Thailand",
+          "risk_index": 0.9861,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chaiyaphum": {
+          "country": "Thailand",
+          "risk_index": 0.8356,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chanthaburi": {
+          "country": "Thailand",
+          "risk_index": 1.1175,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chiang Mai": {
+          "country": "Thailand",
+          "risk_index": 0.4793,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chiang Rai": {
+          "country": "Thailand",
+          "risk_index": 0.6022,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chin": {
+          "country": "Myanmar",
+          "risk_index": 0.9858,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chon Buri": {
+          "country": "Thailand",
+          "risk_index": 1.9484,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chumphon": {
+          "country": "Thailand",
+          "risk_index": 1.7575,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Cordillera Administrative Region (Car)": {
+          "country": "Philippines",
+          "risk_index": 0.0296,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Daerah Istimewa Yogyakarta": {
+          "country": "Indonesia",
+          "risk_index": 0.9084,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Dki Jakarta": {
+          "country": "Indonesia",
+          "risk_index": 1.0021,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Gorontalo": {
+          "country": "Indonesia",
+          "risk_index": 1.4326,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jambi": {
+          "country": "Indonesia",
+          "risk_index": 1.4728,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jawa Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.2901,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jawa Tengah": {
+          "country": "Indonesia",
+          "risk_index": 1.1735,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jawa Timur": {
+          "country": "Indonesia",
+          "risk_index": 0.804,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Johor": {
+          "country": "Malaysia",
+          "risk_index": 0.9318,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kachin": {
+          "country": "Myanmar",
+          "risk_index": 0.9155,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalasin": {
+          "country": "Thailand",
+          "risk_index": 0.7057,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.2729,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Selatan": {
+          "country": "Indonesia",
+          "risk_index": 1.3302,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Tengah": {
+          "country": "Indonesia",
+          "risk_index": 1.4294,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Timur": {
+          "country": "Indonesia",
+          "risk_index": 0.5347,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Utara": {
+          "country": "Indonesia",
+          "risk_index": 0.9558,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kamphaeng Phet": {
+          "country": "Thailand",
+          "risk_index": 0.7057,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kanchanaburi": {
+          "country": "Thailand",
+          "risk_index": 1.3715,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kayah": {
+          "country": "Myanmar",
+          "risk_index": 1.5726,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kayin": {
+          "country": "Myanmar",
+          "risk_index": 1.2505,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kedah": {
+          "country": "Malaysia",
+          "risk_index": 3.2574,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kelantan": {
+          "country": "Malaysia",
+          "risk_index": 0.9534,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kepulauan Bangka Belitung": {
+          "country": "Indonesia",
+          "risk_index": 0.9491,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kepulauan Riau": {
+          "country": "Indonesia",
+          "risk_index": 1.1385,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Khon Kaen": {
+          "country": "Thailand",
+          "risk_index": 1.2731,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Krabi": {
+          "country": "Thailand",
+          "risk_index": 1.2505,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lampang": {
+          "country": "Thailand",
+          "risk_index": 1.0077,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lamphun": {
+          "country": "Thailand",
+          "risk_index": 1.2886,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lampung": {
+          "country": "Indonesia",
+          "risk_index": 1.357,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lao People's Democratic Republic": {
+          "country": "Lao People's Democratic Republic",
+          "risk_index": 0.6524,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Loei": {
+          "country": "Thailand",
+          "risk_index": 0.674,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lop Buri": {
+          "country": "Thailand",
+          "risk_index": 0.7019,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mae Hong Son": {
+          "country": "Thailand",
+          "risk_index": 0.2165,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Magway": {
+          "country": "Myanmar",
+          "risk_index": 0.9956,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Maha Sarakham": {
+          "country": "Thailand",
+          "risk_index": 1.1614,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Maluku": {
+          "country": "Indonesia",
+          "risk_index": 2.2436,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Maluku Utara": {
+          "country": "Indonesia",
+          "risk_index": 1.2911,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mandalay": {
+          "country": "Myanmar",
+          "risk_index": 1.0827,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Melaka": {
+          "country": "Malaysia",
+          "risk_index": 1.3467,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mon": {
+          "country": "Myanmar",
+          "risk_index": 1.0763,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mukdahan": {
+          "country": "Thailand",
+          "risk_index": 1.207,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Nayok": {
+          "country": "Thailand",
+          "risk_index": 2.1378,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Pathom": {
+          "country": "Thailand",
+          "risk_index": 0.8583,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Phanom": {
+          "country": "Thailand",
+          "risk_index": 1.6065,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Ratchasima": {
+          "country": "Thailand",
+          "risk_index": 1.2998,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Sawan": {
+          "country": "Thailand",
+          "risk_index": 0.7653,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Si Thammarat": {
+          "country": "Thailand",
+          "risk_index": 1.6738,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nan": {
+          "country": "Thailand",
+          "risk_index": 2.4035,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Narathiwat": {
+          "country": "Thailand",
+          "risk_index": 2.0074,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "National Capital Region (Ncr)": {
+          "country": "Philippines",
+          "risk_index": 0.0793,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nay Pyi Taw": {
+          "country": "Myanmar",
+          "risk_index": 1.2561,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Negeri Sembilan": {
+          "country": "Malaysia",
+          "risk_index": 1.2163,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nong Bua Lam Phu": {
+          "country": "Thailand",
+          "risk_index": 1.6685,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nong Khai": {
+          "country": "Thailand",
+          "risk_index": 1.7202,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nonthaburi": {
+          "country": "Thailand",
+          "risk_index": 2.2709,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nusa Tenggara Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.866,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nusa Tenggara Timur": {
+          "country": "Indonesia",
+          "risk_index": 1.2249,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pahang": {
+          "country": "Malaysia",
+          "risk_index": 1.6774,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Papua": {
+          "country": "Indonesia",
+          "risk_index": 2.4254,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Papua Barat": {
+          "country": "Indonesia",
+          "risk_index": 2.3755,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pathum Thani": {
+          "country": "Thailand",
+          "risk_index": 2.593,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pattani": {
+          "country": "Thailand",
+          "risk_index": 2.5453,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Perak": {
+          "country": "Malaysia",
+          "risk_index": 0.9611,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Perlis": {
+          "country": "Malaysia",
+          "risk_index": 2.6265,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phangnga": {
+          "country": "Thailand",
+          "risk_index": 0.9826,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phatthalung": {
+          "country": "Thailand",
+          "risk_index": 1.4374,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phayao": {
+          "country": "Thailand",
+          "risk_index": 1.6147,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phetchabun": {
+          "country": "Thailand",
+          "risk_index": 1.6773,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phetchaburi": {
+          "country": "Thailand",
+          "risk_index": 0.8585,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phichit": {
+          "country": "Thailand",
+          "risk_index": 0.7795,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phitsanulok": {
+          "country": "Thailand",
+          "risk_index": 1.0052,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phra Nakhon Si Ayutthaya": {
+          "country": "Thailand",
+          "risk_index": 1.5097,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phrae": {
+          "country": "Thailand",
+          "risk_index": 2.5881,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phuket": {
+          "country": "Thailand",
+          "risk_index": 1.6797,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Prachin Buri": {
+          "country": "Thailand",
+          "risk_index": 1.2651,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Prachuap Khiri Khan": {
+          "country": "Thailand",
+          "risk_index": 1.7314,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pulau Pinang": {
+          "country": "Malaysia",
+          "risk_index": 2.1543,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Rakhine": {
+          "country": "Myanmar",
+          "risk_index": 1.0496,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ranong": {
+          "country": "Thailand",
+          "risk_index": 2.9866,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ratchaburi": {
+          "country": "Thailand",
+          "risk_index": 0.6764,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Rayong": {
+          "country": "Thailand",
+          "risk_index": 1.6223,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region I (Ilocos Region)": {
+          "country": "Philippines",
+          "risk_index": 0.0195,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Iii (Central Luzon)": {
+          "country": "Philippines",
+          "risk_index": 0.1347,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Ix (Zamboanga Peninsula)": {
+          "country": "Philippines",
+          "risk_index": 0.0858,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Vi (Western Visayas)": {
+          "country": "Philippines",
+          "risk_index": 0.0295,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Vii (Central Visayas)": {
+          "country": "Philippines",
+          "risk_index": 0.1054,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Xi (Davao Region)": {
+          "country": "Philippines",
+          "risk_index": 0.0154,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Xii (Soccsksargen)": {
+          "country": "Philippines",
+          "risk_index": 0.0376,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Xiii (Caraga)": {
+          "country": "Philippines",
+          "risk_index": 0.4586,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Riau": {
+          "country": "Indonesia",
+          "risk_index": 1.4557,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Roi Et": {
+          "country": "Thailand",
+          "risk_index": 1.5166,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sa Kaeo": {
+          "country": "Thailand",
+          "risk_index": 1.7626,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sabah": {
+          "country": "Malaysia",
+          "risk_index": 1.358,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sagaing": {
+          "country": "Myanmar",
+          "risk_index": 1.0966,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sakon Nakhon": {
+          "country": "Thailand",
+          "risk_index": 1.7183,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Samut Prakan": {
+          "country": "Thailand",
+          "risk_index": 1.1708,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Samut Sakhon": {
+          "country": "Thailand",
+          "risk_index": 0.7422,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Samut Songkhram": {
+          "country": "Thailand",
+          "risk_index": 1.3159,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Saraburi": {
+          "country": "Thailand",
+          "risk_index": 1.6636,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sarawak": {
+          "country": "Malaysia",
+          "risk_index": 1.887,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Satun": {
+          "country": "Thailand",
+          "risk_index": 2.0593,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Selangor": {
+          "country": "Malaysia",
+          "risk_index": 0.6258,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Shan (East)": {
+          "country": "Myanmar",
+          "risk_index": 1.9653,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Shan (North)": {
+          "country": "Myanmar",
+          "risk_index": 0.9307,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Shan (South)": {
+          "country": "Myanmar",
+          "risk_index": 0.8436,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Si Sa Ket": {
+          "country": "Thailand",
+          "risk_index": 0.5488,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sing Buri": {
+          "country": "Thailand",
+          "risk_index": 3.4609,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Singapore": {
+          "country": "Singapore",
+          "risk_index": 1.0604,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Songkhla": {
+          "country": "Thailand",
+          "risk_index": 2.0284,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sukhothai": {
+          "country": "Thailand",
+          "risk_index": 0.9058,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Barat": {
+          "country": "Indonesia",
+          "risk_index": 2.1905,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Selatan": {
+          "country": "Indonesia",
+          "risk_index": 1.1303,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Tengah": {
+          "country": "Indonesia",
+          "risk_index": 0.6981,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Tenggara": {
+          "country": "Indonesia",
+          "risk_index": 1.4896,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Utara": {
+          "country": "Indonesia",
+          "risk_index": 0.9031,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sumatera Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.0405,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sumatera Selatan": {
+          "country": "Indonesia",
+          "risk_index": 1.1608,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sumatera Utara": {
+          "country": "Indonesia",
+          "risk_index": 1.0296,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Suphan Buri": {
+          "country": "Thailand",
+          "risk_index": 1.661,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Surat Thani": {
+          "country": "Thailand",
+          "risk_index": 1.847,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Surin": {
+          "country": "Thailand",
+          "risk_index": 0.6783,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Tak": {
+          "country": "Thailand",
+          "risk_index": 0.4335,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Tanintharyi": {
+          "country": "Myanmar",
+          "risk_index": 1.3483,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Temburong": {
+          "country": "Brunei Darussalam",
+          "risk_index": 0.7142,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Terengganu": {
+          "country": "Malaysia",
+          "risk_index": 1.6001,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Trang": {
+          "country": "Thailand",
+          "risk_index": 2.362,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Trat": {
+          "country": "Thailand",
+          "risk_index": 1.6573,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Tutong": {
+          "country": "Brunei Darussalam",
+          "risk_index": 1.0849,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ubon Ratchathani": {
+          "country": "Thailand",
+          "risk_index": 0.7481,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Udon Thani": {
+          "country": "Thailand",
+          "risk_index": 3.0753,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Uthai Thani": {
+          "country": "Thailand",
+          "risk_index": 1.0989,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Uttaradit": {
+          "country": "Thailand",
+          "risk_index": 1.2741,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Viet Nam": {
+          "country": "Viet Nam",
+          "risk_index": 1.1206,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "W.P. Kuala Lumpur": {
+          "country": "Malaysia",
+          "risk_index": 1.5557,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "W.P. Labuan": {
+          "country": "Malaysia",
+          "risk_index": 1.9321,
+          "has_data": true,
+          "env_months_imputed": 12
+        },
+        "Yala": {
+          "country": "Thailand",
+          "risk_index": 1.8569,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Yangon": {
+          "country": "Myanmar",
+          "risk_index": 1.0194,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Yasothon": {
+          "country": "Thailand",
+          "risk_index": 1.2472,
+          "has_data": true,
+          "env_months_imputed": 0
+        }
+      }
+    },
+    {
+      "lead": 2,
+      "target_month": "2026-11",
+      "regions": {
+        "Aceh": {
+          "country": "Indonesia",
+          "risk_index": 1.3051,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Amnat Charoen": {
+          "country": "Thailand",
+          "risk_index": 1.0188,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ang Thong": {
+          "country": "Thailand",
+          "risk_index": 1.0138,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ayeyarwady": {
+          "country": "Myanmar",
+          "risk_index": 0.8757,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bago (East)": {
+          "country": "Myanmar",
+          "risk_index": 0.9448,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bago (West)": {
+          "country": "Myanmar",
+          "risk_index": 0.9735,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bali": {
+          "country": "Indonesia",
+          "risk_index": 0.7358,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bangkok": {
+          "country": "Thailand",
+          "risk_index": 0.699,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Banten": {
+          "country": "Indonesia",
+          "risk_index": 2.1,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Belait": {
+          "country": "Brunei Darussalam",
+          "risk_index": 1.3382,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bengkulu": {
+          "country": "Indonesia",
+          "risk_index": 1.3585,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Brunei And Muara": {
+          "country": "Brunei Darussalam",
+          "risk_index": 1.877,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Bueng Kan": {
+          "country": "Thailand",
+          "risk_index": 0.9765,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Buri Ram": {
+          "country": "Thailand",
+          "risk_index": 1.2958,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Cambodia": {
+          "country": "Cambodia",
+          "risk_index": 0.9529,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chachoengsao": {
+          "country": "Thailand",
+          "risk_index": 0.8404,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chai Nat": {
+          "country": "Thailand",
+          "risk_index": 0.6956,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chaiyaphum": {
+          "country": "Thailand",
+          "risk_index": 0.7454,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chanthaburi": {
+          "country": "Thailand",
+          "risk_index": 1.0577,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chiang Mai": {
+          "country": "Thailand",
+          "risk_index": 0.4863,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chiang Rai": {
+          "country": "Thailand",
+          "risk_index": 0.5777,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chin": {
+          "country": "Myanmar",
+          "risk_index": 0.9782,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chon Buri": {
+          "country": "Thailand",
+          "risk_index": 1.388,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Chumphon": {
+          "country": "Thailand",
+          "risk_index": 1.3668,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Cordillera Administrative Region (Car)": {
+          "country": "Philippines",
+          "risk_index": 0.0386,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Daerah Istimewa Yogyakarta": {
+          "country": "Indonesia",
+          "risk_index": 1.0328,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Dki Jakarta": {
+          "country": "Indonesia",
+          "risk_index": 0.8279,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Gorontalo": {
+          "country": "Indonesia",
+          "risk_index": 1.7634,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jambi": {
+          "country": "Indonesia",
+          "risk_index": 1.4665,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jawa Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.6059,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jawa Tengah": {
+          "country": "Indonesia",
+          "risk_index": 1.5023,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Jawa Timur": {
+          "country": "Indonesia",
+          "risk_index": 0.8534,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Johor": {
+          "country": "Malaysia",
+          "risk_index": 0.8849,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kachin": {
+          "country": "Myanmar",
+          "risk_index": 0.9259,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalasin": {
+          "country": "Thailand",
+          "risk_index": 0.9002,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.2382,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Selatan": {
+          "country": "Indonesia",
+          "risk_index": 1.0942,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Tengah": {
+          "country": "Indonesia",
+          "risk_index": 1.0518,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Timur": {
+          "country": "Indonesia",
+          "risk_index": 0.7047,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kalimantan Utara": {
+          "country": "Indonesia",
+          "risk_index": 1.2644,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kamphaeng Phet": {
+          "country": "Thailand",
+          "risk_index": 0.6627,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kanchanaburi": {
+          "country": "Thailand",
+          "risk_index": 1.0515,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kayah": {
+          "country": "Myanmar",
+          "risk_index": 1.4317,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kayin": {
+          "country": "Myanmar",
+          "risk_index": 1.0451,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kedah": {
+          "country": "Malaysia",
+          "risk_index": 2.6944,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kelantan": {
+          "country": "Malaysia",
+          "risk_index": 0.8193,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kepulauan Bangka Belitung": {
+          "country": "Indonesia",
+          "risk_index": 0.7552,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Kepulauan Riau": {
+          "country": "Indonesia",
+          "risk_index": 1.0808,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Khon Kaen": {
+          "country": "Thailand",
+          "risk_index": 1.0826,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Krabi": {
+          "country": "Thailand",
+          "risk_index": 0.9003,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lampang": {
+          "country": "Thailand",
+          "risk_index": 1.161,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lamphun": {
+          "country": "Thailand",
+          "risk_index": 1.3087,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lampung": {
+          "country": "Indonesia",
+          "risk_index": 1.2557,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lao People's Democratic Republic": {
+          "country": "Lao People's Democratic Republic",
+          "risk_index": 0.8153,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Loei": {
+          "country": "Thailand",
+          "risk_index": 0.7304,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Lop Buri": {
+          "country": "Thailand",
+          "risk_index": 0.625,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mae Hong Son": {
+          "country": "Thailand",
+          "risk_index": 0.2179,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Magway": {
+          "country": "Myanmar",
+          "risk_index": 0.9951,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Maha Sarakham": {
+          "country": "Thailand",
+          "risk_index": 1.0431,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Maluku": {
+          "country": "Indonesia",
+          "risk_index": 2.4477,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Maluku Utara": {
+          "country": "Indonesia",
+          "risk_index": 1.64,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mandalay": {
+          "country": "Myanmar",
+          "risk_index": 1.0881,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Melaka": {
+          "country": "Malaysia",
+          "risk_index": 1.2201,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mon": {
+          "country": "Myanmar",
+          "risk_index": 0.9772,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Mukdahan": {
+          "country": "Thailand",
+          "risk_index": 1.1752,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Nayok": {
+          "country": "Thailand",
+          "risk_index": 2.3678,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Pathom": {
+          "country": "Thailand",
+          "risk_index": 0.7313,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Phanom": {
+          "country": "Thailand",
+          "risk_index": 1.3683,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Ratchasima": {
+          "country": "Thailand",
+          "risk_index": 0.9415,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Sawan": {
+          "country": "Thailand",
+          "risk_index": 0.5891,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nakhon Si Thammarat": {
+          "country": "Thailand",
+          "risk_index": 1.5357,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nan": {
+          "country": "Thailand",
+          "risk_index": 2.4507,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Narathiwat": {
+          "country": "Thailand",
+          "risk_index": 1.6198,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "National Capital Region (Ncr)": {
+          "country": "Philippines",
+          "risk_index": 0.1111,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nay Pyi Taw": {
+          "country": "Myanmar",
+          "risk_index": 1.1832,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Negeri Sembilan": {
+          "country": "Malaysia",
+          "risk_index": 1.1585,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nong Bua Lam Phu": {
+          "country": "Thailand",
+          "risk_index": 1.5018,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nong Khai": {
+          "country": "Thailand",
+          "risk_index": 1.8273,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nonthaburi": {
+          "country": "Thailand",
+          "risk_index": 1.702,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nusa Tenggara Barat": {
+          "country": "Indonesia",
+          "risk_index": 2.1842,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Nusa Tenggara Timur": {
+          "country": "Indonesia",
+          "risk_index": 1.201,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pahang": {
+          "country": "Malaysia",
+          "risk_index": 1.548,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Papua": {
+          "country": "Indonesia",
+          "risk_index": 2.8521,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Papua Barat": {
+          "country": "Indonesia",
+          "risk_index": 2.7764,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pathum Thani": {
+          "country": "Thailand",
+          "risk_index": 1.946,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pattani": {
+          "country": "Thailand",
+          "risk_index": 1.828,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Perak": {
+          "country": "Malaysia",
+          "risk_index": 0.9192,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Perlis": {
+          "country": "Malaysia",
+          "risk_index": 2.3274,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phangnga": {
+          "country": "Thailand",
+          "risk_index": 0.9704,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phatthalung": {
+          "country": "Thailand",
+          "risk_index": 1.1671,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phayao": {
+          "country": "Thailand",
+          "risk_index": 1.5666,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phetchabun": {
+          "country": "Thailand",
+          "risk_index": 1.3563,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phetchaburi": {
+          "country": "Thailand",
+          "risk_index": 0.6609,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phichit": {
+          "country": "Thailand",
+          "risk_index": 0.6633,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phitsanulok": {
+          "country": "Thailand",
+          "risk_index": 0.8181,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phra Nakhon Si Ayutthaya": {
+          "country": "Thailand",
+          "risk_index": 1.4584,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phrae": {
+          "country": "Thailand",
+          "risk_index": 2.1733,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Phuket": {
+          "country": "Thailand",
+          "risk_index": 1.3617,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Prachin Buri": {
+          "country": "Thailand",
+          "risk_index": 1.2297,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Prachuap Khiri Khan": {
+          "country": "Thailand",
+          "risk_index": 1.1219,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Pulau Pinang": {
+          "country": "Malaysia",
+          "risk_index": 2.022,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Rakhine": {
+          "country": "Myanmar",
+          "risk_index": 0.9381,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ranong": {
+          "country": "Thailand",
+          "risk_index": 1.4922,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ratchaburi": {
+          "country": "Thailand",
+          "risk_index": 0.5476,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Rayong": {
+          "country": "Thailand",
+          "risk_index": 1.2568,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region I (Ilocos Region)": {
+          "country": "Philippines",
+          "risk_index": 0.0235,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Iii (Central Luzon)": {
+          "country": "Philippines",
+          "risk_index": 0.1495,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Ix (Zamboanga Peninsula)": {
+          "country": "Philippines",
+          "risk_index": 0.1172,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Vi (Western Visayas)": {
+          "country": "Philippines",
+          "risk_index": 0.0378,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Vii (Central Visayas)": {
+          "country": "Philippines",
+          "risk_index": 0.1437,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Xi (Davao Region)": {
+          "country": "Philippines",
+          "risk_index": 0.022,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Xii (Soccsksargen)": {
+          "country": "Philippines",
+          "risk_index": 0.0585,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Region Xiii (Caraga)": {
+          "country": "Philippines",
+          "risk_index": 0.6034,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Riau": {
+          "country": "Indonesia",
+          "risk_index": 1.503,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Roi Et": {
+          "country": "Thailand",
+          "risk_index": 1.4001,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sa Kaeo": {
+          "country": "Thailand",
+          "risk_index": 1.791,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sabah": {
+          "country": "Malaysia",
+          "risk_index": 1.5036,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sagaing": {
+          "country": "Myanmar",
+          "risk_index": 1.1098,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sakon Nakhon": {
+          "country": "Thailand",
+          "risk_index": 1.5929,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Samut Prakan": {
+          "country": "Thailand",
+          "risk_index": 1.1366,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Samut Sakhon": {
+          "country": "Thailand",
+          "risk_index": 0.6407,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Samut Songkhram": {
+          "country": "Thailand",
+          "risk_index": 1.4012,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Saraburi": {
+          "country": "Thailand",
+          "risk_index": 1.4737,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sarawak": {
+          "country": "Malaysia",
+          "risk_index": 1.9286,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Satun": {
+          "country": "Thailand",
+          "risk_index": 1.978,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Selangor": {
+          "country": "Malaysia",
+          "risk_index": 0.6113,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Shan (East)": {
+          "country": "Myanmar",
+          "risk_index": 1.8284,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Shan (North)": {
+          "country": "Myanmar",
+          "risk_index": 0.9203,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Shan (South)": {
+          "country": "Myanmar",
+          "risk_index": 0.8151,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Si Sa Ket": {
+          "country": "Thailand",
+          "risk_index": 0.5431,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sing Buri": {
+          "country": "Thailand",
+          "risk_index": 3.2915,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Singapore": {
+          "country": "Singapore",
+          "risk_index": 1.2607,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Songkhla": {
+          "country": "Thailand",
+          "risk_index": 1.9661,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sukhothai": {
+          "country": "Thailand",
+          "risk_index": 0.9573,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Barat": {
+          "country": "Indonesia",
+          "risk_index": 2.8457,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Selatan": {
+          "country": "Indonesia",
+          "risk_index": 1.1688,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Tengah": {
+          "country": "Indonesia",
+          "risk_index": 0.8797,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Tenggara": {
+          "country": "Indonesia",
+          "risk_index": 1.6702,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sulawesi Utara": {
+          "country": "Indonesia",
+          "risk_index": 1.2507,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sumatera Barat": {
+          "country": "Indonesia",
+          "risk_index": 1.4865,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sumatera Selatan": {
+          "country": "Indonesia",
+          "risk_index": 1.1918,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Sumatera Utara": {
+          "country": "Indonesia",
+          "risk_index": 1.4555,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Suphan Buri": {
+          "country": "Thailand",
+          "risk_index": 1.3465,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Surat Thani": {
+          "country": "Thailand",
+          "risk_index": 1.871,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Surin": {
+          "country": "Thailand",
+          "risk_index": 0.7056,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Tak": {
+          "country": "Thailand",
+          "risk_index": 0.3241,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Tanintharyi": {
+          "country": "Myanmar",
+          "risk_index": 1.1497,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Temburong": {
+          "country": "Brunei Darussalam",
+          "risk_index": 0.7598,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Terengganu": {
+          "country": "Malaysia",
+          "risk_index": 1.4321,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Trang": {
+          "country": "Thailand",
+          "risk_index": 2.525,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Trat": {
+          "country": "Thailand",
+          "risk_index": 1.4066,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Tutong": {
+          "country": "Brunei Darussalam",
+          "risk_index": 1.3362,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Ubon Ratchathani": {
+          "country": "Thailand",
+          "risk_index": 0.7895,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Udon Thani": {
+          "country": "Thailand",
+          "risk_index": 2.0288,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Uthai Thani": {
+          "country": "Thailand",
+          "risk_index": 0.7286,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Uttaradit": {
+          "country": "Thailand",
+          "risk_index": 1.167,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Viet Nam": {
+          "country": "Viet Nam",
+          "risk_index": 1.3276,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "W.P. Kuala Lumpur": {
+          "country": "Malaysia",
+          "risk_index": 1.7937,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "W.P. Labuan": {
+          "country": "Malaysia",
+          "risk_index": 1.828,
+          "has_data": true,
+          "env_months_imputed": 12
+        },
+        "Yala": {
+          "country": "Thailand",
+          "risk_index": 1.6367,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Yangon": {
+          "country": "Myanmar",
+          "risk_index": 0.997,
+          "has_data": true,
+          "env_months_imputed": 0
+        },
+        "Yasothon": {
+          "country": "Thailand",
+          "risk_index": 1.2967,
+          "has_data": true,
+          "env_months_imputed": 0
+        }
+      }
+    }
+  ]
+}
