@@ -40,7 +40,7 @@ These are per-admin-1 spatial averages (zonal statistics) of the environmental f
 
 regions = stats.get("regions", {})
 if not stats_path.exists() or not regions:
-    print("⚠️  No zonal statistics found — run site/scripts/fetch_zonal_stats.py first.")
+    print("⚠️  No zonal statistics found — the monthly zonal statistics now feed data/processed/env/SEA_env_monthly_v2.csv on the cluster (repo-root Snakefile, env_table_v2).")
 else:
     rows = []
     for region, vals in regions.items():

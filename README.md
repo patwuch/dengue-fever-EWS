@@ -62,7 +62,9 @@ This binds to localhost by design — it shells out to `docker run` with no auth
 
 ### Monthly inference
 
-`.github/workflows/monthly-update.yml` runs on the 1st of each month on a CPU GitHub runner. It fetches the latest Earth Engine zonal statistics, runs the models below, commits the predictions under `site/data/`, and redeploys the site.
+Each month the repo-root `Snakefile` runs on the k3s cluster (`profiles/k8s-inference`): EZGEE fetches the newest month of Earth Engine zonal statistics (CHIRPS v3, VIIRS, ERA5-Land), `env_table_v2` updates the province × month table, and `predict_climate_v2` writes this month's and next month's risk index to `site/data/predictions/climate_v2/`. Committing that file to `main` redeploys the site (`.github/workflows/deploy-on-push.yml`).
+
+Since October 2026 the live map uses **climate model v2**, retrained on CHIRPS v3 and VIIRS because Terra MODIS drifts from 2022 and ends in early 2027 and CHIRPS v2 ends after 2026 (`machine-learning-module/config/OpenDengue/stgnn_climate_v2_*.yaml`; 2011 is converted from MODIS, `machine-learning-module/results/conversion/modis_to_viirs_2011.json`). It predicts two months from the same 12-month window. The table below describes the v1 models.
 
 Both models share the cyclical design (sin/cos month encoding, 12-month window) and the same architecture, and both are trained on 2011–2018. The climate-only model drives the live risk map: no incidence data exists after 2018, so it runs on the latest Earth Engine data alone, delta-corrected for the 2019–2026 climate shift. The IR + environment model is the study model it was derived from (its hyperparameters come from the `cyclical_seasonal` sweep); it also forecasts incidence in months when recent case data is supplied.
 

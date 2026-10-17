@@ -10,17 +10,20 @@ page-layout: full
 import json, pathlib, datetime
 
 data_dir = pathlib.Path("data")
-# The climate model's newest forecast drives the map.
-archive = sorted((data_dir / "predictions" / "climate").glob("????-??.json"))
+# The climate model's newest forecast drives the maps: v2 files hold both months ("leads").
+archive = sorted((data_dir / "predictions" / "climate_v2").glob("????-??.json")) \
+          or sorted((data_dir / "predictions" / "climate").glob("????-??.json"))
 preds = json.loads(archive[-1].read_text()) if archive else {}
+leads = preds.get("leads") or ([{"lead": 1, "target_month": preds["target_month"],
+                                 "regions": preds["regions"]}] if preds else [])
 
 updated = preds.get("generated_at", "—")
-target_month = preds.get("target_month", "—")
+target_month = " and ".join(l["target_month"] for l in leads) or "—"
 n_regions = len(preds.get("regions", {}))
 ```
 
 ::: {.callout-note appearance="minimal"}
-**Last updated:** `{python} updated` &nbsp;·&nbsp; **Forecast month:** `{python} target_month` &nbsp;·&nbsp; **SEA regions covered:** `{python} n_regions`
+**Last updated:** `{python} updated` &nbsp;·&nbsp; **Forecast months:** `{python} target_month` &nbsp;·&nbsp; **SEA regions covered:** `{python} n_regions`
 :::
 
 ## Study Overview
@@ -31,7 +34,7 @@ This project combines two complementary prediction models targeting different ge
 
 ::: {.g-col-6}
 ### Arm 1 — Southeast Asia Provinces
-A spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin-1 provinces across 10 SEA countries (2011–2018). It captures international dengue risk dynamics using province-level historical infection data, monthly climatological data (ERA5-Land, MODIS, CHIRPS), and Shared Socioeconomic Pathways. Inference runs monthly; the climate-only risk map is bias-corrected for the observed post-2018 climate shift.
+A spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin-1 provinces across 10 SEA countries (2011–2018). It captures international dengue risk dynamics using province-level historical infection data, monthly climatological data (ERA5-Land, VIIRS, CHIRPS v3 for the live climate model; MODIS and CHIRPS v2 in the study), and Shared Socioeconomic Pathways. Inference runs monthly; the climate-only risk map is bias-corrected for the observed post-2018 climate shift.
 
 [View SEA Provinces Results →](sea-provinces-study-results.qmd)
 :::
@@ -47,37 +50,44 @@ A Taiwan-specific counterpart operating at the finer granularity of the Basic St
 
 ---
 
-## SEA Provinces — Current Risk Map
+## SEA Provinces — Current Risk Maps
 
-Relative dengue risk index for next month, per admin-1 province, from the climate-only model.
-1 is the province's usual level for that calendar month in 2011–2018; 2 is twice it, 0.5 half.
+Relative dengue risk index per admin-1 province from the climate-only model, for this month and
+next month. Both maps come from the same run and the same inputs, the 12 months up to last
+month; "next month" is one month further ahead. 1 is the province's usual level for that
+calendar month in 2011–2018; 2 is twice it, 0.5 half.
+
+::: {.callout-note collapse="true"}
+## Model update, October 2026: climate model v2
+NASA's Terra MODIS has drifted from its orbit since 2022 (its daytime land surface temperature
+reads up to ~3 °C too cool by 2026) and stops in early 2027; CHIRPS v2 ends after 2026. The
+climate model was retrained on their successors, VIIRS land surface temperature and vegetation
+indices and CHIRPS v3 precipitation, and now predicts two months at once. Forecasts before
+October 2026 came from the previous model.
+:::
 
 ```{python}
 #| echo: false
-#| label: fig-risk-map
-#| fig-cap: "Predicted relative dengue risk index (climate-only model), on a log scale centred on 1. Inputs are corrected for the observed shift between 2011–2018 and 2019–2025 climate. Grey: no model for that province."
 
 import json, pathlib
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+from IPython.display import display, Markdown
 
 data_dir = pathlib.Path("data")
-archive = sorted((data_dir / "predictions" / "climate").glob("????-??.json"))
-preds = json.loads(archive[-1].read_text()) if archive else {}
 shapes = json.loads((data_dir / "regions.json").read_text())
+skill_path = data_dir / "model_skill_climate_v2.json"
+skill = json.loads(skill_path.read_text())["leads"] if skill_path.exists() else {}
+ticks = [0.1, 0.25, 0.5, 1, 2, 4, 10]
 
-regions = preds.get("regions", {})
-if not regions:
-    print("⚠️  No prediction data found — run the predict_climate rule first.")
-else:
+
+def risk_map(regions: dict, title: str) -> go.Figure:
     df = pd.DataFrame([{"name": k, "country": v["country"], "risk_index": v["risk_index"],
                         "imputed": v["env_months_imputed"]} for k, v in regions.items()])
     df["log_risk"] = np.log10(df["risk_index"].clip(0.1, 10))
-    all_names = [f["properties"]["name"] for f in shapes["features"]]
-    unmodelled = [n for n in all_names if n not in regions]
-
-    ticks = [0.1, 0.25, 0.5, 1, 2, 4, 10]
+    unmodelled = [f["properties"]["name"] for f in shapes["features"]
+                  if f["properties"]["name"] not in regions]
     fig = go.Figure()
     if unmodelled:
         fig.add_trace(go.Choropleth(
@@ -98,10 +108,49 @@ else:
         marker_line_color="white", marker_line_width=0.4,
     ))
     fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(title=f"Dengue risk index — {preds['target_month']}",
-                      margin=dict(l=0, r=0, t=40, b=0), height=560)
-    fig.show()
+    fig.update_layout(title=title, margin=dict(l=0, r=0, t=40, b=0), height=560)
+    return fig
+
+
+def skill_note(lead: int) -> str:
+    s = skill.get(str(lead))
+    if not s:
+        return ""
+    return (f"Held-out test months (2017-11 → 2018-12): skill vs. each province's usual level "
+            f"{s['skill_vs_seasonal']:+.2f} (0 = no better than the usual level, 1 = perfect).")
+
+
+if not leads:
+    print("⚠️  No prediction data found — run the predict_climate_v2 rule first.")
 ```
+
+::: {.panel-tabset}
+
+## This month
+
+```{python}
+#| echo: false
+#| label: fig-risk-map
+#| fig-cap: "Risk index for this month, on a log scale centred on 1. Inputs are corrected for the shift between 2011–2018 and 2019–2025 climate. Grey: no model for that province."
+if leads:
+    risk_map(leads[0]["regions"], f"Dengue risk index — {leads[0]['target_month']}").show()
+    display(Markdown(skill_note(1)))
+```
+
+## Next month
+
+```{python}
+#| echo: false
+#| label: fig-risk-map-next
+#| fig-cap: "Risk index for next month, from the same run. One month further ahead, so less certain."
+if len(leads) > 1:
+    risk_map(leads[1]["regions"], f"Dengue risk index — {leads[1]['target_month']}").show()
+    display(Markdown(skill_note(2)))
+else:
+    print("This model predicts one month only.")
+```
+
+:::
 
 ## SEA Provinces — Incidence-based Forecasts
 
@@ -151,33 +200,28 @@ Mean risk index across all SEA admin-1 regions over every month predictions have
 import json, pathlib
 import plotly.graph_objects as go
 
-archive_dir = pathlib.Path("data/predictions/climate")
 records = []
-for f in sorted(archive_dir.glob("*.json")):
-    data = json.loads(f.read_text())
-    regions = data.get("regions", {})
-    valid = [r["risk_index"] for r in regions.values() if r.get("has_data") and r.get("risk_index") is not None]
-    if valid:
-        records.append({
-            "month": data["target_month"],
-            "mean_risk": round(sum(valid) / len(valid), 4),
-            "n_regions": len(valid),
-        })
+for label, folder in [("Climate model v1", "climate"), ("Climate model v2", "climate_v2")]:
+    for f in sorted(pathlib.Path("data/predictions", folder).glob("*.json")):
+        data = json.loads(f.read_text())
+        regions = data.get("regions", {})     # lead 1 (this month) in v2 files
+        valid = [r["risk_index"] for r in regions.values() if r.get("has_data") and r.get("risk_index") is not None]
+        if valid:
+            records.append({"model": label, "month": data["target_month"],
+                            "mean_risk": round(sum(valid) / len(valid), 4)})
 
 if not records:
     print("No archived predictions yet — will populate after the first monthly run.")
 else:
-    months = [r["month"] for r in records]
-    means  = [r["mean_risk"] for r in records]
-
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=months, y=means, mode="lines+markers",
-        line=dict(color="#e63946", width=2),
-        marker=dict(size=6),
-        name="Mean risk index",
-        hovertemplate="%{x}<br>Risk index: %{y:.3f}<extra></extra>",
-    ))
+    for label, colour in [("Climate model v1", "#adb5bd"), ("Climate model v2", "#e63946")]:
+        rs = [r for r in records if r["model"] == label]
+        if rs:
+            fig.add_trace(go.Scatter(
+                x=[r["month"] for r in rs], y=[r["mean_risk"] for r in rs], mode="lines+markers",
+                line=dict(color=colour, width=2), marker=dict(size=6), name=label,
+                hovertemplate="%{x}<br>Risk index: %{y:.3f}<extra></extra>",
+            ))
     fig.add_hline(y=1.0, line_dash="dash", line_color="grey",
                   annotation_text="Baseline (2011–2018 mean)", annotation_position="bottom right")
     fig.update_layout(
