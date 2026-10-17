@@ -122,6 +122,8 @@ def save_inference_bundle(
         "mode":            "incidence" if incidence else "climate",
         "incidence_input": incidence,
         "target_column":   cfg["target_column"],
+        # Months ahead the model predicts: output k is month t + k - 1 for inputs ending at t - 1.
+        "horizon":         int(prep.get("horizon", 1)),
         "train_period":    list(train_period),
         "nodes":           nodes,
         "features": {

@@ -30,10 +30,11 @@ from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import roc_auc_score, precision_recall_fscore_support
 
 from model import STGATGRU
-from loss  import masked_huber_loss
+from loss  import masked_huber_loss, split_masks
 from torch.utils.data import DataLoader
 from tune  import STGNNDataset, load_tensors, load_edge_index
 from preprocess.utils import load_preprocessing_params
+from preprocess.temporal import horizon
 
 
 # ── Inverse transform ─────────────────────────────────────────────────────────
@@ -84,17 +85,20 @@ def eval_with_metrics(
         for x, y, mask in dataloader:
             x, y, mask = x.to(device), y.to(device), mask.to(device)
 
-            pred = model(x, edge_index, mask=mask)
-            if pred.dim() == 3:
+            model_mask, target_mask = split_masks(y, mask)
+            pred = model(x, edge_index, mask=model_mask)
+            if pred.dim() == 3 and pred.size(-1) == 1:
                 pred = pred.squeeze(-1)
-
-            target_mask = mask[:, -1, :] if mask.dim() == 3 else mask
 
             loss = masked_huber_loss(pred, y, target_mask)
             total_loss += loss.item()
 
-            if y.dim() == 3:
+            if y.dim() == 3 and y.size(-1) == 1:
                 y = y.squeeze(-1)
+            # Multi-month models: the metrics below are for the first lead (month t), so they
+            # stay comparable with one-month models; evaluate_horizons.py scores every lead.
+            if pred.dim() == 3:
+                pred, y, target_mask = pred[..., 0], y[..., 0], target_mask[..., 0]
 
             all_preds.append(pred.cpu().numpy())
             all_targets.append(y.cpu().numpy())
@@ -301,7 +305,7 @@ def test(cfg: dict, params: dict, model_path, out_dir: Path, split: str = "test"
         gat2_hidden  = params["gat2_hidden"],
         gat2_heads   = params["gat2_heads"],
         gru_hidden   = params["gru_hidden"],
-        pred_horizon = 1,
+        pred_horizon = horizon(cfg),
         dropout      = params["dropout"],
     ).to(device)
 

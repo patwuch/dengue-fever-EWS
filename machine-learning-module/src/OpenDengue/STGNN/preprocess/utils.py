@@ -76,9 +76,10 @@ def save_tensors(snapshots: dict, cfg: dict, window_size: int,
 
         if split_months and split in split_months:
             all_months = split_months[split]
-            # window i targets timestep window_size + i
+            # window i targets timestep window_size + i (its first lead); with a horizon
+            # above 1 the last months have no window of their own.
             splits[f"{split}_months"] = torch.tensor(
-                all_months[window_size:], dtype=torch.int32
+                all_months[window_size:window_size + len(windows)], dtype=torch.int32
             )
 
     torch.save(splits, out_dir / "tensors.pt")

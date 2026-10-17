@@ -12,7 +12,8 @@ from torch.amp import autocast, GradScaler
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 from model import STGATGRU
-from loss import masked_huber_loss
+from loss import masked_huber_loss, split_masks
+from preprocess.temporal import horizon
 
 
 # ── Dataset Definition ────────────────────────────────────────────────────────
@@ -268,15 +269,11 @@ def run_epoch(
             assert not torch.isnan(x).any(), "NaN in feature map configurations"
             assert not torch.isnan(y).any(), "NaN in ground-truth labels"
 
+            model_mask, target_mask = split_masks(y, mask)
             with autocast("cuda", enabled=use_amp_fwd):
-                pred = model(x, edge_index, mask=mask)
+                pred = model(x, edge_index, mask=model_mask)
                 if pred.dim() == 3 and y.dim() == 2:
                     pred = pred.squeeze(-1)
-
-                if mask.dim() == 3:
-                    target_mask = mask[:, -1, :]
-                else:
-                    target_mask = mask
 
                 loss = masked_huber_loss(pred, y, target_mask)
 
@@ -378,7 +375,7 @@ def train_sweep(cfg: dict):
         gat2_hidden  = wc.gat2_hidden,
         gat2_heads   = wc.gat2_heads,
         gru_hidden   = wc.get("gru_hidden", wc.gat2_hidden),
-        pred_horizon = 1,
+        pred_horizon = horizon(cfg),
         dropout      = wc.dropout,
     ).to(device)
 

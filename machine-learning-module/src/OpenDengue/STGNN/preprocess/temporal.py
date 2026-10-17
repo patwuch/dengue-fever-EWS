@@ -78,9 +78,33 @@ def _build_feature_tensor(data: dict, include_incidence: bool = True) -> torch.T
     return torch.cat(parts, dim=-1)
 
 
+def horizon(cfg: dict) -> int:
+    """Months ahead the model predicts: 1 → month t only; 2 → months t and t+1."""
+    return int(cfg.get("preprocessing", {}).get("horizon", 1))
+
+
+def _targets(inc: torch.Tensor, mask: torch.Tensor, t: int, h: int):
+    """Target and mask for a window ending before month t.
+
+    h == 1 keeps the original shapes, (N, 1) and (N,). h > 1 gives (N, h) for both: lead k
+    is month t + k - 1, and months past the end of the series are masked out.
+    """
+    if h == 1:
+        return inc[t], mask[t]
+    n = inc.shape[1]
+    y = torch.zeros(n, h, dtype=inc.dtype)
+    m = torch.zeros(n, h, dtype=torch.bool)
+    for k in range(h):
+        if t + k < len(inc):
+            y[:, k] = inc[t + k, :, 0]
+            m[:, k] = mask[t + k]
+    return y, m
+
+
 def create_windows(tensors: dict, window_size: int, node_index: dict, cfg: dict) -> dict:
     snapshots = {}
     include_incidence = cfg.get("preprocessing", {}).get("incidence_input", True)
+    h = horizon(cfg)
 
     for split, data in tensors.items():
         x    = _build_feature_tensor(data, include_incidence)
@@ -94,19 +118,23 @@ def create_windows(tensors: dict, window_size: int, node_index: dict, cfg: dict)
                 f"in {split} split."
             )
 
+        # Within a split every lead's target must exist, so the last h - 1 months only
+        # appear as later leads of earlier windows.
         snapshots[split] = [
-            (x[t-window_size:t], inc[t], mask[t])
-            for t in range(window_size, len(x))
+            (x[t-window_size:t], *_targets(inc, mask, t, h))
+            for t in range(window_size, len(x) - h + 1)
         ]
 
     return snapshots
 
 
-def create_inference_windows(tensors: dict, window_size: int, include_incidence: bool = True) -> list:
+def create_inference_windows(tensors: dict, window_size: int, include_incidence: bool = True,
+                             h: int = 1) -> list:
     """Build windows that cover all test months.
 
     The first window's context is drawn from the tail of the train+val data,
     so every test month gets a prediction (not just the last len(test)-window_size).
+    With h > 1, leads that fall past the last test month are masked out.
     """
     pre_x = torch.cat(
         [_build_feature_tensor(tensors["train"], include_incidence),
@@ -123,6 +151,6 @@ def create_inference_windows(tensors: dict, window_size: int, include_incidence:
     T_test = len(test_x)
 
     return [
-        (full_x[t - window_size:t], test_inc[t - window_size], test_mask[t - window_size])
+        (full_x[t - window_size:t], *_targets(test_inc, test_mask, t - window_size, h))
         for t in range(window_size, window_size + T_test)
     ]

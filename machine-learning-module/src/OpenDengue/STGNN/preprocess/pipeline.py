@@ -12,7 +12,7 @@ from features import fit_seasonal_means, apply_seasonal_means
 from features import fill_node_from_donors, impute_env_naive, assert_no_nans, encode_quality_flags
 from features import diagnose_feature_composition, scale_sources
 from graph import build_edge_index
-from temporal import create_windows, create_inference_windows, temporal_split
+from temporal import create_windows, create_inference_windows, temporal_split, horizon
 
 
 # ---------------------------------------------------------------------------
@@ -178,7 +178,8 @@ def main(config_path: str | None = None, data_path: str | None = None, cfg: dict
         # test-month numbers correctly.
         # Production runs (test_months: 0) have no test split to cover.
         if "test" in tensors:
-            snapshots["inference"] = create_inference_windows(tensors, window_size, include_incidence)
+            snapshots["inference"] = create_inference_windows(tensors, window_size, include_incidence,
+                                                              horizon(cfg))
             inference_months = {
                 **split_months,
                 "inference": [0] * window_size + split_months["test"],

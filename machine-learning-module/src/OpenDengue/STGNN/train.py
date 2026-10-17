@@ -21,11 +21,12 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score, roc_auc_score
 
 from model import STGATGRU
-from loss  import masked_huber_loss
+from loss  import masked_huber_loss, split_masks
 from tune  import (
     STGNNDataset, load_tensors, load_edge_index,
     check_isolated_nodes, run_epoch,
 )
+from preprocess.temporal import horizon
 
 
 # ── Evaluation pass (used for val metrics during training) ────────────────────
@@ -58,11 +59,11 @@ def eval_with_metrics(
             mask = mask.to(device, non_blocking=True)
 
             # Vectorized multi-step forward pass
-            pred = model(x, edge_index, mask=mask)
+            model_mask, target_mask = split_masks(y, mask)
+            pred = model(x, edge_index, mask=model_mask)
             if pred.dim() == 3 and y.dim() == 2:
                 pred = pred.squeeze(-1)
 
-            target_mask = mask[:, -1, :] if mask.dim() == 3 else mask
             loss = masked_huber_loss(pred, y, target_mask)
             total_loss += loss.item()
 
@@ -189,7 +190,7 @@ def train(
         gat2_hidden  = params["gat2_hidden"],
         gat2_heads   = params["gat2_heads"],
         gru_hidden   = params.get("gru_hidden", params["gat2_hidden"]),
-        pred_horizon = 1,
+        pred_horizon = horizon(cfg),
         dropout      = params["dropout"],
     ).to(device)
 
