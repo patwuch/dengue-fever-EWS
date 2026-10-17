@@ -99,6 +99,16 @@ ews machine-learning-module results/STGNN/production_logIR/inference_bundle_ir_e
     --configfile config/OpenDengue/stgnn_logIR_production.yaml --profile profiles/k8s
 ```
 
+**Explaining a model.** `explain_attention_stgnn`, `attention_shift_stgnn` and `explain_shap_stgnn` write GAT attention and SHAP Expected Gradients attributions (per lead for two-month models) for a config with held-out test months. For climate model v2 that is the evaluation copy; all three run on CPU:
+
+```bash
+ews machine-learning-module results/STGNN/climate_v2_eval/shap_feature_importance.json \
+    results/STGNN/climate_v2_eval/attention_shift_interactive.html \
+    --configfile config/OpenDengue/stgnn_climate_v2_eval.yaml --profile profiles/k8s
+```
+
+The home page reads `site/data/xai_climate_v2.json` (a copy of `shap_feature_importance.json`) and `site/xai/attention_shift_climate_v2.html`; the study page reads `machine-learning-module/results/STGNN/climate_v2_eval/`.
+
 The ServiceAccount token expires. On `401 Unauthorized`, mint a new one with an admin context and set it on the kubeconfig's `snakemake` user: `kubectl -n dengue-ews create token snakemake --duration=720h`.
 
 The tarballs land in S3 under the same paths (`s3://dengue-ews/results/STGNN/<name>/`); download them from there before uploading to the release.

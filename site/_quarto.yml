@@ -1,6 +1,9 @@
 project:
   type: website
   output-dir: ../docs
+  # Embedded by index.qmd in an iframe, which Quarto doesn't follow on its own.
+  resources:
+    - xai/*.html
 
 website:
   title: "Chuang Lab, Dept. of Molecular Parasitology and Tropical Diseasess"
