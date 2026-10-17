@@ -107,7 +107,7 @@ ews machine-learning-module results/STGNN/climate_v2_eval/shap_feature_importanc
     --configfile config/OpenDengue/stgnn_climate_v2_eval.yaml --profile profiles/k8s
 ```
 
-The home page reads `site/data/xai_climate_v2.json` (a copy of `shap_feature_importance.json`) and `site/xai/attention_shift_climate_v2.html`; the study page reads `machine-learning-module/results/STGNN/climate_v2_eval/`.
+The home page reads `site/data/xai_climate_v2.json` (a copy of `shap_feature_importance.json`) and `site/xai/attention_shift_climate_v2.html` and `site/data/attention_hubs_climate_v2.json` (`attention_shift_centroid.csv` as JSON); the study page reads `machine-learning-module/results/STGNN/climate_v2_eval/`.
 
 The ServiceAccount token expires. On `401 Unauthorized`, mint a new one with an admin context and set it on the kubeconfig's `snakemake` user: `kubectl -n dengue-ews create token snakemake --duration=720h`.
 

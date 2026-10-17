@@ -241,8 +241,10 @@ rule explain_shap_stgnn:
         # The staged copies of the inputs: on k8s + S3 a bare path in params isn't fetched.
         best_params = lambda wc, input: input.best_params,
         csv_path    = lambda wc, input: input.csv_data,
-    # CPU, one sample per pass (~2 GB peak, ~5 min per explained window). On the laptop GPU
-    # the explainer's first pass failed with "CUDA driver error: device not ready".
+    # CPU, one sample per pass (~2 GB peak, ~5 min per explained window on 12 threads; Snakemake
+    # caps torch at `threads`, and on 1 it takes ~6x longer). On the laptop GPU the explainer's
+    # first pass failed with "CUDA driver error: device not ready".
+    threads: 8
     resources:
         mem_mb = 3000,
     script:

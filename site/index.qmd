@@ -240,11 +240,11 @@ if xai is not None:
 ```{python}
 #| echo: false
 shift_html = pathlib.Path("xai/attention_shift_climate_v2.html")
-hubs_path = data_dir / "attention_hubs_climate_v2.csv"
+hubs_path = data_dir / "attention_hubs_climate_v2.json"
 if shift_html.exists():
     hubs_note = ""
     if hubs_path.exists():
-        hubs = pd.read_csv(hubs_path)
+        hubs = pd.DataFrame(json.loads(hubs_path.read_text()))
         g = hubs.groupby("cluster")
         # How far each hub centre ranges over the months, in degrees (~111 km each).
         drift = (g["centroid_x"].agg(np.ptp) ** 2 + g["centroid_y"].agg(np.ptp) ** 2) ** 0.5
