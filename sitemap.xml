@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/climate-projection-data.html</loc>
-    <lastmod>2026-08-31T13:43:44.069Z</lastmod>
-  </url>
-  <url>
     <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/sea-provinces-study-results.html</loc>
-    <lastmod>2026-08-31T13:43:44.070Z</lastmod>
-  </url>
-  <url>
-    <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/taiwan-bsa-study-results.html</loc>
-    <lastmod>2026-08-31T13:43:44.070Z</lastmod>
-  </url>
-  <url>
-    <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/shared-socioeconomic-pathways.html</loc>
-    <lastmod>2026-08-31T13:43:44.070Z</lastmod>
+    <lastmod>2026-10-17T13:15:02.259Z</lastmod>
   </url>
   <url>
     <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/monthly-zonal-stats.html</loc>
-    <lastmod>2026-08-31T13:43:44.069Z</lastmod>
+    <lastmod>2026-10-17T13:15:02.258Z</lastmod>
+  </url>
+  <url>
+    <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/taiwan-bsa-study-results.html</loc>
+    <lastmod>2026-10-17T13:15:02.259Z</lastmod>
   </url>
   <url>
     <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/index.html</loc>
-    <lastmod>2026-08-31T13:43:44.069Z</lastmod>
+    <lastmod>2026-10-17T13:15:02.258Z</lastmod>
+  </url>
+  <url>
+    <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/shared-socioeconomic-pathways.html</loc>
+    <lastmod>2026-10-17T13:15:02.259Z</lastmod>
+  </url>
+  <url>
+    <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/climate-projection-data.html</loc>
+    <lastmod>2026-10-17T13:15:02.254Z</lastmod>
   </url>
   <url>
     <loc>https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/dengue-data.html</loc>
-    <lastmod>2026-08-31T13:43:44.069Z</lastmod>
+    <lastmod>2026-10-17T13:15:02.258Z</lastmod>
   </url>
 </urlset>

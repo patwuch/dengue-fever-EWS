@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,14 +77,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c31c705935906e54bdd193600b3122ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-761e2db56e4933a99215ab662aeff883.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-c31c705935906e54bdd193600b3122ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-431248b8c7171e253c28e4abe2856e53.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -404,7 +404,7 @@ Table&nbsp;1: Latest monthly zonal statistics by SEA admin-1 region (raw, pre-co
 </figcaption>
 <div aria-describedby="tbl-zonal-stats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output cell-output-stdout">
-<pre><code>⚠️  No zonal statistics found — run site/scripts/fetch_zonal_stats.py first.</code></pre>
+<pre><code>⚠️  No zonal statistics found — the monthly zonal statistics now feed data/processed/env/SEA_env_monthly_v2.csv on the cluster (repo-root Snakefile, env_table_v2).</code></pre>
 </div>
 </div>
 </figure>
@@ -413,18 +413,6 @@ Table&nbsp;1: Latest monthly zonal statistics by SEA admin-1 region (raw, pre-co
 <section id="applied-climate-deltas-sea" class="level3">
 <h3 class="anchored" data-anchor-id="applied-climate-deltas-sea">Applied Climate Deltas (SEA)</h3>
 <p>The table below shows the bias correction delta applied to each SEA feature this month. A negative delta means the current climate is warmer/wetter than the 2011–2018 baseline, so the raw observation is shifted downward before model inference.</p>
-<div id="tbl-deltas" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="3">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-deltas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Per-variable climate deltas (AR6 SSP2-4.5 projection minus 2011–2018 baseline) applied this month.
-</figcaption>
-<div aria-describedby="tbl-deltas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-stdout">
-<pre><code>⚠️  No climate delta file found — run site/scripts/apply_climate_delta.py first.</code></pre>
-</div>
-</div>
-</figure>
-</div>
 </section>
 <section id="global-warming-level-projections-sea-domain" class="level3">
 <h3 class="anchored" data-anchor-id="global-warming-level-projections-sea-domain">Global Warming Level Projections (SEA Domain)</h3>
@@ -465,7 +453,7 @@ Warning
 <div id="tbl-taiwan-zonal-stats" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="5">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-taiwan-zonal-stats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Placeholder: Monthly zonal statistics by Taiwan BSA (temperature, precipitation, NDVI, EVI).
+Table&nbsp;2: Placeholder: Monthly zonal statistics by Taiwan BSA (temperature, precipitation, NDVI, EVI).
 </figcaption>
 <div aria-describedby="tbl-taiwan-zonal-stats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output cell-output-stdout">
@@ -480,7 +468,7 @@ Table&nbsp;3: Placeholder: Monthly zonal statistics by Taiwan BSA (temperature, 
 <div id="tbl-taiwan-deltas" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="6">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-taiwan-deltas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4: Placeholder: Per-variable TCCIP climate deltas applied to Taiwan BSA features this month.
+Table&nbsp;3: Placeholder: Per-variable TCCIP climate deltas applied to Taiwan BSA features this month.
 </figcaption>
 <div aria-describedby="tbl-taiwan-deltas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output cell-output-stdout">
@@ -977,167 +965,167 @@ Figure&nbsp;2
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Monthly Environmental Data"</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Per-region environmental indicators derived from Google Earth Engine and TCCIP, used as features for both study arms"</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#| output: false</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json, pathlib</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>data_dir <span class="op">=</span> pathlib.Path(<span class="st">"data"</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>stats_path <span class="op">=</span> data_dir <span class="op">/</span> <span class="st">"latest_zonal_stats.json"</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>deltas_path <span class="op">=</span> data_dir <span class="op">/</span> <span class="st">"climate_deltas.json"</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>stats <span class="op">=</span> json.loads(stats_path.read_text()) <span class="cf">if</span> stats_path.exists() <span class="cf">else</span> {}</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>deltas <span class="op">=</span> json.loads(deltas_path.read_text()) <span class="cf">if</span> deltas_path.exists() <span class="cf">else</span> {}</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>target_month <span class="op">=</span> stats.get(<span class="st">"target_month"</span>, <span class="st">"—"</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>Environmental features feed both study arms, but at different spatial granularities: admin-1 zonal statistics</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>for the SEA Provinces model, and BSA-level indicators for the Taiwan model. All zonal statistics between 2011</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>and 2026 have been computed with the Easy-Earth-Engine application, which provides a data-provenance pipeline</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>ensuring reproducibility of the remote sensing extraction.</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 1 — Southeast Asia Provinces (Admin-1 Zonal Statistics)</span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>Remote sensing data fetched from Google Earth Engine for **`{python} target_month`**.</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>These are per-admin-1 spatial averages (zonal statistics) of the environmental features used by the SEA STGNN.</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### Latest Monthly Zonal Statistics</span></span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-zonal-stats</span></span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Latest monthly zonal statistics by SEA admin-1 region (raw, pre-correction)."</span></span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>regions <span class="op">=</span> stats.get(<span class="st">"regions"</span>, {})</span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> stats_path.exists() <span class="kw">or</span> <span class="kw">not</span> regions:</span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  No zonal statistics found — run site/scripts/fetch_zonal_stats.py first."</span>)</span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region, vals <span class="kw">in</span> regions.items():</span>
-<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>        row <span class="op">=</span> {<span class="st">"Region"</span>: region, <span class="st">"Country"</span>: vals.get(<span class="st">"country"</span>, <span class="st">""</span>)}</span>
-<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>        row.update({k: <span class="bu">round</span>(v, <span class="dv">3</span>) <span class="cf">for</span> k, v <span class="kw">in</span> vals.items() <span class="cf">if</span> k <span class="kw">not</span> <span class="kw">in</span> (<span class="st">"country"</span>,)})</span>
-<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>        rows.append(row)</span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(rows).set_index(<span class="st">"Region"</span>)</span>
-<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [<span class="st">"Country"</span>, <span class="st">"precipitation_sum"</span>, <span class="st">"temperature_2m_mean"</span>,</span>
-<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"LST_Day_1km_mean"</span>, <span class="st">"NDVI_mean"</span>, <span class="st">"EVI_mean"</span>]</span>
-<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> display_cols <span class="cf">if</span> c <span class="kw">in</span> df.columns]</span>
-<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>    df[display_cols].style.<span class="bu">format</span>(precision<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a><span class="fu">### Applied Climate Deltas (SEA)</span></span>
-<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>The table below shows the bias correction delta applied to each SEA feature this month.</span>
-<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>A negative delta means the current climate is warmer/wetter than the 2011–2018 baseline,</span>
-<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>so the raw observation is shifted downward before model inference.</span>
-<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-deltas</span></span>
-<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Per-variable climate deltas (AR6 SSP2-4.5 projection minus 2011–2018 baseline) applied this month."</span></span>
-<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>current_month <span class="op">=</span> target_month[<span class="op">-</span><span class="dv">2</span>:] <span class="cf">if</span> <span class="bu">len</span>(target_month) <span class="op">&gt;=</span> <span class="dv">2</span> <span class="cf">else</span> <span class="st">"01"</span></span>
-<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>month_deltas <span class="op">=</span> deltas.get(current_month, deltas.get(<span class="st">"annual_mean"</span>, {}))</span>
-<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> deltas_path.exists() <span class="kw">or</span> <span class="kw">not</span> month_deltas:</span>
-<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  No climate delta file found — run site/scripts/apply_climate_delta.py first."</span>)</span>
-<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a>    delta_df <span class="op">=</span> pd.DataFrame([</span>
-<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"Feature"</span>: feat, <span class="st">"Delta (subtract from obs)"</span>: <span class="bu">round</span>(val, <span class="dv">4</span>)}</span>
-<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> feat, val <span class="kw">in</span> month_deltas.items()</span>
-<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>    ]).set_index(<span class="st">"Feature"</span>)</span>
-<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>    delta_df</span>
-<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a><span class="fu">### Global Warming Level Projections (SEA Domain)</span></span>
-<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>Summary of regional climate trajectories from the GWL dataset covering the SEA domain.</span>
-<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-gwl</span></span>
-<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Temperature and precipitation trends across Global Warming Levels for the SEA region."</span></span>
-<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
-<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib, pandas <span class="im">as</span> pd</span>
-<span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a>gwl_path <span class="op">=</span> pathlib.Path(<span class="st">"../climate-projection-module/data/processed/TSV/GWL_NetCDF/gwl_all_sliced.tsv"</span>)</span>
-<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> gwl_path.exists():</span>
-<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  GWL TSV not found — run climate-projection-module pipeline first."</span>)</span>
-<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a>    gwl <span class="op">=</span> pd.read_csv(gwl_path, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, parse_dates<span class="op">=</span>[<span class="st">"time"</span>])</span>
-<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>    gwl_monthly <span class="op">=</span> gwl.groupby([<span class="st">"gwl"</span>, gwl[<span class="st">"time"</span>].dt.to_period(<span class="st">"M"</span>)]).mean(numeric_only<span class="op">=</span><span class="va">True</span>).reset_index()</span>
-<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>    gwl_monthly[<span class="st">"time"</span>] <span class="op">=</span> gwl_monthly[<span class="st">"time"</span>].astype(<span class="bu">str</span>)</span>
-<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> go.Figure()</span>
-<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gwl_val <span class="kw">in</span> <span class="bu">sorted</span>(gwl_monthly[<span class="st">"gwl"</span>].unique()):</span>
-<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a>        subset <span class="op">=</span> gwl_monthly[gwl_monthly[<span class="st">"gwl"</span>] <span class="op">==</span> gwl_val]</span>
-<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a>        fig.add_trace(go.Scatter(</span>
-<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span>subset[<span class="st">"time"</span>], y<span class="op">=</span>subset[<span class="st">"temp_avg"</span>],</span>
-<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>            mode<span class="op">=</span><span class="st">"lines"</span>, name<span class="op">=</span><span class="ss">f"GWL </span><span class="sc">{</span>gwl_val<span class="sc">}</span><span class="ss">°C"</span>,</span>
-<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>        ))</span>
-<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>    fig.update_layout(</span>
-<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Mean Temperature by Global Warming Level — SEA"</span>,</span>
-<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a>        xaxis_title<span class="op">=</span><span class="st">"Month"</span>, yaxis_title<span class="op">=</span><span class="st">"Temperature (°C)"</span>,</span>
-<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a>        legend_title<span class="op">=</span><span class="st">"GWL Scenario"</span>, height<span class="op">=</span><span class="dv">400</span>,</span>
-<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>    fig.show()</span>
-<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 2 — Taiwan Basic Statistics Area (BSA-Level Environmental Data)</span></span>
-<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a>Environmental features for the Taiwan BSA model are derived from TCCIP (Taiwan Climate Change Projection</span>
-<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>Information and Adaptation Knowledge Platform) and local remote sensing products, aggregated to BSA granularity.</span>
-<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>These complement the individual case report data from Taiwan MoH.</span>
-<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a><span class="fu">### Latest Monthly BSA Zonal Statistics</span></span>
-<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
-<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>**Placeholder** — BSA-level zonal statistics for Taiwan are not yet available. This table will show</span>
-<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a>per-BSA averages of temperature, precipitation, NDVI, and other suitability indicators once the</span>
-<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a>taiwan-bsa-module environmental pipeline is operational.</span>
-<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb7-139"><a href="#cb7-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-143"><a href="#cb7-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-taiwan-zonal-stats</span></span>
-<span id="cb7-145"><a href="#cb7-145" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Placeholder: Monthly zonal statistics by Taiwan BSA (temperature, precipitation, NDVI, EVI)."</span></span>
-<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-147"><a href="#cb7-147" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA zonal statistics not yet available — implement taiwan-bsa-module/data/gee_bsa_pipeline.py first."</span>)</span>
-<span id="cb7-148"><a href="#cb7-148" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-149"><a href="#cb7-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-150"><a href="#cb7-150" aria-hidden="true" tabindex="-1"></a><span class="fu">### Applied Climate Deltas (Taiwan)</span></span>
-<span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-taiwan-deltas</span></span>
-<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Placeholder: Per-variable TCCIP climate deltas applied to Taiwan BSA features this month."</span></span>
-<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA climate deltas not yet available — requires TCCIP baseline computation."</span>)</span>
-<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a><span class="fu">### Vegetation and Urban Heat Island Indicators (Taiwan BSA)</span></span>
-<span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>BSA-level NDVI and LST are particularly important for identifying urban heat island effects that</span>
-<span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a>increase vector reproduction rates in dense Taiwanese cities.</span>
-<span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-taiwan-lst</span></span>
-<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: Land surface temperature and NDVI distribution across Taiwan BSAs for the current month."</span></span>
-<span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA LST/NDVI data not yet available."</span>)</span>
-<span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Monthly Environmental Data"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Per-region environmental indicators derived from Google Earth Engine and TCCIP, used as features for both study arms"</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#| output: false</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json, pathlib</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>data_dir <span class="op">=</span> pathlib.Path(<span class="st">"data"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>stats_path <span class="op">=</span> data_dir <span class="op">/</span> <span class="st">"latest_zonal_stats.json"</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>deltas_path <span class="op">=</span> data_dir <span class="op">/</span> <span class="st">"climate_deltas.json"</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>stats <span class="op">=</span> json.loads(stats_path.read_text()) <span class="cf">if</span> stats_path.exists() <span class="cf">else</span> {}</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>deltas <span class="op">=</span> json.loads(deltas_path.read_text()) <span class="cf">if</span> deltas_path.exists() <span class="cf">else</span> {}</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>target_month <span class="op">=</span> stats.get(<span class="st">"target_month"</span>, <span class="st">"—"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>Environmental features feed both study arms, but at different spatial granularities: admin-1 zonal statistics</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>for the SEA Provinces model, and BSA-level indicators for the Taiwan model. All zonal statistics between 2011</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>and 2026 have been computed with the Easy-Earth-Engine application, which provides a data-provenance pipeline</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>ensuring reproducibility of the remote sensing extraction.</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 1 — Southeast Asia Provinces (Admin-1 Zonal Statistics)</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>Remote sensing data fetched from Google Earth Engine for **`{python} target_month`**.</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>These are per-admin-1 spatial averages (zonal statistics) of the environmental features used by the SEA STGNN.</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### Latest Monthly Zonal Statistics</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-zonal-stats</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Latest monthly zonal statistics by SEA admin-1 region (raw, pre-correction)."</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>regions <span class="op">=</span> stats.get(<span class="st">"regions"</span>, {})</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> stats_path.exists() <span class="kw">or</span> <span class="kw">not</span> regions:</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  No zonal statistics found — the monthly zonal statistics now feed data/processed/env/SEA_env_monthly_v2.csv on the cluster (repo-root Snakefile, env_table_v2)."</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> region, vals <span class="kw">in</span> regions.items():</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>        row <span class="op">=</span> {<span class="st">"Region"</span>: region, <span class="st">"Country"</span>: vals.get(<span class="st">"country"</span>, <span class="st">""</span>)}</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>        row.update({k: <span class="bu">round</span>(v, <span class="dv">3</span>) <span class="cf">for</span> k, v <span class="kw">in</span> vals.items() <span class="cf">if</span> k <span class="kw">not</span> <span class="kw">in</span> (<span class="st">"country"</span>,)})</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>        rows.append(row)</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(rows).set_index(<span class="st">"Region"</span>)</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [<span class="st">"Country"</span>, <span class="st">"precipitation_sum"</span>, <span class="st">"temperature_2m_mean"</span>,</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"LST_Day_1km_mean"</span>, <span class="st">"NDVI_mean"</span>, <span class="st">"EVI_mean"</span>]</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> display_cols <span class="cf">if</span> c <span class="kw">in</span> df.columns]</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>    df[display_cols].style.<span class="bu">format</span>(precision<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="fu">### Applied Climate Deltas (SEA)</span></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>The table below shows the bias correction delta applied to each SEA feature this month.</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>A negative delta means the current climate is warmer/wetter than the 2011–2018 baseline,</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>so the raw observation is shifted downward before model inference.</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-deltas</span></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Per-variable climate deltas (2019–2026 observed minus 2011–2018 baseline) applied this month."</span></span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>current_month <span class="op">=</span> target_month[<span class="op">-</span><span class="dv">2</span>:] <span class="cf">if</span> <span class="bu">len</span>(target_month) <span class="op">&gt;=</span> <span class="dv">2</span> <span class="cf">else</span> <span class="st">"01"</span></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>month_deltas <span class="op">=</span> deltas.get(current_month, deltas.get(<span class="st">"annual_mean"</span>, {}))</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> deltas_path.exists() <span class="kw">or</span> <span class="kw">not</span> month_deltas:</span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  No climate delta file found — run site/scripts/apply_climate_delta.py first."</span>)</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>    delta_df <span class="op">=</span> pd.DataFrame([</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"Feature"</span>: feat, <span class="st">"Delta (subtract from obs)"</span>: <span class="bu">round</span>(val, <span class="dv">4</span>)}</span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> feat, val <span class="kw">in</span> month_deltas.items()</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>    ]).set_index(<span class="st">"Feature"</span>)</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>    delta_df</span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a><span class="fu">### Global Warming Level Projections (SEA Domain)</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>Summary of regional climate trajectories from the GWL dataset covering the SEA domain.</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-gwl</span></span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Temperature and precipitation trends across Global Warming Levels for the SEA region."</span></span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib, pandas <span class="im">as</span> pd</span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>gwl_path <span class="op">=</span> pathlib.Path(<span class="st">"../climate-projection-module/data/processed/TSV/GWL_NetCDF/gwl_all_sliced.tsv"</span>)</span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> gwl_path.exists():</span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  GWL TSV not found — run climate-projection-module pipeline first."</span>)</span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>    gwl <span class="op">=</span> pd.read_csv(gwl_path, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, parse_dates<span class="op">=</span>[<span class="st">"time"</span>])</span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>    gwl_monthly <span class="op">=</span> gwl.groupby([<span class="st">"gwl"</span>, gwl[<span class="st">"time"</span>].dt.to_period(<span class="st">"M"</span>)]).mean(numeric_only<span class="op">=</span><span class="va">True</span>).reset_index()</span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>    gwl_monthly[<span class="st">"time"</span>] <span class="op">=</span> gwl_monthly[<span class="st">"time"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> go.Figure()</span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gwl_val <span class="kw">in</span> <span class="bu">sorted</span>(gwl_monthly[<span class="st">"gwl"</span>].unique()):</span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a>        subset <span class="op">=</span> gwl_monthly[gwl_monthly[<span class="st">"gwl"</span>] <span class="op">==</span> gwl_val]</span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a>        fig.add_trace(go.Scatter(</span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span>subset[<span class="st">"time"</span>], y<span class="op">=</span>subset[<span class="st">"temp_avg"</span>],</span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a>            mode<span class="op">=</span><span class="st">"lines"</span>, name<span class="op">=</span><span class="ss">f"GWL </span><span class="sc">{</span>gwl_val<span class="sc">}</span><span class="ss">°C"</span>,</span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a>    fig.update_layout(</span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Mean Temperature by Global Warming Level — SEA"</span>,</span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a>        xaxis_title<span class="op">=</span><span class="st">"Month"</span>, yaxis_title<span class="op">=</span><span class="st">"Temperature (°C)"</span>,</span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a>        legend_title<span class="op">=</span><span class="st">"GWL Scenario"</span>, height<span class="op">=</span><span class="dv">400</span>,</span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>    fig.show()</span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 2 — Taiwan Basic Statistics Area (BSA-Level Environmental Data)</span></span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>Environmental features for the Taiwan BSA model are derived from TCCIP (Taiwan Climate Change Projection</span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>Information and Adaptation Knowledge Platform) and local remote sensing products, aggregated to BSA granularity.</span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>These complement the individual case report data from Taiwan MoH.</span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a><span class="fu">### Latest Monthly BSA Zonal Statistics</span></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a>**Placeholder** — BSA-level zonal statistics for Taiwan are not yet available. This table will show</span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a>per-BSA averages of temperature, precipitation, NDVI, and other suitability indicators once the</span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a>taiwan-bsa-module environmental pipeline is operational.</span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-taiwan-zonal-stats</span></span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Placeholder: Monthly zonal statistics by Taiwan BSA (temperature, precipitation, NDVI, EVI)."</span></span>
+<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA zonal statistics not yet available — implement taiwan-bsa-module/data/gee_bsa_pipeline.py first."</span>)</span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a><span class="fu">### Applied Climate Deltas (Taiwan)</span></span>
+<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-taiwan-deltas</span></span>
+<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Placeholder: Per-variable TCCIP climate deltas applied to Taiwan BSA features this month."</span></span>
+<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA climate deltas not yet available — requires TCCIP baseline computation."</span>)</span>
+<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a><span class="fu">### Vegetation and Urban Heat Island Indicators (Taiwan BSA)</span></span>
+<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a>BSA-level NDVI and LST are particularly important for identifying urban heat island effects that</span>
+<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a>increase vector reproduction rates in dense Taiwanese cities.</span>
+<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-taiwan-lst</span></span>
+<span id="cb6-172"><a href="#cb6-172" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: Land surface temperature and NDVI distribution across Taiwan BSAs for the current month."</span></span>
+<span id="cb6-173"><a href="#cb6-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-174"><a href="#cb6-174" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA LST/NDVI data not yet available."</span>)</span>
+<span id="cb6-175"><a href="#cb6-175" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
