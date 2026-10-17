@@ -2,6 +2,18 @@ import torch
 import torch.nn.functional as F
 
 
+def split_masks(y: torch.Tensor, mask: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    """(mask passed to the model, mask for the loss) for one batch.
+
+    One-month models (y: (B, N, 1)) keep the original behaviour: the model and the loss both
+    use the batch's (B, N) target mask. Multi-month models (y, mask: (B, N, H)) score every
+    observed lead, and the model treats a node as observed if any lead is.
+    """
+    if y.dim() == 3 and y.size(-1) > 1:
+        return mask.any(dim=-1), mask
+    return mask, (mask[:, -1, :] if mask.dim() == 3 else mask)
+
+
 def masked_huber_loss(
     pred:   torch.Tensor,
     target: torch.Tensor,

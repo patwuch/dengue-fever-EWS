@@ -1,0 +1,49 @@
+{
+  "fit_years": [
+    2012,
+    2021
+  ],
+  "method": "VIIRS province \u00d7 calendar-month climatology + beta \u00d7 MODIS anomaly [+ gamma \u00d7 ERA5 temperature_2m_mean anomaly for LST], anomalies against the same province \u00d7 calendar-month climatologies over fit_years",
+  "features": {
+    "lst_day_mean": {
+      "from": "LST_Day_1km_mean",
+      "beta": 0.43089617823306514,
+      "gamma": 0.9615938533492033,
+      "pairs": 19548,
+      "rmse_conversion": 1.2617604502379478,
+      "rmse_climatology_only": 1.6644005616213318,
+      "rmse_conversion_worst_year": 1.610231568527148,
+      "converted_rows": 1944
+    },
+    "lst_night_mean": {
+      "from": "LST_Night_1km_mean",
+      "beta": 0.1923717521996617,
+      "gamma": 0.7120628229175794,
+      "pairs": 19543,
+      "rmse_conversion": 1.3952935602543524,
+      "rmse_climatology_only": 1.5367792923943129,
+      "rmse_conversion_worst_year": 1.5932614818508493,
+      "converted_rows": 1946
+    },
+    "ndvi_mean": {
+      "from": "NDVI_mean",
+      "beta": 0.5770315001854395,
+      "gamma": 0.0,
+      "pairs": 19548,
+      "rmse_conversion": 0.023745854443067278,
+      "rmse_climatology_only": 0.029554436798942218,
+      "rmse_conversion_worst_year": 0.028957528753338097,
+      "converted_rows": 1944
+    },
+    "evi_mean": {
+      "from": "EVI_mean",
+      "beta": 0.40579190493610734,
+      "gamma": 0.0,
+      "pairs": 19548,
+      "rmse_conversion": 0.022259719176000774,
+      "rmse_climatology_only": 0.025530197781004405,
+      "rmse_conversion_worst_year": 0.025180324278700247,
+      "converted_rows": 1944
+    }
+  }
+}

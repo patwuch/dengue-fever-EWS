@@ -915,21 +915,23 @@ def write_interactive_graph(edges: np.ndarray, attn1_all: np.ndarray, attn2_all:
 
 def explain_attention(cfg: dict, params: dict, model_path, out_dir: Path,
                        csv_path: str, geom_path: str,
-                       split: str = "test", top_k: int = 15) -> None:
+                       split: str = "test", top_k: int = 15,
+                       tensors_path: Path | None = None,
+                       edge_index_path: Path | None = None) -> None:
     model_path = Path(model_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     device      = torch.device(cfg.get("device", "cpu"))
     window_size = params["window_size"]
 
-    tensors = load_tensors(cfg, window_size)
+    tensors = load_tensors(cfg, window_size, tensors_path)
     if split == "test" and "inference_x" in tensors:
         split = "inference"
         print("INFO: using inference split — attention covers all test months.")
 
     dataset     = STGNNDataset(tensors, split)
     dataloader  = DataLoader(dataset, batch_size=8, shuffle=False)
-    edge_index  = load_edge_index(cfg, device)
+    edge_index  = load_edge_index(cfg, device, edge_index_path)
     in_channels = dataset.x.shape[-1]
 
     model = STGATGRU(
@@ -1065,6 +1067,8 @@ if __name__ == "__main__":
             csv_path=snakemake.params.csv_path,   # noqa: F821
             geom_path=snakemake.params.geom_path,  # noqa: F821
             split="test", top_k=top_k,
+            tensors_path    = Path(snakemake.input.tensors),     # noqa: F821
+            edge_index_path = Path(snakemake.input.edge_index),  # noqa: F821
         )
     else:
         _main_cli()

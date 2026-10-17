@@ -1,0 +1,28 @@
+# Snakemake profile for the tmu k3s cluster: every rule runs as a Job in dengue-ews, and
+# inputs/outputs go through the SeaweedFS S3 store (k8s/storage.yaml) instead of local disk.
+#
+#   snakemake <target> --configfile config/OpenDengue/<experiment>.yaml --profile profiles/k8s
+#
+# Needs SNAKEMAKE_STORAGE_S3_ACCESS_KEY / SNAKEMAKE_STORAGE_S3_SECRET_KEY in the environment
+# (the executor copies them into a per-run Secret for the pods) and a kube context with the
+# snakemake ServiceAccount from k8s/rbac.yaml.
+
+executor: kubernetes
+kubernetes-namespace: dengue-ews
+# Not :latest; with that tag the kubelet always pulls from Docker Hub and misses the imported image.
+container-image: dengue-ews:k8s-v1
+
+default-storage-provider: s3
+default-storage-prefix: s3://dengue-ews
+# The NUC's Tailscale IP: the one address both the controller and the job pods can reach.
+storage-s3-endpoint-url: http://100.100.41.64:30900
+
+# Keep data/ paths relative so they map to the same S3 keys on the controller and in the pod.
+config:
+  - data_root=.
+
+jobs: 4
+resources:
+  - gpu=1        # one GPU in the cluster (the workstation's 1050 Ti)
+retries: 1
+printshellcmds: true

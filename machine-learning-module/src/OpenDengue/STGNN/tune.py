@@ -12,7 +12,8 @@ from torch.amp import autocast, GradScaler
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 from model import STGATGRU
-from loss import masked_huber_loss
+from loss import masked_huber_loss, split_masks
+from preprocess.temporal import horizon
 
 
 # ── Dataset Definition ────────────────────────────────────────────────────────
@@ -48,13 +49,29 @@ def _sweep_id_path(cfg: dict) -> Path:
     return Path("results/STGNN") / cfg["name"] / "sweep_id.txt"
 
 
-def load_tensors(cfg: dict, window_size: int) -> dict:
-    path = _processed_dir(cfg) / f"window_{window_size}" / "tensors.pt"
+# Paths Snakemake staged for this job (set via stage_inputs). The git-root fallback
+# below breaks when the script runs from Snakemake's source cache (no .git there).
+_STAGED: dict = {"tensors": {}, "edge_index": None}
+
+
+def stage_inputs(tensors=(), edge_index=None) -> None:
+    """Register snakemake.input paths so wandb-agent callbacks can find them."""
+    _STAGED["tensors"] = {
+        int(Path(p).parent.name.removeprefix("window_")): Path(p) for p in tensors
+    }
+    _STAGED["edge_index"] = Path(edge_index) if edge_index else None
+
+
+def load_tensors(cfg: dict, window_size: int, path: Path | None = None) -> dict:
+    # Pass `path` (e.g. snakemake.input.tensors) to load the file Snakemake staged;
+    # it differs from the git-root path when inputs come from remote storage.
+    path = path or _STAGED["tensors"].get(window_size) \
+        or _processed_dir(cfg) / f"window_{window_size}" / "tensors.pt"
     return torch.load(path, weights_only=True)
 
 
-def load_edge_index(cfg: dict, device: torch.device) -> torch.Tensor:
-    path = _processed_dir(cfg) / "edge_index.pt"
+def load_edge_index(cfg: dict, device: torch.device, path: Path | None = None) -> torch.Tensor:
+    path = path or _STAGED["edge_index"] or _processed_dir(cfg) / "edge_index.pt"
     return torch.load(path, weights_only=True).to(device)
 
 
@@ -252,15 +269,11 @@ def run_epoch(
             assert not torch.isnan(x).any(), "NaN in feature map configurations"
             assert not torch.isnan(y).any(), "NaN in ground-truth labels"
 
+            model_mask, target_mask = split_masks(y, mask)
             with autocast("cuda", enabled=use_amp_fwd):
-                pred = model(x, edge_index, mask=mask)
+                pred = model(x, edge_index, mask=model_mask)
                 if pred.dim() == 3 and y.dim() == 2:
                     pred = pred.squeeze(-1)
-
-                if mask.dim() == 3:
-                    target_mask = mask[:, -1, :]
-                else:
-                    target_mask = mask
 
                 loss = masked_huber_loss(pred, y, target_mask)
 
@@ -362,7 +375,7 @@ def train_sweep(cfg: dict):
         gat2_hidden  = wc.gat2_hidden,
         gat2_heads   = wc.gat2_heads,
         gru_hidden   = wc.get("gru_hidden", wc.gat2_hidden),
-        pred_horizon = 1,
+        pred_horizon = horizon(cfg),
         dropout      = wc.dropout,
     ).to(device)
 
@@ -497,4 +510,8 @@ def run_sweep(cfg: dict, out_path: str | Path = None):
 if __name__ == "__main__":
     with open(snakemake.params.cfg) as f: # noqa: F821
         cfg = yaml.safe_load(f)
+    stage_inputs(
+        tensors    = snakemake.input.tensors,  # noqa: F821
+        edge_index = snakemake.input.edge_index,  # noqa: F821
+    )
     run_sweep(cfg, out_path=snakemake.output.best_params) # noqa: F821

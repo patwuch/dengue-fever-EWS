@@ -1,0 +1,70 @@
+# Gives Snakemake job pods that run the inference image the Earth Engine key from the gee-key Secret.
+#
+# The executor plugin can only pass secrets as env vars copied from the controller's environment,
+# so the key would have to sit wherever the controller runs. Instead the key lives only in the
+# cluster: this policy mounts the Secret read-only at /var/run/secrets/gee and points
+# GOOGLE_APPLICATION_CREDENTIALS (what EZGEE reads) at it. The snakemake ServiceAccount still
+# can't read the Secret; the kubelet fetches it for the pod.
+#
+# Create the Secret once (admin context), then apply:
+#   KUBECONFIG=~/.kube/k3s-tmu.yaml kubectl --context tmu -n dengue-ews \
+#     create secret generic gee-key --from-file=key.json=<service-account key>.json
+#   KUBECONFIG=~/.kube/k3s-tmu.yaml kubectl --context tmu apply -f k8s/gee-key-for-inference-pods.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: gee-key-for-inference-pods
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    # The Job controller labels each pod with its Job's name; the plugin names Jobs snakejob-<uuid>.
+    - name: is-snakemake-job-pod
+      expression: >
+        has(object.metadata.labels) &&
+        'batch.kubernetes.io/job-name' in object.metadata.labels &&
+        object.metadata.labels['batch.kubernetes.io/job-name'].startsWith('snakejob-')
+    # Only the CPU inference image; training pods never get the key.
+    - name: runs-inference-image
+      expression: >
+        object.spec.containers[0].image.startsWith('ghcr.io/patwuch/dengue-ews-inference:')
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    # Appends to lists the plugin always sets: volumes (workdir), volumeMounts (/workdir) and
+    # env (the run's S3 keys).
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >
+          [
+            JSONPatch{
+              op: "add", path: "/spec/volumes/-",
+              value: Object.spec.volumes{name: "gee-key", secret: Object.spec.volumes.secret{
+                secretName: "gee-key", defaultMode: 292}}
+            },
+            JSONPatch{
+              op: "add", path: "/spec/containers/0/volumeMounts/-",
+              value: Object.spec.containers.volumeMounts{
+                name: "gee-key", mountPath: "/var/run/secrets/gee", readOnly: true}
+            },
+            JSONPatch{
+              op: "add", path: "/spec/containers/0/env/-",
+              value: Object.spec.containers.env{
+                name: "GOOGLE_APPLICATION_CREDENTIALS", value: "/var/run/secrets/gee/key.json"}
+            }
+          ]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: gee-key-for-inference-pods
+spec:
+  policyName: gee-key-for-inference-pods
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: dengue-ews

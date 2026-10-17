@@ -1,0 +1,51 @@
+# Identity the Snakemake controller uses to submit jobs into dengue-ews.
+#
+# Verbs are exactly the calls snakemake-executor-plugin-kubernetes 0.5.1 makes
+# (grep'd from the installed plugin inside dengue-ews:k8s-v1):
+#   batchapi.create_namespaced_job / delete_namespaced_job   -> jobs: create, delete
+#   batchapi.read_namespaced_job_status                      -> jobs/status: get
+#   kubeapi.create_namespaced_secret / delete_namespaced_secret -> secrets: create, delete
+#   kubeapi.list_namespaced_pod / delete_namespaced_pod      -> pods: list, delete
+#   kubeapi.read_namespaced_pod_log                          -> pods/log: get
+# Re-check this list when bumping the plugin version.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: snakemake
+  namespace: dengue-ews
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: snakemake-executor
+  namespace: dengue-ews
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs/status"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: snakemake-executor
+  namespace: dengue-ews
+subjects:
+  - kind: ServiceAccount
+    name: snakemake
+    namespace: dengue-ews
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: snakemake-executor

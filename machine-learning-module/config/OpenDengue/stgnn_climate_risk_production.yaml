@@ -1,0 +1,131 @@
+# ============================================================
+# OpenDengue SEA — STGNN Production Model, CLIMATE mode (mode 2)
+#
+# Same target (log IR, 2011-2018) and features as production_logIR,
+# minus the incidence input and the data_quality flags (which describe
+# the incidence series). The model learns how 2011-2018 weather and
+# land use preceded dengue, so monthly inference needs only Earth Engine
+# zonal stats (+ the climate delta correction). Output is a relative
+# risk index, not IR.
+#
+# Hyperparameters are borrowed from the incidence-mode sweep. With the
+# incidence channel gone they may no longer be the best choice; a
+# dedicated sweep (test_months > 0, n_trials > 0, no best_params_source)
+# is worth running before trusting this model.
+#
+# Invoke:
+#   snakemake results/STGNN/production_climate_risk/inference_bundle_climate.tar.gz \
+#       --configfile config/OpenDengue/stgnn_climate_risk_production.yaml \
+#       --cores 4 --resources gpu=1
+# ============================================================
+
+name:    production_climate_risk
+bundle_label: climate   # release asset: inference_bundle_climate.tar.gz
+dataset: opendengue
+model:   stgnn
+task:    regressor
+scope:   multi-country
+wandb_project: stgnn-dengue
+
+# Reuse best hyperparameters from the cyclical_seasonal sweep (stgnn_logIR_cyclical.yaml) — no new sweep.
+best_params_source: cyclical_seasonal
+# Must match window_size in results/STGNN/cyclical_seasonal/best_params.json. Required for runs
+# without a shared filesystem (kubernetes + S3), where that file can't be read at DAG-build
+# time; when unset, the rule reads it from local disk instead.
+window_size: 12
+
+
+# ---------------------------------------------------------------------------
+# Data
+# ---------------------------------------------------------------------------
+data:
+  path:          data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv
+  time_column:   year_month
+  unit_column:   adm_1_name
+  region_column: adm_0_name
+  split:
+    strategy:     month
+    test_months:  0      # no holdout — all data used for training
+    val_fraction: 0.2    # small slice for early-stopping monitoring only
+
+# ---------------------------------------------------------------------------
+# Target
+# ---------------------------------------------------------------------------
+target_column: IR
+
+# ---------------------------------------------------------------------------
+# Preprocessing  (target transforms match cyclical_seasonal)
+# ---------------------------------------------------------------------------
+preprocessing:
+  incidence_input: false  # climate/land-use inputs only (mode 2)
+  log_transform:  true
+  deseasonalise:  false
+  cyclical_month_features: true
+  scale_target:   true
+  add_lag_target: false
+  lag_steps:      []
+
+# ---------------------------------------------------------------------------
+# Features  (cyclical_seasonal minus incidence-related inputs)
+# ---------------------------------------------------------------------------
+features:
+  use_landuse: true
+  quality_vars: []   # data_quality describes the incidence input, which this mode drops
+  env_vars:
+    - precipitation_sum
+    - temperature_2m_mean
+    - temperature_2m_max_mean
+    - temperature_2m_min_mean
+    - potential_evaporation_sum_mean
+    - total_evaporation_sum_mean
+    - evaporation_from_bare_soil_sum_mean
+    - evaporation_from_open_water_surfaces_excluding_oceans_sum_mean
+    - evaporation_from_the_top_of_canopy_sum_mean
+    - evaporation_from_vegetation_transpiration_sum_mean
+    - LST_Day_1km_mean
+    - LST_Night_1km_mean
+    - NDVI_mean
+    - EVI_mean
+    - month_sin
+    - month_cos
+  climate_vars:  []
+  epidemic_vars: []
+  land_use_vars:
+    - LC_Type1_pct_class1
+    - LC_Type1_pct_class2
+    - LC_Type1_pct_class3
+    - LC_Type1_pct_class4
+    - LC_Type1_pct_class5
+    - LC_Type1_pct_class6
+    - LC_Type1_pct_class7
+    - LC_Type1_pct_class8
+    - LC_Type1_pct_class9
+    - LC_Type1_pct_class10
+    - LC_Type1_pct_class11
+    - LC_Type1_pct_class12
+    - LC_Type1_pct_class13
+    - LC_Type1_pct_class14
+    - LC_Type1_pct_class15
+    - LC_Type1_pct_class16
+    - LC_Type1_pct_class17
+
+# ---------------------------------------------------------------------------
+# Tune block kept for preprocess window expansion — no new tuning is run.
+# ---------------------------------------------------------------------------
+tune:
+  n_trials:     0
+  metric:       masked_huber_loss
+  device:       cuda
+  patience:     15
+  search_space:
+    stgnn:
+      learning_rate:   {type: log_uniform, low: 1.0e-4, high: 5.0e-1}
+      batch_size:      {type: categorical, choices: [2, 4]}
+      window_size:     {type: categorical, choices: [1, 3, 6, 12]}
+      gat1_hidden:     {type: categorical, choices: [16, 32, 64]}
+      gat1_heads:      {type: categorical, choices: [2, 4]}
+      mlp_hidden:      {type: categorical, choices: [32, 64]}
+      gat2_hidden:     {type: categorical, choices: [16, 32, 64]}
+      gat2_heads:      {type: categorical, choices: [2, 4]}
+      mlp_layers:      {type: categorical, choices: [1, 2]}
+      dropout:         {type: categorical, choices: [0.0, 0.2, 0.4]}

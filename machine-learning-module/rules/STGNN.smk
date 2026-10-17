@@ -22,15 +22,18 @@ _window_sizes = (
           .get("choices", [0])
 )
 
-_ML_PROCESSED = PROJECT_ROOT / "data" / "processed" / "machine-learning"
+_ML_PROCESSED = DATA_ROOT / "data" / "processed" / "machine-learning"
 _RESULTS      = f"results/STGNN/{_name}"
+# The training table the config names (default: the merge_env_infection output).
+_TRAIN_DATA   = (str(DATA_ROOT / config["data"]["path"]) if "data" in config
+                 else str(MERGED_DENGUE_ENV_DATA))
 
 
 rule preprocess_stgnn:
     message:
         "Preprocessing for STGNN with experiment name '{_name}' and window sizes {_window_sizes}."
     input:
-        str(MERGED_DENGUE_ENV_DATA),
+        _TRAIN_DATA,
     output:
         tensors = expand(
             str(_ML_PROCESSED / "STGNN/{name}/window_{w}/tensors.pt"),
@@ -38,6 +41,8 @@ rule preprocess_stgnn:
             w=_window_sizes,
         ),
         scaler  = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
+        edge_index = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
+        bundle  = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
     params:
         cfg = lambda wc: workflow.configfiles[-1],
     script:
@@ -51,10 +56,13 @@ checkpoint tune_stgnn:
             w    = _window_sizes,
         ),
         scaler  = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
+        edge_index = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     params:
         cfg = lambda wc: workflow.configfiles[-1],
     script:
@@ -74,9 +82,15 @@ def _tensors_for_best_window(wildcards):
 def _tensors_for_production_window(wildcards):
     """Same as above, but for train_stgnn_production: best_params.json comes
     from a previously completed experiment (_params_source), not one produced
-    within this workflow run, so no checkpoint indirection is needed."""
-    with open(f"results/STGNN/{_params_source}/best_params.json") as f:
-        window = json.load(f)["window_size"]
+    within this workflow run, so no checkpoint indirection is needed.
+
+    Prefer `window_size` from the config: this function runs while the DAG is
+    built, before any inputs are staged, so on an executor without a shared
+    filesystem (e.g. kubernetes + S3) best_params.json isn't on local disk yet."""
+    window = config.get("window_size")
+    if window is None:
+        with open(f"results/STGNN/{_params_source}/best_params.json") as f:
+            window = json.load(f)["window_size"]
     return str(_ML_PROCESSED / f"STGNN/{_name}/window_{window}/tensors.pt")
 
 
@@ -84,6 +98,7 @@ rule train_stgnn:
     input:
         best_params = f"{_RESULTS}/best_params.json",
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         checkpoint = f"{_RESULTS}/best_model.pt",
         losses     = f"{_RESULTS}/train_val_losses.json",
@@ -94,6 +109,8 @@ rule train_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     script:
         "../src/OpenDengue/STGNN/train.py"
 
@@ -103,6 +120,7 @@ rule test_stgnn:
         model       = f"{_RESULTS}/best_model.pt",
         best_params = f"{_RESULTS}/best_params.json",
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         predictions = f"{_RESULTS}/test_predictions.npz",
         metrics     = f"{_RESULTS}/metrics.json",
@@ -114,6 +132,8 @@ rule test_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     script:
         "../src/OpenDengue/STGNN/test.py"
 
@@ -144,6 +164,7 @@ rule explain_attention_stgnn:
         geom        = str(GEOM_PATH),
         csv_data    = str(MERGED_DENGUE_ENV_DATA),
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         weights       = f"{_RESULTS}/attention_weights.npz",
         graph         = f"{_RESULTS}/attention_graph.png",
@@ -168,6 +189,7 @@ rule explain_shap_stgnn:
         best_params = f"{_RESULTS}/best_params.json",
         csv_data    = str(MERGED_DENGUE_ENV_DATA),
         tensors     = _tensors_for_best_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         attributions = f"{_RESULTS}/shap_attributions.npz",
         feature_plot = f"{_RESULTS}/shap_feature_importance.png",
@@ -179,6 +201,8 @@ rule explain_shap_stgnn:
         csv_path    = str(MERGED_DENGUE_ENV_DATA),
     resources:
         gpu = 1,
+        gpu_manufacturer = "nvidia",   # see train_stgnn_production
+        scale = False,
     script:
         "../src/OpenDengue/STGNN/explain_shap.py"
 
@@ -190,10 +214,15 @@ rule explain_shap_stgnn:
 if config.get("best_params_source"):
     _params_source = config["best_params_source"]
 
+    # Both rules produce {_RESULTS}/best_model.pt; without this Snakemake raises
+    # AmbiguousRuleException whenever both are viable.
+    ruleorder: train_stgnn_production > train_stgnn
+
     rule train_stgnn_production:
         input:
             best_params = f"results/STGNN/{_params_source}/best_params.json",
             tensors     = _tensors_for_production_window,
+            edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
             scaler      = str(_ML_PROCESSED / f"STGNN/{_name}/preprocessing_params.json"),
         output:
             checkpoint = f"{_RESULTS}/best_model.pt",
@@ -205,5 +234,59 @@ if config.get("best_params_source"):
             best_params = f"results/STGNN/{_params_source}/best_params.json",
         resources:
             gpu = 1,
+            # Read by the kubernetes executor: gpu_manufacturer maps gpu to
+            # nvidia.com/gpu, and scale=False sets limits alongside requests,
+            # which the API server requires for extended resources.
+            gpu_manufacturer = "nvidia",
+            scale = False,
         script:
             "../src/OpenDengue/STGNN/train.py"
+
+
+# ---------------------------------------------------------------------------
+# Inference bundle — what the monthly GitHub Actions run downloads.
+#
+#   snakemake results/STGNN/<name>/inference_bundle_<bundle_label>.tar.gz \
+#       --configfile config/OpenDengue/<production config>.yaml --profile profiles/k8s
+#
+# The tarball holds inference_bundle/{best_model.pt,best_params.json,bundle.json} and is named
+# like the release asset, so it uploads as-is (see README "Monthly inference"). A single file
+# rather than a directory() output: S3 has no directory objects, so Snakemake can't confirm a
+# directory output exists in remote storage.
+# ---------------------------------------------------------------------------
+
+_bundle_params = (
+    f"results/STGNN/{config['best_params_source']}/best_params.json"
+    if config.get("best_params_source") else f"{_RESULTS}/best_params.json"
+)
+
+rule export_inference_bundle:
+    input:
+        model       = f"{_RESULTS}/best_model.pt",
+        best_params = _bundle_params,
+        bundle      = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
+    output:
+        f"{_RESULTS}/inference_bundle_{config.get('bundle_label', _name)}.tar.gz",
+    shell:
+        "staging=$(mktemp -d) && mkdir $staging/inference_bundle && "
+        "cp {input.model} $staging/inference_bundle/best_model.pt && "
+        "cp {input.best_params} $staging/inference_bundle/best_params.json && "
+        "cp {input.bundle} $staging/inference_bundle/bundle.json && "
+        "tar -czf {output} -C $staging inference_bundle && rm -rf $staging"
+
+
+# Per-lead skill against the seasonal baseline on the held-out months (configs with
+# test_months > 0, e.g. stgnn_climate_v2_eval.yaml). Runs on CPU.
+rule evaluate_horizons_stgnn:
+    input:
+        model       = f"{_RESULTS}/best_model.pt",
+        best_params = _bundle_params,
+        tensors     = _tensors_for_production_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
+        bundle      = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
+    output:
+        metrics = f"{_RESULTS}/horizon_metrics.json",
+    resources:
+        mem_mb = 4000,
+    script:
+        "../src/OpenDengue/STGNN/evaluate_horizons.py"

@@ -59,8 +59,8 @@ def fill_missing_inc(sources: dict) -> dict:
     return {
         **sources,
         "inc": {
-            split: sources["inc"][split].fillna(0)
-            for split in ["train", "val", "test"]
+            split: series.fillna(0)
+            for split, series in sources["inc"].items()
         },
     }
 
@@ -72,47 +72,31 @@ def scale_sources(sources: dict, scale_target: bool = True) -> dict:
     (log1p + deseasonalised) without z-scoring, so expm1 alone inverts it.
     env features are always z-scored regardless of this flag.
     """
+    # Splits present in sources — "test" is absent for production runs (test_months: 0).
+    splits = list(sources["inc"].keys())
+
+    inc = {split: sources["inc"][split].values.reshape(-1, 1) for split in splits}
     if scale_target:
-        scaler_inc, inc_train = fit_scaler(sources["inc"]["train"].values.reshape(-1, 1))
-        inc_val  = apply_scaler(sources["inc"]["val"].values.reshape(-1, 1),  scaler_inc)
-        inc_test = apply_scaler(sources["inc"]["test"].values.reshape(-1, 1), scaler_inc)
+        scaler_inc, _ = fit_scaler(inc["train"])
+        inc = {split: apply_scaler(arr, scaler_inc) for split, arr in inc.items()}
         print("inc scaler std:", scaler_inc.scale_)
     else:
         scaler_inc = None
-        inc_train  = sources["inc"]["train"].values.reshape(-1, 1)
-        inc_val    = sources["inc"]["val"].values.reshape(-1, 1)
-        inc_test   = sources["inc"]["test"].values.reshape(-1, 1)
         print("inc scaler: disabled (scale_target=False)")
 
-    env_train_arr = sources["env"]["train"].values
-    if env_train_arr.shape[1] > 0:
-        scaler_env, env_train = fit_scaler(env_train_arr)
-        env_val  = apply_scaler(sources["env"]["val"].values,  scaler_env)
-        env_test = apply_scaler(sources["env"]["test"].values, scaler_env)
+    env = {split: sources["env"][split].values for split in splits}
+    if env["train"].shape[1] > 0:
+        scaler_env, _ = fit_scaler(env["train"])
+        env = {split: apply_scaler(arr, scaler_env) for split, arr in env.items()}
         print("env scaler std:", scaler_env.scale_)
     else:
         scaler_env = None
-        env_train  = env_train_arr
-        env_val    = sources["env"]["val"].values
-        env_test   = sources["env"]["test"].values
         print("env scaler: skipped (no env features)")
 
     return {
-        "inc": {
-            "train": inc_train,
-            "val":   inc_val,
-            "test":  inc_test,
-        },
-        "env": {
-            "train": env_train,
-            "val":   env_val,
-            "test":  env_test,
-        },
-        "lulc": {
-            "train": sources["lulc"]["train"].values,
-            "val":   sources["lulc"]["val"].values,
-            "test":  sources["lulc"]["test"].values,
-        },
+        "inc":     inc,
+        "env":     env,
+        "lulc":    {split: sources["lulc"][split].values for split in splits},
         "scalers": {"inc": scaler_inc, "env": scaler_env},
     }
 
@@ -122,23 +106,31 @@ def separate_sources(
     test_df:  pd.DataFrame,
     cfg:      dict,
 ) -> dict:
-    """Separate each split into incidence, env, and lulc source arrays."""
+    """Separate each split into incidence, env, and lulc source arrays.
+
+    An empty test_df (test_months: 0) is left out rather than carried as an
+    empty split, which the scalers would reject.
+    """
     target   = cfg["target_column"]
     env_vars = cfg.get("features", {}).get("env_vars", [])
     lulc     = cfg.get("features", {}).get("land_use_vars", [])
 
+    dfs = {"train": train_df, "val": val_df}
+    if not test_df.empty:
+        dfs["test"] = test_df
+
     return {
-        "inc":  {"train": train_df[target],   "val": val_df[target],   "test": test_df[target]},
-        "env":  {"train": train_df[env_vars],  "val": val_df[env_vars],  "test": test_df[env_vars]},
-        "lulc": {"train": train_df[lulc],      "val": val_df[lulc],      "test": test_df[lulc]},
+        "inc":  {split: df[target]   for split, df in dfs.items()},
+        "env":  {split: df[env_vars] for split, df in dfs.items()},
+        "lulc": {split: df[lulc]     for split, df in dfs.items()},
     }
 
 
 def build_masks(sources: dict) -> dict:
     """Build missingness masks from IR NaNs before any filling."""
     return {
-        split: ~sources["inc"][split].isna().values
-        for split in ["train", "val", "test"]
+        split: ~series.isna().values
+        for split, series in sources["inc"].items()
     }
 
 def reshape_to_tensor(
@@ -180,7 +172,9 @@ def reshape_all(
     lulc          = cfg.get("features", {}).get("land_use_vars", [])
     quality_vars  = cfg.get("features", {}).get("quality_dummy_vars", [])
     n             = len(node_index)
-    dfs           = {"train": train_df, "val": val_df, "test": test_df}
+    dfs           = {"train": train_df, "val": val_df}
+    if not test_df.empty:
+        dfs["test"] = test_df
     tensors       = {}
 
     for split, df in dfs.items():
@@ -438,8 +432,9 @@ def diagnose_feature_composition(snapshots: dict, cfg: dict) -> None:
     quality_vars = cfg.get("features", {}).get("quality_dummy_vars", [])
 
     # Reconstruct expected feature order — must match create_windows
-    feature_names = ["inc"] + env_vars + lulc_vars + quality_vars
-    expected_f    = 1 + len(env_vars) + len(lulc_vars) + len(quality_vars)
+    inc_names     = ["inc"] if cfg.get("preprocessing", {}).get("incidence_input", True) else []
+    feature_names = inc_names + env_vars + lulc_vars + quality_vars
+    expected_f    = len(feature_names)
 
     x, y, mask = snapshots["train"][0]   # (window_size, N, F)
     actual_f   = x.shape[-1]
@@ -462,7 +457,7 @@ def diagnose_feature_composition(snapshots: dict, cfg: dict) -> None:
     # Specifically check quality dummy columns
     if quality_vars:
         print(f"\n[feature check] Quality dummy summary (train split, t=0):")
-        q_start = 1 + len(env_vars) + len(lulc_vars)
+        q_start = len(inc_names) + len(env_vars) + len(lulc_vars)
         for i, name in enumerate(quality_vars):
             col     = x[0, :, q_start + i]             # (N,) at first timestep
             vals    = col.unique().tolist()

@@ -1,221 +1,445 @@
 """
-Run STGNN inference on delta-corrected zonal statistics.
+Monthly STGNN inference, in one of two modes.
 
-Loads the production model (trained on full 2011-2018 data) and runs a single
-forward pass for the current month. Predictions are expressed as a relative
-risk index (exp(predicted_log_IR) / exp(training_period_mean_log_IR)) rather
-than raw case counts, since the training/deployment gap makes absolute
-predictions unreliable.
+  --mode climate     Climate-only model (production_climate_risk). Inputs are the
+                     last window_size months of Earth Engine zonal stats,
+                     delta-corrected to the 2011-2018 climate by default. Output is
+                     a relative risk index only — no incidence estimate.
+
+  --mode incidence   Autoregressive model production_logIR (IR + environment).
+                     Inputs include the last
+                     window_size months of reported incidence for whichever provinces
+                     have it (--incidence CSV); provinces with no report get the same
+                     fill value the model saw for missing incidence in training.
+                     Output is predicted IR plus the risk index.
+
+--label names the output (default: the mode); the monthly workflow uses
+--label ir_env.
+
+Both modes forecast ahead from inputs for months L-w+1..L: month L+1, and for bundles with
+horizon > 1 also L+2 … L+horizon (the "leads" list in the output), the same alignment as
+training (x[t-w:t] → y[t], …, y[t+horizon-1]).
+
+Risk index (both modes): (1 + predicted IR) / (1 + the province's mean IR for
+that calendar month over 2011-2018), computed in log1p space as
+exp(pred_log1p - baseline_log1p). Above 1 = above the province's usual level
+for that time of year. Falls back to the SEA-wide calendar-month baseline for
+provinces with no reported cases in training.
 
 Inputs:
-    site/data/delta_corrected_stats.json
-    machine-learning-module/results/STGNN/production_logIR/best_model.pt
-    machine-learning-module/results/STGNN/baseline_logIR/best_params.json
-    machine-learning-module/data/processed/STGNN/production_logIR/scaler.pkl
-    machine-learning-module/data/processed/STGNN/production_logIR/edge_index.pt
+    --bundle     inference_bundle_<label>.tar.gz (or its extracted inference_bundle/ directory):
+                 bundle.json, best_params.json, best_model.pt
+    --env        province × month env table, data/processed/env/SEA_env_monthly.csv
+                 (build_env_table.py)
+    --deltas     site/data/climate_deltas.json from compute_climate_delta.py (climate mode)
+    --incidence  CSV (incidence mode only), columns:
+                 adm_1_name, year_month (YYYY-MM), and either IR (cases per 100,000)
+                 or dengue_total + population_sum. Optional adm_0_name.
 
-Outputs:
-    site/data/latest_predictions.json
+Output:
+    --out        default site/data/predictions/<label>/<target>.json. The site shows the
+                 latest month in site/data/predictions/climate/.
 """
 
-import json
-import pickle
-import pathlib
+import argparse
 import datetime
-import numpy as np
-import torch
+import json
+import pathlib
 import sys
+import tarfile
+import tempfile
 
-ROOT = pathlib.Path(__file__).parent.parent.parent
-ML_ROOT = ROOT / "machine-learning-module"
+import numpy as np
+import pandas as pd
+import torch
 
-# Allow importing STGNN model definition
-sys.path.insert(0, str(ML_ROOT / "src/OpenDengue/STGNN"))
-from model import STGATGRU  # noqa: E402
+SCRIPTS_DIR = pathlib.Path(__file__).parent
+ROOT        = SCRIPTS_DIR.parent.parent
+STGNN_DIR   = ROOT / "machine-learning-module/src/OpenDengue/STGNN"
+sys.path.insert(0, str(STGNN_DIR))
+sys.path.insert(0, str(STGNN_DIR / "preprocess"))
+sys.path.insert(0, str(SCRIPTS_DIR))
 
-CORRECTED_STATS  = pathlib.Path(__file__).parent.parent / "data/delta_corrected_stats.json"
-BEST_PARAMS      = ML_ROOT / "results/STGNN/baseline_logIR/best_params.json"
-MODEL_PATH       = ML_ROOT / "results/STGNN/production_logIR/best_model.pt"
-SCALER_PATH      = ML_ROOT / "data/processed/STGNN/production_logIR/scaler.pkl"
-EDGE_INDEX_PATH  = ML_ROOT / "data/processed/STGNN/production_logIR/edge_index.pt"
-TRAINING_CSV     = ML_ROOT / "data/interim/SEA_dengue_env_monthly_2011-2018.csv"
-DATA_DIR         = pathlib.Path(__file__).parent.parent / "data"
-OUTPUT_PATH      = DATA_DIR / "latest_predictions.json"
-ARCHIVE_DIR      = DATA_DIR / "predictions"
+from model import STGATGRU                                       # noqa: E402
+from graph import build_edge_index                               # noqa: E402
+from apply_climate_delta import load_deltas, correct_stats       # noqa: E402
 
-ENV_FEATURES = [
-    "precipitation_sum",
-    "temperature_2m_mean",
-    "temperature_2m_max_mean",
-    "temperature_2m_min_mean",
-    "potential_evaporation_sum_mean",
-    "total_evaporation_sum_mean",
-    "evaporation_from_bare_soil_sum_mean",
-    "evaporation_from_open_water_surfaces_excluding_oceans_sum_mean",
-    "evaporation_from_the_top_of_canopy_sum_mean",
-    "evaporation_from_vegetation_transpiration_sum_mean",
-    "LST_Day_1km_mean",
-    "LST_Night_1km_mean",
-    "NDVI_mean",
-    "EVI_mean",
-]
-
-LULC_FEATURES = [f"LC_Type1_pct_class{i}" for i in range(1, 18)]
-ALL_FEATURES  = ENV_FEATURES + LULC_FEATURES
+DATA_DIR    = SCRIPTS_DIR.parent / "data"
+ARCHIVE_DIR = DATA_DIR / "predictions"
 
 
-def load_model(params: dict, n_features: int, device: torch.device) -> STGATGRU:
+# ---------------------------------------------------------------------------
+# Months
+# ---------------------------------------------------------------------------
+
+def shift_month(month: str, delta: int) -> str:
+    dt = datetime.datetime.strptime(month, "%Y-%m")
+    idx = dt.year * 12 + (dt.month - 1) + delta
+    return f"{idx // 12:04d}-{idx % 12 + 1:02d}"
+
+
+def read_env_table(path: pathlib.Path) -> pd.DataFrame:
+    env = pd.read_csv(path)
+    env["year_month"] = pd.to_datetime(env["year_month"]).dt.strftime("%Y-%m")
+    return env
+
+
+# ---------------------------------------------------------------------------
+# Bundle & model
+# ---------------------------------------------------------------------------
+
+def extract_bundle(path: pathlib.Path) -> pathlib.Path:
+    """Directory holding bundle.json; a .tar.gz is unpacked into a temporary directory."""
+    if path.is_dir():
+        return path
+    out = pathlib.Path(tempfile.mkdtemp(prefix="bundle-"))
+    with tarfile.open(path) as tar:
+        tar.extractall(out, filter="data")
+    return next(out.rglob("bundle.json")).parent
+
+
+def load_bundle(bundle_dir: pathlib.Path) -> tuple[dict, dict]:
+    bundle = json.loads((bundle_dir / "bundle.json").read_text())
+    params = json.loads((bundle_dir / "best_params.json").read_text())
+    if bundle.get("format_version") != 1:
+        raise ValueError(f"Unsupported bundle format_version {bundle.get('format_version')!r}")
+    return bundle, params
+
+
+def load_model(bundle_dir: pathlib.Path, params: dict, n_features: int, horizon: int = 1) -> STGATGRU:
+    state = torch.load(bundle_dir / "best_model.pt", map_location="cpu", weights_only=True)
+    trained_f = state["missing_emb"].shape[0]
+    if trained_f != n_features:
+        raise ValueError(f"Model was trained on {trained_f} features; bundle describes {n_features}.")
     model = STGATGRU(
         in_channels  = n_features,
         gat1_hidden  = params["gat1_hidden"],
         gat1_heads   = params["gat1_heads"],
-        mlp_hidden   = params["mlp_hidden"],
+        mlp_hidden   = params.get("mlp_hidden", params["gat1_hidden"] * params["gat1_heads"]),
         mlp_layers   = params["mlp_layers"],
         gat2_hidden  = params["gat2_hidden"],
         gat2_heads   = params["gat2_heads"],
         gru_hidden   = params.get("gru_hidden", params["gat2_hidden"]),
-        pred_horizon = 1,
+        pred_horizon = horizon,
         dropout      = params.get("dropout", 0.0),
     )
-    state = torch.load(MODEL_PATH, map_location=device, weights_only=True)
     model.load_state_dict(state)
     model.eval()
-    return model.to(device)
+    return model
 
 
-def build_feature_tensor(
-    regions: dict,
-    region_order: list[str],
-    scalers: dict,
-    window_size: int,
-) -> tuple[torch.Tensor, torch.Tensor]:
+# ---------------------------------------------------------------------------
+# Feature construction — mirrors preprocess/pipeline.py
+# ---------------------------------------------------------------------------
+
+def load_window_stats(env: pd.DataFrame, months: list[str], deltas: dict | None) -> list[dict]:
+    """One {"target_month", "regions": {province: {"country", feature: value}}} per month."""
+    missing = [m for m in months if m not in set(env["year_month"])]
+    if missing:
+        raise ValueError(f"Env table has no rows for {missing}; it ends at {env['year_month'].max()}.")
+    features = [c for c in env.columns if c not in ("adm_0_name", "adm_1_name", "year_month")]
+    window = []
+    for m in months:
+        rows = env[env["year_month"] == m]
+        regions = {r["adm_1_name"]: {"country": r["adm_0_name"], **{f: r[f] for f in features}}
+                   for r in rows.to_dict("records")}
+        window.append(correct_stats({"target_month": m, "regions": regions}, deltas))
+    return window
+
+
+def match_nodes(nodes: list[dict], regions: dict) -> list[str | None]:
+    """Region key in the zonal stats for each model node (None if absent)."""
+    keys = []
+    for node in nodes:
+        rec = regions.get(node["name"])
+        if rec is not None and node["country"] and rec.get("country") not in ("", None, node["country"]):
+            print(f"  WARNING: {node['name']!r} is {node['country']!r} in training but "
+                  f"{rec.get('country')!r} in zonal stats")
+        keys.append(node["name"] if rec is not None else None)
+    return keys
+
+
+# Calendar features computed in preprocessing (features.add_cyclical_month_features),
+# not fetched from Earth Engine.
+DERIVED_FEATURES = {
+    "month_sin": lambda month: np.sin(2 * np.pi * month / 12),
+    "month_cos": lambda month: np.cos(2 * np.pi * month / 12),
+}
+
+
+def stack_features(window: list[dict], keys: list[str | None], features: list[str]) -> np.ndarray:
+    """(T, N, F) raw feature array, NaN where a value is missing."""
+    arr = np.full((len(window), len(keys), len(features)), np.nan, dtype=np.float64)
+    for t, stats in enumerate(window):
+        month = int(stats["target_month"][5:7])
+        for f, feat in enumerate(features):
+            if feat in DERIVED_FEATURES:
+                arr[t, :, f] = DERIVED_FEATURES[feat](month)
+        regions = stats["regions"]
+        for n, key in enumerate(keys):
+            if key is None:
+                continue
+            vals = regions[key]
+            for f, feat in enumerate(features):
+                if feat in DERIVED_FEATURES:
+                    continue
+                v = vals.get(feat)
+                if isinstance(v, (int, float)):
+                    arr[t, n, f] = v
+    return arr
+
+
+def fill_over_time(arr: np.ndarray, fallback: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """ffill → bfill along T per (node, feature), then `fallback` per feature.
+
+    Returns the filled array and an (N,) count of months that had any gap.
     """
-    Build (1, window_size, N, F) feature tensor and (1, N) mask from region stats.
-    For window_size > 1 we repeat the single current month (conservative — avoids
-    needing historical GEE accumulation for v1).
+    gaps = np.isnan(arr).any(axis=2).sum(axis=0)
+    T, N, F = arr.shape
+    flat = pd.DataFrame(arr.reshape(T, N * F)).ffill().bfill().to_numpy().reshape(T, N, F)
+    flat = np.where(np.isnan(flat), fallback.reshape(1, 1, F), flat)
+    return flat, gaps
+
+
+def incidence_features(
+    csv_path: pathlib.Path, months: list[str], bundle: dict,
+) -> tuple[np.ndarray, np.ndarray, dict]:
     """
-    N = len(region_order)
-    F = len(ALL_FEATURES)
-    x = np.zeros((N, F), dtype=np.float32)
-    mask = np.zeros(N, dtype=np.float32)
+    (T, N, 1) incidence channel in model space and a (T, N) observed mask.
+    Applies the training transforms: log1p → minus calendar-month mean → z-score.
+    """
+    nodes = [n["name"] for n in bundle["nodes"]]
+    df = pd.read_csv(csv_path)
+    if "IR" not in df.columns:
+        if not {"dengue_total", "population_sum"} <= set(df.columns):
+            raise ValueError("Incidence CSV needs an IR column or dengue_total + population_sum.")
+        df["IR"] = df["dengue_total"] / df["population_sum"] * 100_000
+    df["year_month"] = pd.to_datetime(df["year_month"]).dt.strftime("%Y-%m")
+    df = df.dropna(subset=["IR"])
 
-    env_scaler  = scalers.get("env")
-    lulc_scaler = scalers.get("lulc")
+    unknown = sorted(set(df["adm_1_name"]) - set(nodes))
+    if unknown:
+        print(f"  WARNING: incidence rows for provinces the model doesn't know (ignored): {unknown}")
 
-    for i, region in enumerate(region_order):
-        vals = regions.get(region, {})
-        if not vals:
-            continue
-        mask[i] = 1.0
+    table = (
+        df[df["year_month"].isin(months) & df["adm_1_name"].isin(nodes)]
+        .groupby(["year_month", "adm_1_name"])["IR"].mean()
+        .unstack()
+        .reindex(index=months, columns=nodes)
+    )
+    observed = table.notna().to_numpy()
+    values = table.to_numpy(dtype=np.float64)
 
-        env_raw = np.array(
-            [vals.get(f, 0.0) or 0.0 for f in ENV_FEATURES],
-            dtype=np.float32,
-        )
-        lulc_raw = np.array(
-            [vals.get(f, 0.0) or 0.0 for f in LULC_FEATURES],
-            dtype=np.float32,
-        )
+    if bundle["log_transform"]:
+        values = np.log1p(values)
+    if bundle["deseasonalise"]:
+        seasonal = np.array([bundle["seasonal_means"][str(int(m[5:7]))] for m in months])
+        values = values - seasonal[:, None]
+    if bundle["inc_scaler"]:
+        values = (values - bundle["inc_scaler"]["mean"]) / bundle["inc_scaler"]["std"]
+    values = np.where(observed, values, bundle["inc_fill_value"])
 
-        if env_scaler is not None:
-            env_scaled = env_scaler.transform(env_raw.reshape(1, -1))[0]
-        else:
-            env_scaled = env_raw
-
-        if lulc_scaler is not None:
-            lulc_scaled = lulc_scaler.transform(lulc_raw.reshape(1, -1))[0]
-        else:
-            lulc_scaled = lulc_raw
-
-        x[i] = np.concatenate([env_scaled, lulc_scaled])
-
-    # Repeat across window dimension — conservative fallback for v1
-    x_seq  = torch.tensor(x, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # (1,1,N,F)
-    x_seq  = x_seq.expand(1, window_size, N, F).clone()
-    mask_t = torch.tensor(mask, dtype=torch.float32).unsqueeze(0)             # (1, N)
-
-    return x_seq, mask_t
+    coverage = {m: int(observed[t].sum()) for t, m in enumerate(months)}
+    return values[..., None], observed, coverage
 
 
-def training_mean_log_ir() -> float:
-    """Compute the grand-mean log IR over the training set for risk index normalisation."""
-    import pandas as pd
-    df = pd.read_csv(TRAINING_CSV)
-    ir = df["IR"].dropna()
-    ir = ir[ir > 0]
-    return float(np.log1p(ir).mean())
+def quality_features(observed: np.ndarray, bundle: dict) -> np.ndarray:
+    """(T, N, Q) data_quality dummies: zeros (OBSERVED) where incidence was reported,
+    otherwise the pattern training rows with missing incidence carried."""
+    q = len(bundle["features"]["quality_dummy_vars"])
+    if q == 0:
+        return np.zeros(observed.shape + (0,))
+    missing = np.asarray(bundle["missing_quality_dummies"], dtype=np.float64)
+    return np.where(observed[..., None], 0.0, missing.reshape(1, 1, q))
 
+
+# ---------------------------------------------------------------------------
+# Output transforms
+# ---------------------------------------------------------------------------
+
+def to_target_space(pred: np.ndarray, target_month: str, bundle: dict) -> np.ndarray:
+    """Model output → log1p(IR) (or raw IR when the model wasn't log-transformed)."""
+    z = pred.astype(np.float64)
+    if bundle["inc_scaler"]:
+        z = z * bundle["inc_scaler"]["std"] + bundle["inc_scaler"]["mean"]
+    if bundle["deseasonalise"]:
+        z = z + bundle["seasonal_means"][str(int(target_month[5:7]))]
+    return z
+
+
+def risk_index(z: np.ndarray, target_month: str, bundle: dict) -> np.ndarray:
+    m = str(int(target_month[5:7]))
+    base = bundle["target_baseline"]
+    fallback = base["by_month"].get(m)
+    baseline = np.array([
+        v if (v := base["by_node_month"].get(n["name"], {}).get(m)) is not None else fallback
+        for n in bundle["nodes"]
+    ], dtype=np.float64)
+    if bundle["log_transform"]:
+        return np.exp(z - baseline)
+    return z / baseline
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main() -> None:
-    for p in (CORRECTED_STATS, BEST_PARAMS, MODEL_PATH, SCALER_PATH, EDGE_INDEX_PATH):
-        if not p.exists():
-            raise FileNotFoundError(
-                f"Required file not found: {p}\n"
-                "Ensure the production model has been trained and zonal stats fetched."
-            )
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--mode", required=True, choices=["climate", "incidence"])
+    ap.add_argument("--label", default=None,
+                    help="Output name under site/data/predictions/ (default: the mode).")
+    ap.add_argument("--bundle", required=True, type=pathlib.Path,
+                    help="inference_bundle_<label>.tar.gz, or a directory with bundle.json, "
+                         "best_params.json, best_model.pt.")
+    ap.add_argument("--env", required=True, type=pathlib.Path,
+                    help="Province × month env table (data/processed/env/SEA_env_monthly.csv).")
+    ap.add_argument("--deltas", type=pathlib.Path, default=DATA_DIR / "climate_deltas.json",
+                    help="Climate deltas from compute_climate_delta.py.")
+    ap.add_argument("--out", type=pathlib.Path, default=None,
+                    help="Output JSON (default site/data/predictions/<label>/<target>.json).")
+    ap.add_argument("--incidence", type=pathlib.Path, default=DATA_DIR / "incidence/recent_incidence.csv",
+                    help="Recent incidence CSV (incidence mode).")
+    ap.add_argument("--last-month", default=None,
+                    help="Last input month YYYY-MM (default: the env table's last month). Forecast is the month after.")
+    ap.add_argument("--delta", choices=["auto", "on", "off"], default="auto",
+                    help="Climate delta correction. auto = on for climate mode, off for incidence mode.")
+    ap.add_argument("--max-missing-nodes", type=float, default=0.2,
+                    help="Fail if more than this fraction of provinces has no env data at all.")
+    args = ap.parse_args()
 
-    device = torch.device("cpu")  # inference on CI runner, no GPU needed
+    bundle_dir     = extract_bundle(args.bundle)
+    bundle, params = load_bundle(bundle_dir)
+    env            = read_env_table(args.env)
+    if bundle["mode"] != args.mode:
+        raise ValueError(f"--mode {args.mode} but bundle {bundle['name']!r} is a {bundle['mode']!r}-mode model.")
 
-    stats  = json.loads(CORRECTED_STATS.read_text())
-    params = json.loads(BEST_PARAMS.read_text())
+    window_size  = int(params["window_size"])
+    horizon      = int(bundle.get("horizon", 1))
+    last_month   = args.last_month or env["year_month"].max()
+    months       = [shift_month(last_month, -k) for k in reversed(range(window_size))]
+    target_month = shift_month(last_month, 1)
+    targets      = [shift_month(last_month, k) for k in range(1, horizon + 1)]
+    nodes        = bundle["nodes"]
+    feats        = bundle["features"]
+    label        = args.label or args.mode
+    # Models whose only env inputs are calendar features (IR-only) need no zonal stats.
+    needs_stats  = bool(feats["lulc_vars"]) or any(f not in DERIVED_FEATURES for f in feats["env_vars"])
+    print(f"[{label}] model {bundle['name']} (trained {bundle['train_period'][0]}–{bundle['train_period'][1]})")
+    print(f"  inputs {months[0]} → {months[-1]}  ⇒  forecast {', '.join(targets)}")
 
-    with open(SCALER_PATH, "rb") as f:
-        scalers = pickle.load(f)
+    # ── Climate delta ────────────────────────────────────────────────────────
+    use_delta = args.delta == "on" or (args.delta == "auto" and args.mode == "climate")
+    deltas = load_deltas(args.deltas) if use_delta else None
+    if use_delta and deltas is None:
+        raise FileNotFoundError(f"Delta correction is on but {args.deltas} is missing or empty; "
+                                "run compute_climate_delta.py, or pass --delta off.")
+    if needs_stats:
+        window = load_window_stats(env, months, deltas)
+        bias_corrected = all(s["bias_corrected"] for s in window)
+        keys = match_nodes(nodes, window[-1]["regions"])
+        unmatched = [n["name"] for n, k in zip(nodes, keys) if k is None]
+        if unmatched:
+            print(f"  WARNING: {len(unmatched)} model provinces absent from zonal stats: {unmatched}")
+    else:
+        window = [{"target_month": m, "regions": {}} for m in months]
+        bias_corrected = None
+        keys = [None] * len(nodes)
 
-    edge_index = torch.load(EDGE_INDEX_PATH, weights_only=True).to(device)
+    # ── Env + land use ───────────────────────────────────────────────────────
+    env_raw = stack_features(window, keys, feats["env_vars"])
+    fetched = [f for f, name in enumerate(feats["env_vars"]) if name not in DERIVED_FEATURES]
+    no_env  = (np.isnan(env_raw[:, :, fetched]).all(axis=(0, 2)) if fetched
+               else np.zeros(len(nodes), dtype=bool))
+    if no_env.mean() > args.max_missing_nodes:
+        raise RuntimeError(f"{no_env.sum()}/{len(nodes)} provinces have no env data — refusing to publish.")
 
-    regions      = stats.get("regions", {})
-    region_order = sorted(regions.keys())
-    n_features   = len(ALL_FEATURES)
-    window_size  = int(params.get("window_size", 1))
+    scaler   = bundle["env_scaler"]
+    env_mean = np.asarray(scaler["mean"])
+    env_raw, env_gaps = fill_over_time(env_raw, env_mean)   # training mean → 0 after scaling
+    env = (env_raw - env_mean) / np.asarray(scaler["scale"])
 
-    print(f"Loading production model from {MODEL_PATH} ...")
-    model = load_model(params, n_features, device)
+    lulc, _ = fill_over_time(stack_features(window, keys, feats["lulc_vars"]),
+                             np.zeros(len(feats["lulc_vars"])))
 
-    print(f"Building feature tensor for {len(region_order)} regions (window={window_size}) ...")
-    x, mask = build_feature_tensor(regions, region_order, scalers, window_size)
-    x, mask = x.to(device), mask.to(device)
+    # ── Incidence + quality flags ────────────────────────────────────────────
+    parts, coverage = [], None
+    if bundle["incidence_input"]:
+        if not args.incidence.exists():
+            raise FileNotFoundError(f"Incidence mode needs {args.incidence}.")
+        inc, observed, coverage = incidence_features(args.incidence, months, bundle)
+        if not observed.any():
+            raise RuntimeError(f"No incidence in {args.incidence} for {months[0]}–{months[-1]}.")
+        print(f"  incidence coverage (provinces per month): {coverage}")
+        parts.append(inc)
+    else:
+        observed = np.zeros((window_size, len(nodes)), dtype=bool)
+    parts += [env, lulc, quality_features(observed, bundle)]
 
-    print("Running forward pass ...")
+    x = np.concatenate(parts, axis=-1)
+    if x.shape[-1] != len(feats["order"]):
+        raise ValueError(f"Built {x.shape[-1]} features; bundle expects {len(feats['order'])}.")
+
+    # ── Forward pass ─────────────────────────────────────────────────────────
+    model = load_model(bundle_dir, params, x.shape[-1], horizon)
+    x_t   = torch.tensor(x, dtype=torch.float32).unsqueeze(0)        # (1, T, N, F)
+    # Training masked nodes whose *target* was unreported; every node is a
+    # prediction target here, which is the mask=1 case.
+    mask  = torch.ones(1, len(nodes))
+    edge_index = build_edge_index({n["name"]: i for i, n in enumerate(nodes)})
     with torch.no_grad():
-        pred = model(x, edge_index, mask=mask)  # (1, N, 1)
-    pred_log_ir = pred.squeeze().cpu().numpy()   # (N,)
+        pred = model(x_t, edge_index, mask=mask).squeeze(0).numpy()   # (N, horizon)
 
-    baseline_mean = training_mean_log_ir()
-    risk_index    = np.exp(pred_log_ir - baseline_mean)  # >1 = elevated risk
+    # ── Output ───────────────────────────────────────────────────────────────
+    def regions_for(k: int, month: str) -> dict:
+        z    = to_target_space(pred[:, k], month, bundle)
+        risk = risk_index(z, month, bundle)
+        out = {}
+        for i, node in enumerate(nodes):
+            rec = {
+                "country":           node["country"],
+                "risk_index":        round(float(risk[i]), 4),
+                "has_data":          bool(not no_env[i]) if needs_stats else bool(observed[:, i].any()),
+                "env_months_imputed": int(env_gaps[i]),
+            }
+            if bundle["incidence_input"]:
+                rec["predicted_ir"] = round(float(np.expm1(z[i]) if bundle["log_transform"] else z[i]), 4)
+                rec["incidence_months_observed"] = int(observed[:, i].sum())
+            out[node["name"]] = rec
+        return out
 
-    target_month = stats.get("target_month", datetime.datetime.now().strftime("%Y-%m"))
+    leads = [{"lead": k + 1, "target_month": m, "regions": regions_for(k, m)}
+             for k, m in enumerate(targets)]
+    regions_out = leads[0]["regions"]
 
     output = {
-        "generated_at":  datetime.datetime.utcnow().isoformat() + "Z",
-        "target_month":  target_month,
-        "bias_corrected": stats.get("bias_corrected", False),
-        "baseline_mean_log_ir": round(baseline_mean, 4),
-        "regions": {
-            region: {
-                "country":     regions[region].get("country", ""),
-                "risk_index":  round(float(risk_index[i]), 4),
-                "pred_log_ir": round(float(pred_log_ir[i]), 4),
-                "has_data":    bool(mask[0, i].item()),
-            }
-            for i, region in enumerate(region_order)
-        },
+        "mode":           args.mode,
+        "label":          label,
+        "model":          bundle["name"],
+        "train_period":   bundle["train_period"],
+        "generated_at":   datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "target_month":   target_month,
+        "input_months":   months,
+        "bias_corrected": bias_corrected,
+        "risk_index_definition": "(1 + predicted IR) / (1 + 2011-2018 mean IR for this province and calendar month)",
+        "regions":        regions_out,
     }
+    # Multi-month models: every lead from the same inputs; "target_month" and "regions" above
+    # are lead 1, so readers of single-month files keep working.
+    if horizon > 1:
+        output["leads"] = leads
+    if coverage is not None:
+        output["incidence_coverage"] = coverage
 
-    payload = json.dumps(output, indent=2)
+    archive = args.out or ARCHIVE_DIR / label / f"{target_month}.json"
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    archive.write_text(json.dumps(output, indent=2))
 
-    # Always update the "latest" pointer
-    OUTPUT_PATH.write_text(payload)
-
-    # Archive a permanent per-month copy — never overwritten
-    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
-    archive_path = ARCHIVE_DIR / f"{target_month}.json"
-    archive_path.write_text(payload)
-
-    print(f"\nPredictions saved → {OUTPUT_PATH}")
-    print(f"Archived         → {archive_path}")
-    print(f"Regions above baseline (risk_index > 1): "
-          f"{sum(1 for r in output['regions'].values() if r['risk_index'] > 1)}/{len(region_order)}")
+    print(f"\nArchived → {archive}")
+    for lead in leads:
+        elevated = sum(r["risk_index"] > 1 for r in lead["regions"].values())
+        print(f"{lead['target_month']}: provinces above their 2011–2018 baseline (risk_index > 1): "
+              f"{elevated}/{len(nodes)}")
 
 
 if __name__ == "__main__":

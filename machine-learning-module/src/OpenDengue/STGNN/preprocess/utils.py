@@ -14,7 +14,19 @@ def _find_git_root(start: Path) -> Path:
     return start
 
 
+# Set by the Snakemake entry point to the directory of the rule's declared outputs. Job pods get
+# the sources without .git, so the git-root default would write where Snakemake never uploads from.
+_OUTPUT_DIR: Path | None = None
+
+
+def set_output_dir(path: Path) -> None:
+    global _OUTPUT_DIR
+    _OUTPUT_DIR = Path(path)
+
+
 def _output_dir(cfg: dict) -> Path:
+    if _OUTPUT_DIR is not None:
+        return _OUTPUT_DIR
     root = _find_git_root(Path(__file__).resolve())
     return root / "data" / "processed" / "machine-learning" / "STGNN" / cfg["name"]
 
@@ -32,6 +44,10 @@ def save_preprocessing_params(scaler_inc, seasonal_means: dict, cfg: dict) -> No
     }
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
+
+
+def inference_bundle_path(cfg: dict) -> Path:
+    return _output_dir(cfg) / "inference_bundle.json"
 
 
 def load_preprocessing_params(cfg: dict) -> dict:
@@ -60,9 +76,10 @@ def save_tensors(snapshots: dict, cfg: dict, window_size: int,
 
         if split_months and split in split_months:
             all_months = split_months[split]
-            # window i targets timestep window_size + i
+            # window i targets timestep window_size + i (its first lead); with a horizon
+            # above 1 the last months have no window of their own.
             splits[f"{split}_months"] = torch.tensor(
-                all_months[window_size:], dtype=torch.int32
+                all_months[window_size:window_size + len(windows)], dtype=torch.int32
             )
 
     torch.save(splits, out_dir / "tensors.pt")

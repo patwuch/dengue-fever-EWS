@@ -1,0 +1,54 @@
+# Workaround for the Snakemake Kubernetes executor never setting runtimeClassName.
+# Pods in the dengue-ews namespace that request an NVIDIA GPU get runtimeClassName: nvidia,
+# so the container actually sees the GPU. Needed on any k3s whose default runtime isn't
+# nvidia: the laptop's single-node cluster (training fallback) uses it; the workstation's
+# agent ran with `default-runtime: nvidia` and didn't. Also creates the namespace.
+#
+# Apply (laptop):  sudo k3s kubectl apply -f k8s/gpu-runtime-policy.yaml
+# Remove:          sudo k3s kubectl delete -f k8s/gpu-runtime-policy.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dengue-ews
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: nvidia-runtime-for-gpu-pods
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: requests-nvidia-gpu
+      expression: >
+        object.spec.containers.exists(c, has(c.resources) && (
+          (has(c.resources.limits) && 'nvidia.com/gpu' in c.resources.limits) ||
+          (has(c.resources.requests) && 'nvidia.com/gpu' in c.resources.requests)))
+    - name: no-runtime-class-set
+      expression: "!has(object.spec.runtimeClassName)"
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            spec: Object.spec{
+              runtimeClassName: "nvidia"
+            }
+          }
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: nvidia-runtime-for-gpu-pods
+spec:
+  policyName: nvidia-runtime-for-gpu-pods
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: dengue-ews

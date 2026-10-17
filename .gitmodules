@@ -1,0 +1,4 @@
+[submodule "zonal-statistics-module"]
+	path = zonal-statistics-module
+	url = https://github.com/chuang-lab-DMPTD-TMU/Google-Earth-Engine-Zonal-Statistics-App.git
+	branch = windows
