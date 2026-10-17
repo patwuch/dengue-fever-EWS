@@ -25,3 +25,6 @@ default-resources:
   - mem_mb=4000
 retries: 1
 printshellcmds: true
+# Rerun only when inputs change, not when params or code do: a different gee_concurrency must
+# not refetch years of Earth Engine data.
+rerun-triggers: mtime

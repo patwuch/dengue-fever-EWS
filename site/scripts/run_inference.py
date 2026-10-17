@@ -16,8 +16,9 @@ Monthly STGNN inference, in one of two modes.
 --label names the output (default: the mode); the monthly workflow uses
 --label ir_env.
 
-Both modes forecast one month ahead: inputs for months L-w+1..L predict month
-L+1, the same alignment as training (x[t-w:t] → y[t]).
+Both modes forecast ahead from inputs for months L-w+1..L: month L+1, and for bundles with
+horizon > 1 also L+2 … L+horizon (the "leads" list in the output), the same alignment as
+training (x[t-w:t] → y[t], …, y[t+horizon-1]).
 
 Risk index (both modes): (1 + predicted IR) / (1 + the province's mean IR for
 that calendar month over 2011-2018), computed in log1p space as
@@ -105,7 +106,7 @@ def load_bundle(bundle_dir: pathlib.Path) -> tuple[dict, dict]:
     return bundle, params
 
 
-def load_model(bundle_dir: pathlib.Path, params: dict, n_features: int) -> STGATGRU:
+def load_model(bundle_dir: pathlib.Path, params: dict, n_features: int, horizon: int = 1) -> STGATGRU:
     state = torch.load(bundle_dir / "best_model.pt", map_location="cpu", weights_only=True)
     trained_f = state["missing_emb"].shape[0]
     if trained_f != n_features:
@@ -119,7 +120,7 @@ def load_model(bundle_dir: pathlib.Path, params: dict, n_features: int) -> STGAT
         gat2_hidden  = params["gat2_hidden"],
         gat2_heads   = params["gat2_heads"],
         gru_hidden   = params.get("gru_hidden", params["gat2_hidden"]),
-        pred_horizon = 1,
+        pred_horizon = horizon,
         dropout      = params.get("dropout", 0.0),
     )
     model.load_state_dict(state)
@@ -314,16 +315,18 @@ def main() -> None:
         raise ValueError(f"--mode {args.mode} but bundle {bundle['name']!r} is a {bundle['mode']!r}-mode model.")
 
     window_size  = int(params["window_size"])
+    horizon      = int(bundle.get("horizon", 1))
     last_month   = args.last_month or env["year_month"].max()
     months       = [shift_month(last_month, -k) for k in reversed(range(window_size))]
     target_month = shift_month(last_month, 1)
+    targets      = [shift_month(last_month, k) for k in range(1, horizon + 1)]
     nodes        = bundle["nodes"]
     feats        = bundle["features"]
     label        = args.label or args.mode
     # Models whose only env inputs are calendar features (IR-only) need no zonal stats.
     needs_stats  = bool(feats["lulc_vars"]) or any(f not in DERIVED_FEATURES for f in feats["env_vars"])
     print(f"[{label}] model {bundle['name']} (trained {bundle['train_period'][0]}–{bundle['train_period'][1]})")
-    print(f"  inputs {months[0]} → {months[-1]}  ⇒  forecast {target_month}")
+    print(f"  inputs {months[0]} → {months[-1]}  ⇒  forecast {', '.join(targets)}")
 
     # ── Climate delta ────────────────────────────────────────────────────────
     use_delta = args.delta == "on" or (args.delta == "auto" and args.mode == "climate")
@@ -378,31 +381,36 @@ def main() -> None:
         raise ValueError(f"Built {x.shape[-1]} features; bundle expects {len(feats['order'])}.")
 
     # ── Forward pass ─────────────────────────────────────────────────────────
-    model = load_model(bundle_dir, params, x.shape[-1])
+    model = load_model(bundle_dir, params, x.shape[-1], horizon)
     x_t   = torch.tensor(x, dtype=torch.float32).unsqueeze(0)        # (1, T, N, F)
     # Training masked nodes whose *target* was unreported; every node is a
     # prediction target here, which is the mask=1 case.
     mask  = torch.ones(1, len(nodes))
     edge_index = build_edge_index({n["name"]: i for i, n in enumerate(nodes)})
     with torch.no_grad():
-        pred = model(x_t, edge_index, mask=mask).squeeze(0).squeeze(-1).numpy()
-
-    z    = to_target_space(pred, target_month, bundle)
-    risk = risk_index(z, target_month, bundle)
+        pred = model(x_t, edge_index, mask=mask).squeeze(0).numpy()   # (N, horizon)
 
     # ── Output ───────────────────────────────────────────────────────────────
-    regions_out = {}
-    for i, node in enumerate(nodes):
-        rec = {
-            "country":           node["country"],
-            "risk_index":        round(float(risk[i]), 4),
-            "has_data":          bool(not no_env[i]) if needs_stats else bool(observed[:, i].any()),
-            "env_months_imputed": int(env_gaps[i]),
-        }
-        if bundle["incidence_input"]:
-            rec["predicted_ir"] = round(float(np.expm1(z[i]) if bundle["log_transform"] else z[i]), 4)
-            rec["incidence_months_observed"] = int(observed[:, i].sum())
-        regions_out[node["name"]] = rec
+    def regions_for(k: int, month: str) -> dict:
+        z    = to_target_space(pred[:, k], month, bundle)
+        risk = risk_index(z, month, bundle)
+        out = {}
+        for i, node in enumerate(nodes):
+            rec = {
+                "country":           node["country"],
+                "risk_index":        round(float(risk[i]), 4),
+                "has_data":          bool(not no_env[i]) if needs_stats else bool(observed[:, i].any()),
+                "env_months_imputed": int(env_gaps[i]),
+            }
+            if bundle["incidence_input"]:
+                rec["predicted_ir"] = round(float(np.expm1(z[i]) if bundle["log_transform"] else z[i]), 4)
+                rec["incidence_months_observed"] = int(observed[:, i].sum())
+            out[node["name"]] = rec
+        return out
+
+    leads = [{"lead": k + 1, "target_month": m, "regions": regions_for(k, m)}
+             for k, m in enumerate(targets)]
+    regions_out = leads[0]["regions"]
 
     output = {
         "mode":           args.mode,
@@ -416,6 +424,10 @@ def main() -> None:
         "risk_index_definition": "(1 + predicted IR) / (1 + 2011-2018 mean IR for this province and calendar month)",
         "regions":        regions_out,
     }
+    # Multi-month models: every lead from the same inputs; "target_month" and "regions" above
+    # are lead 1, so readers of single-month files keep working.
+    if horizon > 1:
+        output["leads"] = leads
     if coverage is not None:
         output["incidence_coverage"] = coverage
 
@@ -423,9 +435,11 @@ def main() -> None:
     archive.parent.mkdir(parents=True, exist_ok=True)
     archive.write_text(json.dumps(output, indent=2))
 
-    elevated = sum(r["risk_index"] > 1 for r in regions_out.values())
     print(f"\nArchived → {archive}")
-    print(f"Provinces above their 2011–2018 baseline (risk_index > 1): {elevated}/{len(nodes)}")
+    for lead in leads:
+        elevated = sum(r["risk_index"] > 1 for r in lead["regions"].values())
+        print(f"{lead['target_month']}: provinces above their 2011–2018 baseline (risk_index > 1): "
+              f"{elevated}/{len(nodes)}")
 
 
 if __name__ == "__main__":
