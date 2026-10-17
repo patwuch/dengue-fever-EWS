@@ -24,13 +24,16 @@ _window_sizes = (
 
 _ML_PROCESSED = DATA_ROOT / "data" / "processed" / "machine-learning"
 _RESULTS      = f"results/STGNN/{_name}"
+# The training table the config names (default: the merge_env_infection output).
+_TRAIN_DATA   = (str(DATA_ROOT / config["data"]["path"]) if "data" in config
+                 else str(MERGED_DENGUE_ENV_DATA))
 
 
 rule preprocess_stgnn:
     message:
         "Preprocessing for STGNN with experiment name '{_name}' and window sizes {_window_sizes}."
     input:
-        str(MERGED_DENGUE_ENV_DATA),
+        _TRAIN_DATA,
     output:
         tensors = expand(
             str(_ML_PROCESSED / "STGNN/{name}/window_{w}/tensors.pt"),
@@ -270,3 +273,20 @@ rule export_inference_bundle:
         "cp {input.best_params} $staging/inference_bundle/best_params.json && "
         "cp {input.bundle} $staging/inference_bundle/bundle.json && "
         "tar -czf {output} -C $staging inference_bundle && rm -rf $staging"
+
+
+# Per-lead skill against the seasonal baseline on the held-out months (configs with
+# test_months > 0, e.g. stgnn_climate_v2_eval.yaml). Runs on CPU.
+rule evaluate_horizons_stgnn:
+    input:
+        model       = f"{_RESULTS}/best_model.pt",
+        best_params = _bundle_params,
+        tensors     = _tensors_for_production_window,
+        edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
+        bundle      = str(_ML_PROCESSED / f"STGNN/{_name}/inference_bundle.json"),
+    output:
+        metrics = f"{_RESULTS}/horizon_metrics.json",
+    resources:
+        mem_mb = 4000,
+    script:
+        "../src/OpenDengue/STGNN/evaluate_horizons.py"

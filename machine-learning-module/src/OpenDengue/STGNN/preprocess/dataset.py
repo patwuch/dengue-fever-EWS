@@ -16,6 +16,10 @@ def load_data(cfg: dict) -> pd.DataFrame:
 
     df = pd.read_csv(str(data_path))
     df = df.filter(items=keep_cols)
+    # Optional first month, e.g. to train without the earliest year.
+    start = cfg.get("data", {}).get("start")
+    if start:
+        df = df[pd.to_datetime(df["year_month"]) >= pd.Timestamp(start)]
     df = df.sort_values(["adm_1_name", "year_month"]).reset_index(drop=True)
     return df
 
