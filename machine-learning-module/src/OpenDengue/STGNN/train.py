@@ -140,7 +140,17 @@ def train(
     The *_path arguments override the default locations (derived from cfg and
     out_dir). Snakemake passes its staged input/output paths, which differ from
     the defaults when files come from remote storage rather than local disk.
+
+    cfg["seed"], when set, seeds weight initialisation and batch shuffling, so runs that
+    compare inputs can be repeated over several seeds (GPU scatter ops stay nondeterministic).
     """
+    if cfg.get("seed") is not None:
+        import random
+        seed = int(cfg["seed"])
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        print(f"Seed: {seed}")
     model_path      = Path(model_path      or out_dir / "best_model.pt")
     losses_path     = Path(losses_path     or out_dir / "train_val_losses.json")
     loss_curve_path = Path(loss_curve_path or out_dir / "loss_curves.png")

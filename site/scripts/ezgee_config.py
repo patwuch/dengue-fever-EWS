@@ -54,6 +54,8 @@ SELECTION = {
     "VIIRS_LST_DAY":   {"bands": ["LST_1KM"], "stats": MODIS_STATS},
     "VIIRS_LST_NIGHT": {"bands": ["LST_1KM"], "stats": MODIS_STATS},
     "VIIRS_NDVI_EVI":  {"bands": ["NDVI", "EVI"], "stats": MODIS_STATS},
+    # Rainfall weighted by GPW v4.11 2015 population; weighted products take the mean only.
+    "CHIRPS_V3_POPW":  {"bands": ["precipitation"], "stats": ["mean"]},
 }
 MONTHLY_PRODUCTS = ["CHIRPS", "ERA5_LAND", "MODIS_LST", "MODIS_NDVI_EVI"]
 
@@ -85,6 +87,7 @@ def product_task(product: str, date_start: str, date_end: str) -> dict:
         "band_masks":      {b: content.get(b, {}).get("qa_mask") for b in bands},
         "band_transforms": {b: content.get(b, {}).get("band_transform") for b in bands},
         "band_computes":   {b: content.get(b, {}).get("band_compute") for b in bands},
+        "weight":          info.get("weight"),
     }
 
 

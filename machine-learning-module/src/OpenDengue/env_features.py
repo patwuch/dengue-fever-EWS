@@ -65,7 +65,18 @@ def era5_monthly(era5: pd.DataFrame) -> pd.DataFrame:
 
 
 def chirps_monthly(chirps: pd.DataFrame) -> pd.DataFrame:
-    return to_monthly(chirps).groupby(JOIN_KEYS)["precipitation_sum"].mean().reset_index()
+    """precipitation_sum: daily rainfall summed over the province's pixels, averaged over the
+    month's days, so it scales with province area (kept for the v1 models trained on it).
+    precipitation_mm: the month's rainfall total in mm, from the spatial mean."""
+    m = to_monthly(chirps).groupby(JOIN_KEYS)[["precipitation_sum", "precipitation_mean"]].mean().reset_index()
+    return monthly_rain_mm(m)
+
+
+def monthly_rain_mm(m: pd.DataFrame) -> pd.DataFrame:
+    """Replace precipitation_mean (mean daily mm over the month's days) with precipitation_mm,
+    the month's total."""
+    days = pd.to_datetime(m["year_month"]).dt.days_in_month
+    return m.assign(precipitation_mm=m["precipitation_mean"] * days).drop(columns="precipitation_mean")
 
 
 def lst_monthly(lst: pd.DataFrame) -> pd.DataFrame:
