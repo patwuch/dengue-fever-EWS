@@ -210,7 +210,7 @@ def grouped(rows: list) -> pd.DataFrame:
 #| label: fig-xai-groups
 #| fig-cap: "Share of total |attribution| by input group, for this month's and next month's prediction. Hover for the individual inputs."
 if xai is None:
-    print("No attribution data yet (run explain_shap_stgnn for climate_v2_eval).")
+    print("No attribution data yet (run explain_shap_stgnn for climate_v2_rain_eval_s{1,2,3}, then site/scripts/combine_seeds.py).")
 else:
     fig = go.Figure()
     order = None
@@ -276,7 +276,7 @@ if shift_html.exists():
         f'<iframe src="{shift_html.as_posix()}" width="100%" height="760px" frameborder="0" '
         'style="border-radius:6px; border:1px solid #dee2e6;"></iframe>'))
 else:
-    print("No attention data yet (run attention_shift_stgnn for climate_v2_eval).")
+    print("No attention data yet (run attention_shift_stgnn for climate_v2_rain_eval_s1).")
 ```
 
 :::

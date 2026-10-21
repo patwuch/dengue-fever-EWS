@@ -1,198 +1,198 @@
 [
  {
-  "month": "Nov 2017",
-  "cluster": 0,
-  "centroid_x": 100.48109020734891,
-  "centroid_y": 13.545016490502185,
-  "mass_fraction": 0.7105326662105572
+  "month":"Nov 2017",
+  "cluster":0,
+  "centroid_x":100.4541326363,
+  "centroid_y":13.576253128,
+  "mass_fraction":0.716192666
  },
  {
-  "month": "Nov 2017",
-  "cluster": 1,
-  "centroid_x": 117.04318688566617,
-  "centroid_y": 0.8599909734996416,
-  "mass_fraction": 0.2894673337894427
+  "month":"Nov 2017",
+  "cluster":1,
+  "centroid_x":116.9396476314,
+  "centroid_y":1.0185823377,
+  "mass_fraction":0.283807334
  },
  {
-  "month": "Dec 2017",
-  "cluster": 0,
-  "centroid_x": 100.46807536328521,
-  "centroid_y": 13.698991668021911,
-  "mass_fraction": 0.7146650273508552
+  "month":"Dec 2017",
+  "cluster":0,
+  "centroid_x":100.4709343127,
+  "centroid_y":13.2908827991,
+  "mass_fraction":0.7135744754
  },
  {
-  "month": "Dec 2017",
-  "cluster": 1,
-  "centroid_x": 117.17524112773694,
-  "centroid_y": 0.9418876992294241,
-  "mass_fraction": 0.28533497264914476
+  "month":"Dec 2017",
+  "cluster":1,
+  "centroid_x":116.8792428439,
+  "centroid_y":0.9029202742,
+  "mass_fraction":0.2864255246
  },
  {
-  "month": "Jan 2018",
-  "cluster": 0,
-  "centroid_x": 100.5005985007233,
-  "centroid_y": 13.701382202722314,
-  "mass_fraction": 0.7093980195899725
+  "month":"Jan 2018",
+  "cluster":0,
+  "centroid_x":100.466032662,
+  "centroid_y":13.4689913383,
+  "mass_fraction":0.7020126041
  },
  {
-  "month": "Jan 2018",
-  "cluster": 1,
-  "centroid_x": 117.23949790844362,
-  "centroid_y": 0.9148413501018897,
-  "mass_fraction": 0.29060198041002744
+  "month":"Jan 2018",
+  "cluster":1,
+  "centroid_x":116.8747799244,
+  "centroid_y":1.0328765689,
+  "mass_fraction":0.2979873959
  },
  {
-  "month": "Feb 2018",
-  "cluster": 0,
-  "centroid_x": 100.52527928396225,
-  "centroid_y": 13.662828913030038,
-  "mass_fraction": 0.7074767610771114
+  "month":"Feb 2018",
+  "cluster":0,
+  "centroid_x":100.497322452,
+  "centroid_y":13.4433110408,
+  "mass_fraction":0.7029224708
  },
  {
-  "month": "Feb 2018",
-  "cluster": 1,
-  "centroid_x": 117.16205236195074,
-  "centroid_y": 0.7850769416578771,
-  "mass_fraction": 0.29252323892288856
+  "month":"Feb 2018",
+  "cluster":1,
+  "centroid_x":116.9120828032,
+  "centroid_y":0.8987894534,
+  "mass_fraction":0.2970775292
  },
  {
-  "month": "Mar 2018",
-  "cluster": 0,
-  "centroid_x": 100.51736706624119,
-  "centroid_y": 13.417858110094919,
-  "mass_fraction": 0.70346582558425
+  "month":"Mar 2018",
+  "cluster":0,
+  "centroid_x":100.4946308046,
+  "centroid_y":13.492971367,
+  "mass_fraction":0.70360189
  },
  {
-  "month": "Mar 2018",
-  "cluster": 1,
-  "centroid_x": 117.40525843297976,
-  "centroid_y": 0.8608330116716854,
-  "mass_fraction": 0.2965341744157501
+  "month":"Mar 2018",
+  "cluster":1,
+  "centroid_x":116.896707806,
+  "centroid_y":0.8554170363,
+  "mass_fraction":0.29639811
  },
  {
-  "month": "Apr 2018",
-  "cluster": 0,
-  "centroid_x": 100.399421682097,
-  "centroid_y": 13.379737686943894,
-  "mass_fraction": 0.6962397557505562
+  "month":"Apr 2018",
+  "cluster":0,
+  "centroid_x":100.4868025997,
+  "centroid_y":13.5134385434,
+  "mass_fraction":0.7145747535
  },
  {
-  "month": "Apr 2018",
-  "cluster": 1,
-  "centroid_x": 117.20059774352144,
-  "centroid_y": 0.781773561340886,
-  "mass_fraction": 0.30376024424944387
+  "month":"Apr 2018",
+  "cluster":1,
+  "centroid_x":116.7693690215,
+  "centroid_y":0.7398530073,
+  "mass_fraction":0.2854252465
  },
  {
-  "month": "May 2018",
-  "cluster": 0,
-  "centroid_x": 100.46356348931388,
-  "centroid_y": 13.2425050116224,
-  "mass_fraction": 0.6935122535989354
+  "month":"May 2018",
+  "cluster":0,
+  "centroid_x":100.476853574,
+  "centroid_y":13.5774890924,
+  "mass_fraction":0.7155408624
  },
  {
-  "month": "May 2018",
-  "cluster": 1,
-  "centroid_x": 117.1138773504871,
-  "centroid_y": 0.7747838522581691,
-  "mass_fraction": 0.30648774640106463
+  "month":"May 2018",
+  "cluster":1,
+  "centroid_x":117.0639782957,
+  "centroid_y":0.903911241,
+  "mass_fraction":0.2844591376
  },
  {
-  "month": "Jun 2018",
-  "cluster": 0,
-  "centroid_x": 100.50658772183111,
-  "centroid_y": 13.34113586983227,
-  "mass_fraction": 0.7047164143287871
+  "month":"Jun 2018",
+  "cluster":0,
+  "centroid_x":100.4658507117,
+  "centroid_y":13.5907553584,
+  "mass_fraction":0.7132319949
  },
  {
-  "month": "Jun 2018",
-  "cluster": 1,
-  "centroid_x": 117.08353481663055,
-  "centroid_y": 0.9781330159204966,
-  "mass_fraction": 0.2952835856712129
+  "month":"Jun 2018",
+  "cluster":1,
+  "centroid_x":117.0398276704,
+  "centroid_y":0.9752933358,
+  "mass_fraction":0.2867680051
  },
  {
-  "month": "Jul 2018",
-  "cluster": 0,
-  "centroid_x": 100.37568064377228,
-  "centroid_y": 13.534302689721743,
-  "mass_fraction": 0.7122894266806988
+  "month":"Jul 2018",
+  "cluster":0,
+  "centroid_x":100.1859550453,
+  "centroid_y":14.1392803733,
+  "mass_fraction":0.7267961017
  },
  {
-  "month": "Jul 2018",
-  "cluster": 1,
-  "centroid_x": 117.02846314296643,
-  "centroid_y": 1.0468472128608308,
-  "mass_fraction": 0.28771057331930117
+  "month":"Jul 2018",
+  "cluster":1,
+  "centroid_x":116.8833574722,
+  "centroid_y":1.0164351272,
+  "mass_fraction":0.2732038983
  },
  {
-  "month": "Aug 2018",
-  "cluster": 0,
-  "centroid_x": 100.38260448897152,
-  "centroid_y": 13.470006962636809,
-  "mass_fraction": 0.7008235383558066
+  "month":"Aug 2018",
+  "cluster":0,
+  "centroid_x":100.1813500119,
+  "centroid_y":14.1670169019,
+  "mass_fraction":0.732869217
  },
  {
-  "month": "Aug 2018",
-  "cluster": 1,
-  "centroid_x": 116.89594866179996,
-  "centroid_y": 0.9527991338217738,
-  "mass_fraction": 0.29917646164419337
+  "month":"Aug 2018",
+  "cluster":1,
+  "centroid_x":116.8734621665,
+  "centroid_y":1.1959463382,
+  "mass_fraction":0.267130783
  },
  {
-  "month": "Sep 2018",
-  "cluster": 0,
-  "centroid_x": 100.41595128731814,
-  "centroid_y": 13.454968314140546,
-  "mass_fraction": 0.6941146306732312
+  "month":"Sep 2018",
+  "cluster":0,
+  "centroid_x":100.2431334702,
+  "centroid_y":14.0546324043,
+  "mass_fraction":0.7271359762
  },
  {
-  "month": "Sep 2018",
-  "cluster": 1,
-  "centroid_x": 116.80213226291886,
-  "centroid_y": 0.8241800752148603,
-  "mass_fraction": 0.3058853693267688
+  "month":"Sep 2018",
+  "cluster":1,
+  "centroid_x":116.7408759873,
+  "centroid_y":1.2092726641,
+  "mass_fraction":0.2728640238
  },
  {
-  "month": "Oct 2018",
-  "cluster": 0,
-  "centroid_x": 100.49041869612597,
-  "centroid_y": 13.548964047834172,
-  "mass_fraction": 0.7049364543490789
+  "month":"Oct 2018",
+  "cluster":0,
+  "centroid_x":100.4591846486,
+  "centroid_y":13.5983504383,
+  "mass_fraction":0.7204404774
  },
  {
-  "month": "Oct 2018",
-  "cluster": 1,
-  "centroid_x": 116.93631126187844,
-  "centroid_y": 0.7310039479412573,
-  "mass_fraction": 0.2950635456509211
+  "month":"Oct 2018",
+  "cluster":1,
+  "centroid_x":116.976375026,
+  "centroid_y":0.9681570313,
+  "mass_fraction":0.2795595226
  },
  {
-  "month": "Nov 2018",
-  "cluster": 0,
-  "centroid_x": 100.51222213507077,
-  "centroid_y": 13.638777430031272,
-  "mass_fraction": 0.7115896101229544
+  "month":"Nov 2018",
+  "cluster":0,
+  "centroid_x":100.450982802,
+  "centroid_y":13.5788122736,
+  "mass_fraction":0.7203908673
  },
  {
-  "month": "Nov 2018",
-  "cluster": 1,
-  "centroid_x": 116.99675163614091,
-  "centroid_y": 0.8086873211198036,
-  "mass_fraction": 0.2884103898770456
+  "month":"Nov 2018",
+  "cluster":1,
+  "centroid_x":116.7912546459,
+  "centroid_y":0.8426445404,
+  "mass_fraction":0.2796091327
  },
  {
-  "month": "Dec 2018",
-  "cluster": 0,
-  "centroid_x": 100.46356303575189,
-  "centroid_y": 13.734370002421244,
-  "mass_fraction": 0.7174183899899066
+  "month":"Dec 2018",
+  "cluster":0,
+  "centroid_x":100.4857149597,
+  "centroid_y":13.4875512426,
+  "mass_fraction":0.7129871339
  },
  {
-  "month": "Dec 2018",
-  "cluster": 1,
-  "centroid_x": 117.12286756419923,
-  "centroid_y": 1.0148121448626704,
-  "mass_fraction": 0.2825816100100934
+  "month":"Dec 2018",
+  "cluster":1,
+  "centroid_x":116.7085445804,
+  "centroid_y":0.8409812425,
+  "mass_fraction":0.2870128661
  }
 ]
