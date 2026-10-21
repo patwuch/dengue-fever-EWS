@@ -1,35 +1,50 @@
 {
   "model": "climate model v2",
+  "runs": [
+    "climate_v2_rain_eval_s1",
+    "climate_v2_rain_eval_s2",
+    "climate_v2_rain_eval_s3"
+  ],
   "evaluated_on": "14 held-out months, 2017-11 to 2018-12 (trained on earlier months)",
-  "skill_definition": "1 - MSE(model) / MSE(each province's 2011-2018 mean log IR for that calendar month)",
+  "skill_definition": "1 - MSE(model) / MSE(each province's 2011-2018 mean log IR for that calendar month); mean over the runs, per-seed values alongside",
   "leads": {
     "1": {
       "province_months": 1851,
-      "mse_model": 0.6362942457199097,
+      "mse_model": 0.6328961451848348,
       "mse_seasonal": 1.1094504972659982,
-      "mae_model": 0.5725950002670288,
+      "mae_model": 0.5912772019704183,
       "mae_seasonal": 0.6666115979911968,
-      "skill_vs_seasonal": 0.4264780201659112,
-      "anomaly_r": 0.6428005059507502
+      "skill_vs_seasonal": 0.4295408882645318,
+      "skill_vs_seasonal_by_seed": [
+        0.41343882162045065,
+        0.3719792149740273,
+        0.5032046281991175
+      ],
+      "anomaly_r": 0.6555432956869566,
+      "anomaly_r_by_seed": [
+        0.6503251712914192,
+        0.618316956523216,
+        0.6979877592462345
+      ]
     },
     "2": {
       "province_months": 1747,
-      "mse_model": 0.6371640563011169,
+      "mse_model": 0.6361327171325684,
       "mse_seasonal": 1.0890213168335026,
-      "mae_model": 0.5798472166061401,
+      "mae_model": 0.5985616246859232,
       "mae_seasonal": 0.6615909465535001,
-      "skill_vs_seasonal": 0.41492049195715497,
-      "anomaly_r": 0.6382142044025559
-    }
-  },
-  "sensitivity_without_2011": {
-    "1": {
-      "skill_vs_seasonal": 0.40817043476678116,
-      "anomaly_r": 0.6310643852422676
-    },
-    "2": {
-      "skill_vs_seasonal": 0.4010275974651094,
-      "anomaly_r": 0.6278768480080615
+      "skill_vs_seasonal": 0.41586752499737806,
+      "skill_vs_seasonal_by_seed": [
+        0.40331817415298166,
+        0.355756076436478,
+        0.4885283244026746
+      ],
+      "anomaly_r": 0.6507067430307474,
+      "anomaly_r_by_seed": [
+        0.648147295504771,
+        0.6139123338618598,
+        0.6900605997256113
+      ]
     }
   }
 }

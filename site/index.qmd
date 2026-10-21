@@ -73,7 +73,8 @@ pixels, which grows with the province's area, instead of rainfall in millimetres
 provinces, a small province's rainfall then barely changed from month to month, so the models
 could make little use of it. Climate model v2 now uses the monthly rainfall total in mm. Forecast
 skill on held-out months is unchanged within training noise; the input attributions below come
-from the corrected model and replace those published before this date.
+from the corrected model and replace those published before this date, in which rainfall's share
+was about 2% (now about 7%).
 :::
 
 ```{python}
