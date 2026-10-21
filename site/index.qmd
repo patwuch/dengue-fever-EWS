@@ -42,7 +42,7 @@ A spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin
 ### Arm 2 — Taiwan Basic Statistics Area (BSA)
 A Taiwan-specific counterpart operating at the finer granularity of the Basic Statistics Area (BSA) — the smallest census unit tracked by the Taiwanese government. It jointly considers international mobility (using SEA risk states from Arm 1 as exporter signals), local mobility, BSA-level environmental suitability, and population demographics to predict elevated local dengue risk.
 
-[View Taiwan BSA Results →](taiwan-bsa-study-results.qmd)
+*In development — results will be published here once the BSA pipeline is operational.*
 :::
 
 :::
@@ -141,20 +141,6 @@ else:
     fig.show()
 ```
 
-## Taiwan BSA — Current Risk Map
-
-::: {.callout-warning}
-**Placeholder** — Taiwan BSA risk predictions are not yet available. This panel will display a choropleth of BSA-level dengue risk across Taiwan once the BSA model pipeline is operational.
-:::
-
-```{python}
-#| echo: false
-#| label: fig-taiwan-risk-map
-#| fig-cap: "Placeholder: Taiwan BSA dengue risk index for the current forecast month."
-
-print("⚠️  Taiwan BSA predictions not yet available — implement taiwan-bsa-module inference pipeline first.")
-```
-
 ## About
 
 Dengue fever's transmission dynamics in Southeast Asia relies on human and vector mobility, displaying a high
@@ -184,20 +170,6 @@ predicts based on individual case report, clinical diagnosis, demographic data, 
 **Features:** ERA5-Land, MODIS LST, NDVI/EVI, CHIRPS, LULC, WorldPop, SSP population
 **Spatial scope:** 162 admin-1 regions across 10 SEA countries
 **Performance (test set):** Huber 0.390 · MAE 1.214 · RMSE 2.460 (log IR, 14 held-out months)
-:::
-
-::: {.g-col-6}
-### Taiwan BSA Pipeline
-1. SEA province risk states ingested as international mobility proxy (from Arm 1)
-2. BSA-level environmental suitability computed from TCCIP climate data
-3. Individual case reports and demographic data from Taiwan Ministry of Health
-4. BSA model inference generates sub-district risk predictions
-
-**Architecture:** *(to be finalised)*
-**Training period:** *(to be determined)*
-**Features:** MoH case reports, clinical diagnosis, demographics, TCCIP climate, local mobility
-**Spatial scope:** Taiwan Basic Statistics Areas (BSAs)
-**Performance:** *(pending model training)*
 :::
 
 :::
