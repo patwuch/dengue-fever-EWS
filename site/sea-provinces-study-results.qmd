@@ -19,8 +19,9 @@ stgnn_dir = pathlib.Path("../machine-learning-module/results/STGNN")
 # Only surface the experiment we stand behind for this study: it predicts log IR
 # from lagged IR plus climate and land-use covariates, with the cyclical (sin/cos)
 # month encoding rather than naive per-month deseasonalisation.
-# climate_v2_eval is the held-out evaluation copy of climate model v2, the live map model.
-experiment_names = [n for n in ["cyclical_seasonal", "climate_v2_eval"] if (stgnn_dir / n).is_dir()]
+# climate_v2_rain_eval_s1 is a held-out evaluation copy of climate model v2, the live map model
+# (rainfall in mm; seed 1 of 3, the median on skill).
+experiment_names = [n for n in ["cyclical_seasonal", "climate_v2_rain_eval_s1"] if (stgnn_dir / n).is_dir()]
 
 # test.py only ever writes raw (W, N) arrays to test_predictions.npz — no node
 # names, countries, or dates attached. Reconstruct those from the merged
@@ -418,7 +419,7 @@ for implementation.
 
 ## Experiment Results
 
-We show one experiment here: **`cyclical_seasonal`**. It predicts log
+We show two experiments here. **`cyclical_seasonal`** predicts log
 incidence rate (log IR) from lagged IR plus climate and land-use covariates,
 encodes calendar month with the sin/cos cyclical encoding (rather than
 subtracting a fixed per-month training baseline — see the
@@ -426,9 +427,20 @@ subtracting a fixed per-month training baseline — see the
 the training window), and gives missing admin-1 nodes a learned trainable
 embedding rather than zeroed-out features (see [Architecture](#architecture)
 above). Its hyperparameters are also the ones the climate-only model behind the
-live risk map is trained with.
+live risk map is trained with. Alongside it is **`climate_v2_rain_eval_s1`**, the
+held-out evaluation copy of that climate-only model (training seed 1 of 3).
 
-The results below come from its config/training run under
+::: {.callout-warning}
+**Known issue with `cyclical_seasonal`'s rainfall input.** It was trained on
+`precipitation_sum`, CHIRPS rainfall summed over each province's pixels, which
+grows with province area instead of measuring millimetres. Scaled across
+provinces, a small province's rainfall barely varies over time, so this model's
+use of rainfall, and anything read from it about rainfall's role, is unreliable.
+The climate model was retrained on monthly rainfall in mm on 21 October 2026;
+`cyclical_seasonal` has not been yet.
+:::
+
+The results below come from each config/training run under
 `machine-learning-module/results/STGNN/`: metrics, hyperparameters, training
 curves, and available plots.
 
