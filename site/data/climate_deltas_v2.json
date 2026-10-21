@@ -1,6 +1,6 @@
 {
   "01": {
-    "precipitation_sum": 201.759971,
+    "precipitation_mm": -14.442511,
     "temperature_2m_mean": 0.436899,
     "temperature_2m_max_mean": 0.60757,
     "temperature_2m_min_mean": 0.204848,
@@ -16,7 +16,7 @@
     "evi_mean": 0.000243
   },
   "02": {
-    "precipitation_sum": 164.438668,
+    "precipitation_mm": 7.432732,
     "temperature_2m_mean": 0.400593,
     "temperature_2m_max_mean": 0.439149,
     "temperature_2m_min_mean": 0.393213,
@@ -32,7 +32,7 @@
     "evi_mean": 0.001284
   },
   "03": {
-    "precipitation_sum": 219.235197,
+    "precipitation_mm": -1.162279,
     "temperature_2m_mean": 0.525776,
     "temperature_2m_max_mean": 0.611906,
     "temperature_2m_min_mean": 0.434113,
@@ -48,7 +48,7 @@
     "evi_mean": 0.003625
   },
   "04": {
-    "precipitation_sum": -90.886204,
+    "precipitation_mm": 0.795783,
     "temperature_2m_mean": 0.523736,
     "temperature_2m_max_mean": 0.587595,
     "temperature_2m_min_mean": 0.431628,
@@ -64,7 +64,7 @@
     "evi_mean": 0.002928
   },
   "05": {
-    "precipitation_sum": 71.568526,
+    "precipitation_mm": 1.82651,
     "temperature_2m_mean": 0.420876,
     "temperature_2m_max_mean": 0.403739,
     "temperature_2m_min_mean": 0.379664,
@@ -80,7 +80,7 @@
     "evi_mean": 0.003478
   },
   "06": {
-    "precipitation_sum": 40.878159,
+    "precipitation_mm": -8.792116,
     "temperature_2m_mean": 0.284718,
     "temperature_2m_max_mean": 0.356722,
     "temperature_2m_min_mean": 0.226323,
@@ -96,7 +96,7 @@
     "evi_mean": 0.006098
   },
   "07": {
-    "precipitation_sum": -421.719092,
+    "precipitation_mm": -12.696628,
     "temperature_2m_mean": 0.471241,
     "temperature_2m_max_mean": 0.545977,
     "temperature_2m_min_mean": 0.356233,
@@ -112,7 +112,7 @@
     "evi_mean": 0.005379
   },
   "08": {
-    "precipitation_sum": 788.069959,
+    "precipitation_mm": 19.434306,
     "temperature_2m_mean": 0.365452,
     "temperature_2m_max_mean": 0.407527,
     "temperature_2m_min_mean": 0.313456,
@@ -128,7 +128,7 @@
     "evi_mean": 0.001662
   },
   "09": {
-    "precipitation_sum": 923.390401,
+    "precipitation_mm": 25.1584,
     "temperature_2m_mean": 0.224232,
     "temperature_2m_max_mean": 0.168742,
     "temperature_2m_min_mean": 0.255367,
@@ -144,7 +144,7 @@
     "evi_mean": -0.001651
   },
   "10": {
-    "precipitation_sum": 866.750727,
+    "precipitation_mm": 24.113736,
     "temperature_2m_mean": 0.222305,
     "temperature_2m_max_mean": 0.162706,
     "temperature_2m_min_mean": 0.271392,
@@ -160,7 +160,7 @@
     "evi_mean": 0.002794
   },
   "11": {
-    "precipitation_sum": -81.234919,
+    "precipitation_mm": 12.764283,
     "temperature_2m_mean": -0.061057,
     "temperature_2m_max_mean": -0.082532,
     "temperature_2m_min_mean": -0.098619,
@@ -176,7 +176,7 @@
     "evi_mean": -0.001808
   },
   "12": {
-    "precipitation_sum": -112.650559,
+    "precipitation_mm": -6.80548,
     "temperature_2m_mean": 0.111119,
     "temperature_2m_max_mean": 0.251898,
     "temperature_2m_min_mean": -0.070094,
