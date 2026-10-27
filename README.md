@@ -99,6 +99,19 @@ ews machine-learning-module results/STGNN/production_logIR/inference_bundle_ir_e
     --configfile config/OpenDengue/stgnn_logIR_production.yaml --profile profiles/k8s
 ```
 
+**Explaining a model.** `explain_attention_stgnn`, `attention_shift_stgnn` and `explain_shap_stgnn` write GAT attention and SHAP Expected Gradients attributions (per lead for two-month models) for a config with held-out test months. For climate model v2 those are the seeded evaluation copies `climate_v2_rain_eval_s{1,2,3}`; all three run on CPU, one seed per invocation:
+
+```bash
+ews machine-learning-module results/STGNN/climate_v2_rain_eval_s1/shap_feature_importance.json \
+    results/STGNN/climate_v2_rain_eval_s1/attention_shift_interactive.html \
+    --configfile config/OpenDengue/stgnn_climate_v2_rain_eval.yaml --profile profiles/k8s \
+    --config data_root=. name=climate_v2_rain_eval_s1 bundle_label=climate_v2_rain_eval_s1 seed=1
+```
+
+The home page reads `site/data/model_skill_climate_v2.json` and `site/data/xai_climate_v2.json`, the means over the three seeds from `site/scripts/combine_seeds.py`, and `site/xai/attention_shift_climate_v2.html` and `site/data/attention_hubs_climate_v2.json` (`attention_shift_centroid.csv` as JSON) from seed 1, the median seed on skill; the study page reads `machine-learning-module/results/STGNN/climate_v2_rain_eval_s1/`.
+
+Until 2026-10-21 climate model v2 used `precipitation_sum`, CHIRPS rainfall summed over each province's pixels, which scales with province area. It now uses `precipitation_mm`, the monthly total from the spatial mean; `precipitation_sum` stays in the tables for the v1 models trained on it.
+
 The ServiceAccount token expires. On `401 Unauthorized`, mint a new one with an admin context and set it on the kubeconfig's `snakemake` user: `kubectl -n dengue-ews create token snakemake --duration=720h`.
 
 The tarballs land in S3 under the same paths (`s3://dengue-ews/results/STGNN/<name>/`); download them from there before uploading to the release.

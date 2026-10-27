@@ -66,6 +66,17 @@ indices and CHIRPS v3 precipitation, and now predicts two months at once. Foreca
 October 2026 came from the previous model.
 :::
 
+::: {.callout-warning collapse="true"}
+## Correction, 21 October 2026: rainfall input
+Until this date the climate models received rainfall as a sum over each province's satellite
+pixels, which grows with the province's area, instead of rainfall in millimetres. Scaled across
+provinces, a small province's rainfall then barely changed from month to month, so the models
+could make little use of it. Climate model v2 now uses the monthly rainfall total in mm. Forecast
+skill on held-out months is unchanged within training noise; the input attributions below come
+from the corrected model and replace those published before this date, in which rainfall's share
+was about 2% (now about 7%).
+:::
+
 ```{python}
 #| echo: false
 
@@ -116,8 +127,10 @@ def skill_note(lead: int) -> str:
     s = skill.get(str(lead))
     if not s:
         return ""
+    by_seed = s.get("skill_vs_seasonal_by_seed", [])
+    spread = f", {min(by_seed):+.2f} to {max(by_seed):+.2f} over training seeds" if len(by_seed) > 1 else ""
     return (f"Held-out test months (2017-11 → 2018-12): skill vs. each province's usual level "
-            f"{s['skill_vs_seasonal']:+.2f} (0 = no better than the usual level, 1 = perfect).")
+            f"{s['skill_vs_seasonal']:+.2f}{spread} (0 = no better than the usual level, 1 = perfect).")
 
 
 if not leads:
@@ -148,6 +161,122 @@ if len(leads) > 1:
     display(Markdown(skill_note(2)))
 else:
     print("This model predicts one month only.")
+```
+
+:::
+
+## SEA Provinces — What Drives the Forecast
+
+Which inputs move the climate model's predictions, measured with SHAP Expected Gradients on three
+evaluation copies of climate model v2 (same data and architecture, trained without the last 14
+months, with training seeds 1–3) over those held-out months, 2017-11 to 2018-12, and averaged over
+the three. Each bar is an input group's share of the
+total attribution to the predicted dengue burden summed over all provinces. These describe the
+model's behaviour in general, not the reasons for this month's map, and attribution is not
+causation.
+
+```{python}
+#| echo: false
+xai_path = data_dir / "xai_climate_v2.json"
+xai = json.loads(xai_path.read_text()) if xai_path.exists() else None
+
+GROUPS = {
+    "Rainfall (CHIRPS v3)":           lambda f: f.startswith("precipitation_"),
+    "Air temperature (ERA5-Land)":    lambda f: f.startswith("temperature_2m"),
+    "Evaporation (ERA5-Land)":        lambda f: "evaporation" in f,
+    "Land surface temperature (VIIRS)": lambda f: f.startswith("lst_"),
+    "Vegetation (VIIRS NDVI / EVI)":  lambda f: f in ("ndvi_mean", "evi_mean"),
+    "Time of year":                   lambda f: f.startswith("month_"),
+    "Land cover (MODIS)":             lambda f: f.startswith("LC_Type1"),
+}
+
+
+def group_of(feature: str) -> str:
+    return next((g for g, test in GROUPS.items() if test(feature)), "Other")
+
+
+def grouped(rows: list) -> pd.DataFrame:
+    df = pd.DataFrame(rows)
+    df["group"] = df["feature"].map(group_of)
+    return df
+```
+
+::: {.panel-tabset}
+
+## Input groups
+
+```{python}
+#| echo: false
+#| label: fig-xai-groups
+#| fig-cap: "Share of total |attribution| by input group, for this month's and next month's prediction. Hover for the individual inputs."
+if xai is None:
+    print("No attribution data yet (run explain_shap_stgnn for climate_v2_rain_eval_s{1,2,3}, then site/scripts/combine_seeds.py).")
+else:
+    fig = go.Figure()
+    order = None
+    for lead, rows in xai["leads"].items():
+        df = grouped(rows)
+        g = df.groupby("group").agg(share=("share", "sum"),
+                                    members=("feature", lambda s: "<br>".join(s)))
+        order = order or g.sort_values("share").index.tolist()
+        g = g.reindex(order)
+        fig.add_trace(go.Bar(
+            y=g.index, x=g["share"] * 100, orientation="h",
+            name="This month" if lead == "1" else "Next month",
+            customdata=g["members"],
+            hovertemplate="%{y}: %{x:.1f}%<br><span style='font-size:10px'>%{customdata}</span><extra></extra>",
+        ))
+    fig.update_layout(barmode="group", height=420, margin=dict(l=0, r=10, t=10, b=40),
+                      xaxis_title="Share of total attribution (%)", legend=dict(orientation="h", y=-0.2))
+    fig.show()
+```
+
+## How far back
+
+```{python}
+#| echo: false
+#| label: fig-xai-lags
+#| fig-cap: "Share of total |attribution| by input month, across all inputs. t is the first predicted month; the model reads the 12 months before it."
+if xai is not None:
+    fig = go.Figure()
+    for lead, rows in xai["leads"].items():
+        by_lag = np.sum([r["share_by_lag"] for r in rows], axis=0) * 100
+        fig.add_trace(go.Scatter(x=xai["lags"], y=by_lag, mode="lines+markers",
+                                 name="This month" if lead == "1" else "Next month"))
+    fig.update_layout(height=380, margin=dict(l=0, r=10, t=10, b=40),
+                      xaxis_title="Input month", yaxis_title="Share of total attribution (%)",
+                      legend=dict(orientation="h", y=-0.25))
+    fig.show()
+```
+
+## Where the model looks
+
+```{python}
+#| echo: false
+shift_html = pathlib.Path("xai/attention_shift_climate_v2.html")
+hubs_path = data_dir / "attention_hubs_climate_v2.json"
+if shift_html.exists():
+    hubs_note = ""
+    if hubs_path.exists():
+        hubs = pd.DataFrame(json.loads(hubs_path.read_text()))
+        g = hubs.groupby("cluster")
+        # How far each hub centre ranges over the months, in degrees (~111 km each).
+        drift = (g["centroid_x"].agg(np.ptp) ** 2 + g["centroid_y"].agg(np.ptp) ** 2) ** 0.5
+        share = g["mass_fraction"].mean().sort_values(ascending=False)
+        hubs_note = (f" Across the {hubs['month'].nunique()} held-out months the "
+                     f"{len(share)} hubs carry {' and '.join(f'{v:.0%}' for v in share)} of the "
+                     f"attention and move at most {drift.max() * 111:.0f} km: this model's "
+                     "spatial focus is close to fixed, and month-to-month changes in its "
+                     "forecasts come from the inputs, not from where it looks.")
+    display(Markdown(
+        "Where the graph attention between neighbouring provinces concentrates over the held-out "
+        "months: each trail follows the centre of a cluster of provinces that draw the most "
+        "attention from their neighbours." + hubs_note + " More detail on the "
+        "[Southeast Asia Provinces Study](sea-provinces-study-results.qmd) page.\n\n"
+        f'<iframe src="{shift_html.as_posix()}" width="100%" height="760px" frameborder="0" '
+        'style="border-radius:6px; border:1px solid #dee2e6;"></iframe>'))
+else:
+    print("No attention data yet (run attention_shift_stgnn for climate_v2_rain_eval_s1).")
 ```
 
 :::

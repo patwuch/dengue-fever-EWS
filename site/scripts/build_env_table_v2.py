@@ -3,7 +3,8 @@
 CHIRPS v3 precipitation and VIIRS LST / NDVI / EVI with ERA5-Land and MODIS land cover, under
 the product-neutral names of the v2 training table (successor_training_table.py):
 
-    precipitation_sum   CHIRPS v3          lst_day_mean / lst_night_mean   VIIRS VNP21A1D / N
+    precipitation_mm    CHIRPS v3          lst_day_mean / lst_night_mean   VIIRS VNP21A1D / N
+    (monthly total, mm; precipitation_sum, the area-scaled spatial sum, is kept alongside)
     ndvi_mean, evi_mean VIIRS VNP13A1      ERA5-Land and LC_Type1_pct_class* as in v1
 
 Aggregated by env_features.build_monthly_env, as the training data was. Each product's batches

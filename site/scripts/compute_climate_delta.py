@@ -84,7 +84,7 @@ def main() -> None:
     deltas = compute_deltas(pd.read_csv(args.env), bundle, args.start, args.end)
 
     print(f"\nAnnual mean delta vs {bundle['name']} ({bundle['train_period'][0]}–{bundle['train_period'][1]}):")
-    for feat in ["temperature_2m_mean", "precipitation_sum", "LST_Day_1km_mean", "NDVI_mean"]:
+    for feat in ["temperature_2m_mean", "precipitation_mm", "precipitation_sum", "LST_Day_1km_mean", "NDVI_mean"]:
         if feat in deltas["01"]:
             print(f"  {feat:24s} {sum(d[feat] for d in deltas.values()) / 12:+.4f}")
 

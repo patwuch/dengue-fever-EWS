@@ -13,10 +13,13 @@ Design notes / limitations:
     because it keeps a leading batch dim of 1 — see _FixedContextModel). So
     this answers "how does this specific prediction depend on x, given its
     own missingness context" rather than jointly attributing to the mask.
-  - The model sums predictions across all nodes into a single scalar target
-    before attribution, so each explained window yields one (T, N, F)
+  - The model sums predictions across all nodes into one scalar per lead
+    before attribution, so each explained window yields one (T, N, F, h)
     attribution tensor aligned with the input — i.e. per-node, per-timestep,
-    per-feature importance for "total predicted burden across the network".
+    per-feature importance for "total predicted burden across the network",
+    for each month ahead the model predicts (h = 1 for single-month models).
+  - Climate-only models (preprocessing.incidence_input: false) are explained
+    with every node observed (mask = 1), as run_inference.py runs them.
   - Expected Gradients needs (background x interpolation steps) forward+
     backward passes per explained window, and STGATGRU's B x T Python loop
     over GAT layers is not vectorised, so this is slow. n_background and
@@ -28,9 +31,11 @@ Inputs:
     best_params.json  — hyperparameters used to build the model
 
 Outputs (results/STGNN/<name>/):
-    shap_attributions.npz       — raw (n_explain, T, N, F) attributions + metadata
-    shap_feature_importance.png — mean |attribution| ranked by feature
-    shap_node_time_heatmap.png  — mean |attribution| summed over features, per node x lag
+    shap_attributions.npz        — raw (n_explain, T, N, F, h) attributions + metadata
+    shap_feature_importance.png  — mean |attribution| ranked by feature, one panel per lead
+    shap_node_time_heatmap.png   — mean |attribution| summed over features, per node x lag
+    shap_feature_importance.json — per lead and feature: share of total |attribution|,
+                                   mean signed attribution, and share by lag (for the site)
 
 Run via Snakemake (script mode) or directly:
     python explain_shap.py --config config.yaml \
@@ -58,6 +63,8 @@ import yaml
 
 from model import STGATGRU
 from tune import STGNNDataset, load_tensors, load_edge_index
+from loss import split_masks
+from preprocess.temporal import horizon
 from choropleth import _node_names
 
 
@@ -69,7 +76,8 @@ def _feature_names(cfg: dict, in_channels: int) -> list[str]:
     from the config alone, so any remaining channels are labelled generically."""
     env_vars  = cfg.get("features", {}).get("env_vars", [])
     lulc_vars = cfg.get("features", {}).get("land_use_vars", [])
-    names = ["inc"] + list(env_vars) + list(lulc_vars)
+    include_incidence = cfg.get("preprocessing", {}).get("incidence_input", True)
+    names = (["inc"] if include_incidence else []) + list(env_vars) + list(lulc_vars)
     n_extra = in_channels - len(names)
     if n_extra > 0:
         names += [f"quality_{i}" for i in range(n_extra)]
@@ -83,8 +91,8 @@ class _FixedContextModel(nn.Module):
     and mask are held fixed. mask keeps a leading batch dim of 1 so it
     broadcasts against whatever batch size GradientExplainer feeds forward()
     (background samples, interpolation steps, ...). Outputs are summed across
-    nodes into a scalar so attributions come back with the same (T, N, F)
-    shape as the input."""
+    nodes into one value per lead, (B, h), so attributions come back as
+    (T, N, F) per lead."""
 
     def __init__(self, model: STGATGRU, edge_index: torch.Tensor, mask: torch.Tensor):
         super().__init__()
@@ -93,33 +101,68 @@ class _FixedContextModel(nn.Module):
         self.mask       = mask
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if not x.requires_grad:
+            # shap's setup pass over the whole background: no gradients needed, and one window
+            # at a time, since the fully connected graph costs ~1 GB per window under autograd.
+            with torch.no_grad():
+                return torch.cat([self._network_total(x[i:i + 1]) for i in range(len(x))])
+        return self._network_total(x)
+
+    def _network_total(self, x: torch.Tensor) -> torch.Tensor:
         out = self.model(x, self.edge_index, mask=self.mask)
-        if out.dim() == 3:
-            out = out.squeeze(-1)
-        return out.sum(dim=1, keepdim=True)  # (B, 1)
+        if out.dim() == 2:
+            out = out.unsqueeze(-1)
+        return out.sum(dim=1)  # (B, h)
 
 
 # ── Plotting ────────────────────────────────────────────────────────────────────
 
 def plot_feature_importance(attrs: np.ndarray, feature_names: list, out_path: Path) -> None:
-    importance = np.abs(attrs).mean(axis=(0, 1, 2))  # (F,)
-    order = np.argsort(importance)[::-1]
+    """attrs: (n_explain, T, N, F, h). One panel per lead, features ranked by lead 1."""
+    importance = np.abs(attrs).mean(axis=(0, 1, 2))  # (F, h)
+    h = importance.shape[-1]
+    order = np.argsort(importance[:, 0])[::-1]
 
-    fig, ax = plt.subplots(figsize=(7, 0.35 * len(feature_names) + 1.5))
-    ax.barh(range(len(order)), importance[order])
-    ax.set_yticks(range(len(order)))
-    ax.set_yticklabels([feature_names[i] for i in order], fontsize=8)
-    ax.invert_yaxis()
-    ax.set_xlabel("Mean |Expected Gradients attribution|")
-    ax.set_title("Feature importance (summed over nodes, averaged over windows)")
+    fig, axes = plt.subplots(1, h, figsize=(7 * h, 0.35 * len(feature_names) + 1.5),
+                             sharey=True, squeeze=False)
+    for k, ax in enumerate(axes[0]):
+        ax.barh(range(len(order)), importance[order, k])
+        ax.set_yticks(range(len(order)))
+        ax.set_yticklabels([feature_names[i] for i in order], fontsize=8)
+        ax.set_xlabel("Mean |Expected Gradients attribution|")
+        ax.set_title("Feature importance" if h == 1 else f"Feature importance — lead {k + 1}")
+    axes[0][0].invert_yaxis()
+    fig.suptitle("Summed over nodes, averaged over windows", fontsize=9)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 
+def importance_summary(attrs: np.ndarray, feature_names: list, months: list) -> dict:
+    """Per lead and feature: share of the total |attribution|, the mean signed attribution
+    (> 0: pushes the predicted network-wide burden up), and how the share splits by lag."""
+    T = attrs.shape[1]
+    out = {"explained_windows": int(attrs.shape[0]), "window_months": months,
+           "lags": [f"t-{T - i}" for i in range(T)], "leads": {}}
+    for k in range(attrs.shape[-1]):
+        a = attrs[..., k]                                 # (n, T, N, F)
+        abs_f = np.abs(a).sum(axis=(1, 2)).mean(axis=0)   # (F,)
+        signed_f = a.sum(axis=(1, 2)).mean(axis=0)        # (F,)
+        by_lag = np.abs(a).sum(axis=2).mean(axis=0)       # (T, F)
+        total = abs_f.sum()
+        out["leads"][str(k + 1)] = [
+            {"feature": name,
+             "share": float(abs_f[f] / total),
+             "mean_signed": float(signed_f[f]),
+             "share_by_lag": [float(v) for v in by_lag[:, f] / total]}
+            for f, name in sorted(enumerate(feature_names), key=lambda e: -abs_f[e[0]])
+        ]
+    return out
+
+
 def plot_node_time_heatmap(attrs: np.ndarray, node_names: list, out_path: Path,
                             top_k: int = 20) -> None:
-    imp = np.abs(attrs).mean(axis=(0, 3))  # (T, N)
+    imp = np.abs(attrs).mean(axis=(0, 3, 4))  # (T, N), averaged over leads
     T, N = imp.shape
     order = np.argsort(imp.sum(axis=0))[::-1][:min(top_k, N)]
     data  = imp[:, order].T  # (top_k, T)
@@ -129,8 +172,8 @@ def plot_node_time_heatmap(attrs: np.ndarray, node_names: list, out_path: Path,
     ax.set_yticks(range(len(order)))
     ax.set_yticklabels([node_names[i] for i in order], fontsize=7)
     ax.set_xticks(range(T))
-    ax.set_xticklabels([f"t-{T - 1 - i}" for i in range(T)], fontsize=8)
-    ax.set_xlabel("Lag (months before prediction)")
+    ax.set_xticklabels([f"t-{T - i}" for i in range(T)], fontsize=8)
+    ax.set_xlabel("Input month (t = the first predicted month)")
     ax.set_title(f"Top {len(order)} nodes — mean |attribution| (summed over features)")
     fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="Mean |attribution|")
     fig.tight_layout()
@@ -142,13 +185,13 @@ def plot_node_time_heatmap(attrs: np.ndarray, node_names: list, out_path: Path,
 
 def explain_shap(cfg: dict, params: dict, model_path, out_dir: Path,
                   csv_path: str, split: str = "test", n_background: int = 20,
-                  n_explain: int = 5, seed: int = 0,
+                  n_explain: int = 5, seed: int = 0, batch_size: int = 1,
                   tensors_path: Path | None = None,
                   edge_index_path: Path | None = None) -> None:
     model_path = Path(model_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    device      = torch.device(cfg.get("device", "cpu"))
+    device      = torch.device(cfg.get("device") or ("cuda" if torch.cuda.is_available() else "cpu"))
     window_size = params["window_size"]
 
     tensors = load_tensors(cfg, window_size, tensors_path)
@@ -170,11 +213,11 @@ def explain_shap(cfg: dict, params: dict, model_path, out_dir: Path,
         gat2_hidden  = params["gat2_hidden"],
         gat2_heads   = params["gat2_heads"],
         gru_hidden   = params["gru_hidden"],
-        pred_horizon = 1,
+        pred_horizon = horizon(cfg),
         dropout      = params["dropout"],
     ).to(device)
     print(f"Loading model from {model_path} ...")
-    model.load_state_dict(torch.load(model_path, weights_only=True))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     model.eval()
 
     rng = np.random.default_rng(seed)
@@ -187,33 +230,38 @@ def explain_shap(cfg: dict, params: dict, model_path, out_dir: Path,
 
     node_names    = _node_names(csv_path)
     feature_names = _feature_names(cfg, in_channels)
+    observed_all  = not cfg.get("preprocessing", {}).get("incidence_input", True)
 
     months_t = tensors.get(f"{split}_months")
     all_attrs, all_months = [], []
 
     for i in explain_idx:
-        x_i, _, mask_i = explain_dataset[i]
+        x_i, y_i, mask_i = explain_dataset[i]
+        mask_i, _ = split_masks(y_i.unsqueeze(0), mask_i.unsqueeze(0))  # the model's (1, N) mask
         x_i    = x_i.unsqueeze(0).to(device)
-        mask_i = mask_i.unsqueeze(0).to(device)
+        mask_i = mask_i.to(device)
+        if observed_all:
+            mask_i = torch.ones_like(mask_i)
 
         wrapped   = _FixedContextModel(model, edge_index, mask_i)
-        explainer = shap.GradientExplainer(wrapped, background)
+        # batch_size: samples per forward/backward pass; each costs ~1 GB (shap's default is 50).
+        explainer = shap.GradientExplainer(wrapped, background, batch_size=batch_size)
 
         sv = explainer.shap_values(x_i)
-        if isinstance(sv, list):
-            sv = sv[0]
-        attr = np.asarray(sv)[0]  # (T, N, F) or (T, N, F, 1) — model output is scalar,
-        if attr.ndim == 4:        # but GradientExplainer still appends an output axis.
-            attr = attr.squeeze(-1)
+        if isinstance(sv, list):                  # older shap: one (1, T, N, F) array per output
+            sv = np.stack([np.asarray(v) for v in sv], axis=-1)
+        attr = np.asarray(sv)[0]                  # (T, N, F, h)
+        if attr.ndim == 3:
+            attr = attr[..., None]
         all_attrs.append(attr)
 
         if months_t is not None:
             m = months_t[i]
-            all_months.append(int(m[-1]) if m.dim() > 0 else int(m))
+            all_months.append(int(m.flatten()[0]) if m.dim() > 0 else int(m))
 
         print(f"  explained window {i} ({len(all_attrs)}/{n_explain})")
 
-    attrs = np.stack(all_attrs)  # (n_explain, T, N, F)
+    attrs = np.stack(all_attrs)  # (n_explain, T, N, F, h)
 
     npz_path = out_dir / "shap_attributions.npz"
     np.savez(
@@ -233,6 +281,14 @@ def explain_shap(cfg: dict, params: dict, model_path, out_dir: Path,
     heat_path = out_dir / "shap_node_time_heatmap.png"
     plot_node_time_heatmap(attrs, node_names, heat_path)
     print(f"  -> {heat_path}")
+
+    summary = importance_summary(attrs, feature_names, all_months)
+    summary["model"] = cfg.get("name")
+    summary_path = out_dir / "shap_feature_importance.json"
+    summary_path.write_text(json.dumps(summary, indent=2))
+    print(f"  -> {summary_path}")
+    for k, rows in summary["leads"].items():
+        print(f"  lead {k} top features: " + ", ".join(f"{r['feature']} {r['share']:.0%}" for r in rows[:5]))
 
     print(f"\nAll outputs saved to {out_dir}")
 
@@ -297,6 +353,7 @@ if __name__ == "__main__":
             split="test",
             n_background = explain_cfg.get("n_background", 20),
             n_explain    = explain_cfg.get("n_explain_windows", 5),
+            batch_size   = explain_cfg.get("batch_size", 1),
             tensors_path    = Path(snakemake.input.tensors),     # noqa: F821
             edge_index_path = Path(snakemake.input.edge_index),  # noqa: F821
         )

@@ -11,6 +11,7 @@
 # ============================================================
 
 import json
+import os
 
 _name = config.get("name", "")
 
@@ -155,15 +156,30 @@ rule choropleth_stgnn:
         "../src/OpenDengue/STGNN/choropleth.py"
 
 
+# The explain rules run on either kind of config: a tuned experiment (its own best_params.json,
+# tensors for the window tune_stgnn picked) or one with best_params_source (borrowed params,
+# tensors for config window_size, e.g. stgnn_climate_v2_eval.yaml).
+_bundle_params = (
+    f"results/STGNN/{config['best_params_source']}/best_params.json"
+    if config.get("best_params_source") else f"{_RESULTS}/best_params.json"
+)
+
+
+def _explain_tensors(wildcards):
+    if config.get("best_params_source"):
+        return _tensors_for_production_window(wildcards)
+    return _tensors_for_best_window(wildcards)
+
+
 rule explain_attention_stgnn:
     message:
         "Visualising GAT attention weights for experiment '{_name}'."
     input:
         model       = f"{_RESULTS}/best_model.pt",
-        best_params = f"{_RESULTS}/best_params.json",
+        best_params = _bundle_params,
         geom        = str(GEOM_PATH),
-        csv_data    = str(MERGED_DENGUE_ENV_DATA),
-        tensors     = _tensors_for_best_window,
+        csv_data    = _TRAIN_DATA,
+        tensors     = _explain_tensors,
         edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         weights       = f"{_RESULTS}/attention_weights.npz",
@@ -173,12 +189,36 @@ rule explain_attention_stgnn:
         interactive   = f"{_RESULTS}/attention_graph_interactive.html",
     params:
         cfg         = lambda wc: workflow.configfiles[-1],
-        results_dir = _RESULTS,
-        best_params = f"{_RESULTS}/best_params.json",
-        csv_path    = str(MERGED_DENGUE_ENV_DATA),
-        geom_path   = str(GEOM_PATH),
+        results_dir = lambda wc, output: os.path.dirname(output[0]),
+        # The staged copies of the inputs: on k8s + S3 a bare path in params isn't fetched.
+        best_params = lambda wc, input: input.best_params,
+        csv_path    = lambda wc, input: input.csv_data,
+        geom_path   = lambda wc, input: input.geom,
+    resources:
+        mem_mb = 6000,
     script:
         "../src/OpenDengue/STGNN/explain_attention.py"
+
+
+rule attention_shift_stgnn:
+    message:
+        "Tracking where attention concentrates over the test months for experiment '{_name}'."
+    input:
+        weights  = f"{_RESULTS}/attention_weights.npz",
+        geom     = str(GEOM_PATH),
+        csv_data = _TRAIN_DATA,
+    output:
+        centroids   = f"{_RESULTS}/attention_shift_centroid.csv",
+        plot        = f"{_RESULTS}/attention_shift_centroid.png",
+        interactive = f"{_RESULTS}/attention_shift_interactive.html",
+    params:
+        results_dir = lambda wc, output: os.path.dirname(output[0]),
+        csv_path    = lambda wc, input: input.csv_data,
+        geom_path   = lambda wc, input: input.geom,
+    resources:
+        mem_mb = 4000,
+    script:
+        "../src/OpenDengue/STGNN/attention_shift.py"
 
 
 rule explain_shap_stgnn:
@@ -186,23 +226,27 @@ rule explain_shap_stgnn:
         "Computing SHAP Expected Gradients feature attributions for experiment '{_name}'."
     input:
         model       = f"{_RESULTS}/best_model.pt",
-        best_params = f"{_RESULTS}/best_params.json",
-        csv_data    = str(MERGED_DENGUE_ENV_DATA),
-        tensors     = _tensors_for_best_window,
+        best_params = _bundle_params,
+        csv_data    = _TRAIN_DATA,
+        tensors     = _explain_tensors,
         edge_index  = str(_ML_PROCESSED / f"STGNN/{_name}/edge_index.pt"),
     output:
         attributions = f"{_RESULTS}/shap_attributions.npz",
         feature_plot = f"{_RESULTS}/shap_feature_importance.png",
         heatmap      = f"{_RESULTS}/shap_node_time_heatmap.png",
+        summary      = f"{_RESULTS}/shap_feature_importance.json",
     params:
         cfg         = lambda wc: workflow.configfiles[-1],
-        results_dir = _RESULTS,
-        best_params = f"{_RESULTS}/best_params.json",
-        csv_path    = str(MERGED_DENGUE_ENV_DATA),
+        results_dir = lambda wc, output: os.path.dirname(output[0]),
+        # The staged copies of the inputs: on k8s + S3 a bare path in params isn't fetched.
+        best_params = lambda wc, input: input.best_params,
+        csv_path    = lambda wc, input: input.csv_data,
+    # CPU, one sample per pass (~2 GB peak, ~5 min per explained window on 12 threads; Snakemake
+    # caps torch at `threads`, and on 1 it takes ~6x longer). On the laptop GPU the explainer's
+    # first pass failed with "CUDA driver error: device not ready".
+    threads: 8
     resources:
-        gpu = 1,
-        gpu_manufacturer = "nvidia",   # see train_stgnn_production
-        scale = False,
+        mem_mb = 3000,
     script:
         "../src/OpenDengue/STGNN/explain_shap.py"
 
@@ -254,11 +298,6 @@ if config.get("best_params_source"):
 # rather than a directory() output: S3 has no directory objects, so Snakemake can't confirm a
 # directory output exists in remote storage.
 # ---------------------------------------------------------------------------
-
-_bundle_params = (
-    f"results/STGNN/{config['best_params_source']}/best_params.json"
-    if config.get("best_params_source") else f"{_RESULTS}/best_params.json"
-)
 
 rule export_inference_bundle:
     input:

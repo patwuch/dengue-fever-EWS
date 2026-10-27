@@ -1,0 +1,198 @@
+[
+ {
+  "month":"Nov 2017",
+  "cluster":0,
+  "centroid_x":100.4541326363,
+  "centroid_y":13.576253128,
+  "mass_fraction":0.716192666
+ },
+ {
+  "month":"Nov 2017",
+  "cluster":1,
+  "centroid_x":116.9396476314,
+  "centroid_y":1.0185823377,
+  "mass_fraction":0.283807334
+ },
+ {
+  "month":"Dec 2017",
+  "cluster":0,
+  "centroid_x":100.4709343127,
+  "centroid_y":13.2908827991,
+  "mass_fraction":0.7135744754
+ },
+ {
+  "month":"Dec 2017",
+  "cluster":1,
+  "centroid_x":116.8792428439,
+  "centroid_y":0.9029202742,
+  "mass_fraction":0.2864255246
+ },
+ {
+  "month":"Jan 2018",
+  "cluster":0,
+  "centroid_x":100.466032662,
+  "centroid_y":13.4689913383,
+  "mass_fraction":0.7020126041
+ },
+ {
+  "month":"Jan 2018",
+  "cluster":1,
+  "centroid_x":116.8747799244,
+  "centroid_y":1.0328765689,
+  "mass_fraction":0.2979873959
+ },
+ {
+  "month":"Feb 2018",
+  "cluster":0,
+  "centroid_x":100.497322452,
+  "centroid_y":13.4433110408,
+  "mass_fraction":0.7029224708
+ },
+ {
+  "month":"Feb 2018",
+  "cluster":1,
+  "centroid_x":116.9120828032,
+  "centroid_y":0.8987894534,
+  "mass_fraction":0.2970775292
+ },
+ {
+  "month":"Mar 2018",
+  "cluster":0,
+  "centroid_x":100.4946308046,
+  "centroid_y":13.492971367,
+  "mass_fraction":0.70360189
+ },
+ {
+  "month":"Mar 2018",
+  "cluster":1,
+  "centroid_x":116.896707806,
+  "centroid_y":0.8554170363,
+  "mass_fraction":0.29639811
+ },
+ {
+  "month":"Apr 2018",
+  "cluster":0,
+  "centroid_x":100.4868025997,
+  "centroid_y":13.5134385434,
+  "mass_fraction":0.7145747535
+ },
+ {
+  "month":"Apr 2018",
+  "cluster":1,
+  "centroid_x":116.7693690215,
+  "centroid_y":0.7398530073,
+  "mass_fraction":0.2854252465
+ },
+ {
+  "month":"May 2018",
+  "cluster":0,
+  "centroid_x":100.476853574,
+  "centroid_y":13.5774890924,
+  "mass_fraction":0.7155408624
+ },
+ {
+  "month":"May 2018",
+  "cluster":1,
+  "centroid_x":117.0639782957,
+  "centroid_y":0.903911241,
+  "mass_fraction":0.2844591376
+ },
+ {
+  "month":"Jun 2018",
+  "cluster":0,
+  "centroid_x":100.4658507117,
+  "centroid_y":13.5907553584,
+  "mass_fraction":0.7132319949
+ },
+ {
+  "month":"Jun 2018",
+  "cluster":1,
+  "centroid_x":117.0398276704,
+  "centroid_y":0.9752933358,
+  "mass_fraction":0.2867680051
+ },
+ {
+  "month":"Jul 2018",
+  "cluster":0,
+  "centroid_x":100.1859550453,
+  "centroid_y":14.1392803733,
+  "mass_fraction":0.7267961017
+ },
+ {
+  "month":"Jul 2018",
+  "cluster":1,
+  "centroid_x":116.8833574722,
+  "centroid_y":1.0164351272,
+  "mass_fraction":0.2732038983
+ },
+ {
+  "month":"Aug 2018",
+  "cluster":0,
+  "centroid_x":100.1813500119,
+  "centroid_y":14.1670169019,
+  "mass_fraction":0.732869217
+ },
+ {
+  "month":"Aug 2018",
+  "cluster":1,
+  "centroid_x":116.8734621665,
+  "centroid_y":1.1959463382,
+  "mass_fraction":0.267130783
+ },
+ {
+  "month":"Sep 2018",
+  "cluster":0,
+  "centroid_x":100.2431334702,
+  "centroid_y":14.0546324043,
+  "mass_fraction":0.7271359762
+ },
+ {
+  "month":"Sep 2018",
+  "cluster":1,
+  "centroid_x":116.7408759873,
+  "centroid_y":1.2092726641,
+  "mass_fraction":0.2728640238
+ },
+ {
+  "month":"Oct 2018",
+  "cluster":0,
+  "centroid_x":100.4591846486,
+  "centroid_y":13.5983504383,
+  "mass_fraction":0.7204404774
+ },
+ {
+  "month":"Oct 2018",
+  "cluster":1,
+  "centroid_x":116.976375026,
+  "centroid_y":0.9681570313,
+  "mass_fraction":0.2795595226
+ },
+ {
+  "month":"Nov 2018",
+  "cluster":0,
+  "centroid_x":100.450982802,
+  "centroid_y":13.5788122736,
+  "mass_fraction":0.7203908673
+ },
+ {
+  "month":"Nov 2018",
+  "cluster":1,
+  "centroid_x":116.7912546459,
+  "centroid_y":0.8426445404,
+  "mass_fraction":0.2796091327
+ },
+ {
+  "month":"Dec 2018",
+  "cluster":0,
+  "centroid_x":100.4857149597,
+  "centroid_y":13.4875512426,
+  "mass_fraction":0.7129871339
+ },
+ {
+  "month":"Dec 2018",
+  "cluster":1,
+  "centroid_x":116.7085445804,
+  "centroid_y":0.8409812425,
+  "mass_fraction":0.2870128661
+ }
+]

@@ -84,6 +84,8 @@ rule zonal_stats:
 # failure only reruns that year. Fetch everything with:  snakemake batches --profile ...
 BATCH_FIRST = {"CHIRPS_V3": 2011, "VIIRS_LST_DAY": 2012, "VIIRS_LST_NIGHT": 2012,
                "VIIRS_NDVI_EVI": 2012,
+               # Population-weighted rainfall, a candidate replacement for the area mean.
+               "CHIRPS_V3_POPW": 2011,
                # ERA5 is unchanged; 2026 fills June–August between the base batch and the
                # first successor-product monthly run.
                "ERA5_LAND": 2026}

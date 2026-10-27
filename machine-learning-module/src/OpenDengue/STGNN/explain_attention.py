@@ -65,6 +65,8 @@ from torch.utils.data import DataLoader
 
 from model import STGATGRU
 from tune import STGNNDataset, load_tensors, load_edge_index
+from loss import split_masks
+from preprocess.temporal import horizon
 from choropleth import _node_names, _load_geometry
 
 
@@ -99,7 +101,8 @@ def _prepare_features(model: STGATGRU, x: torch.Tensor, mask: torch.Tensor) -> t
 
 @torch.no_grad()
 def collect_attention(model: STGATGRU, dataloader: DataLoader,
-                       edge_index: torch.Tensor, device: torch.device):
+                       edge_index: torch.Tensor, device: torch.device,
+                       observed_all: bool = False):
     """
     Run gat1/gat2 with return_attention_weights=True over every window in the
     dataloader, keeping each window's own (lag, edge) attention separate
@@ -116,12 +119,18 @@ def collect_attention(model: STGATGRU, dataloader: DataLoader,
         attn2_by_t (T, E)   — gat2 per-lag mean across windows
         attn1_all  (W, T, E) — gat1, one value per window and lag (unpooled)
         attn2_all  (W, T, E) — gat2, one value per window and lag (unpooled)
+
+    The mask is the one the model saw in training (split_masks), or every node observed when
+    observed_all is set, as run_inference.py runs climate-only models.
     """
     model.eval()
     ref_edges = None
     per_window_attn1, per_window_attn2 = [], []
 
-    for x, _, mask in dataloader:
+    for x, y, mask in dataloader:
+        mask, _ = split_masks(y, mask)
+        if observed_all:
+            mask = torch.ones_like(mask)
         x, mask = x.to(device), mask.to(device)
         x = _prepare_features(model, x, mask)
         B, T, N, _ = x.size()
@@ -921,7 +930,7 @@ def explain_attention(cfg: dict, params: dict, model_path, out_dir: Path,
     model_path = Path(model_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    device      = torch.device(cfg.get("device", "cpu"))
+    device      = torch.device(cfg.get("device") or ("cuda" if torch.cuda.is_available() else "cpu"))
     window_size = params["window_size"]
 
     tensors = load_tensors(cfg, window_size, tensors_path)
@@ -943,14 +952,15 @@ def explain_attention(cfg: dict, params: dict, model_path, out_dir: Path,
         gat2_hidden  = params["gat2_hidden"],
         gat2_heads   = params["gat2_heads"],
         gru_hidden   = params["gru_hidden"],
-        pred_horizon = 1,
+        pred_horizon = horizon(cfg),
         dropout      = params["dropout"],
     ).to(device)
     print(f"Loading model from {model_path} ...")
-    model.load_state_dict(torch.load(model_path, weights_only=True))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
 
+    observed_all = not cfg.get("preprocessing", {}).get("incidence_input", True)
     edges, attn1, attn2, attn1_by_t, attn2_by_t, attn1_all, attn2_all = collect_attention(
-        model, dataloader, edge_index, device
+        model, dataloader, edge_index, device, observed_all=observed_all
     )
 
     node_names   = _node_names(csv_path)

@@ -5,6 +5,9 @@
 # NDVI / EVI (successor_training_table; 2011 converted from MODIS, see
 # results/conversion/modis_to_viirs_2011.json), with ERA5-Land and MODIS land cover unchanged.
 # Two outputs: this month (t) and next month (t + 1) from the 12 months ending at t - 1.
+# Rainfall is precipitation_mm, the monthly CHIRPS v3 total from the spatial mean, since
+# 2026-10-21; precipitation_sum scales with province area (see stgnn_climate_v2_rain_eval.yaml,
+# which matched or beat it over three seeds).
 # Hyperparameters are borrowed from cyclical_seasonal, as for v1.
 #
 # Invoke (laptop k3s, see k8s/sa-kubeconfig.sh):
@@ -65,7 +68,7 @@ features:
   use_landuse: true
   quality_vars: []   # data_quality describes the incidence input, which this mode drops
   env_vars:
-    - precipitation_sum
+    - precipitation_mm
     - temperature_2m_mean
     - temperature_2m_max_mean
     - temperature_2m_min_mean

@@ -5,6 +5,10 @@ retrained on the products that carry on, so live inputs need no conversion. This
 affected columns of the 2011–2018 training table (merge_data.py output) and keeps the rest:
 
     precipitation_sum                       CHIRPS v2 → CHIRPS v3 (covers 2011)
+    precipitation_mm   (new)                CHIRPS v3 monthly total in mm, from the spatial mean
+                                            (precipitation_sum scales with province area)
+    precipitation_popw_mm (new)             the same, population-weighted (CHIRPS_V3_POPW,
+                                            GPW v4.11 2015)
     LST_Day_1km_mean   → lst_day_mean       MODIS → VIIRS VNP21A1D
     LST_Night_1km_mean → lst_night_mean     MODIS → VIIRS VNP21A1N
     NDVI_mean          → ndvi_mean          MODIS → VIIRS VNP13A1
@@ -27,7 +31,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from env_features import read_product  # noqa: E402
+from env_features import monthly_rain_mm, read_product  # noqa: E402
 
 KEYS = ["adm_0_name", "adm_1_name", "year_month"]
 GROUP = ["adm_0_name", "adm_1_name", "mon"]
@@ -103,7 +107,9 @@ def main(inp, out, fit_years):
     modis = with_month(modis)
 
     table = base.drop(columns=REPLACED).copy()
-    chirps = monthly(inp["chirps_v3"], ["precipitation_sum"])
+    chirps = monthly_rain_mm(monthly(inp["chirps_v3"], ["precipitation_sum", "precipitation_mean"]))
+    popw = monthly_rain_mm(monthly(inp["chirps_v3_popw"], ["precipitation_mean"]))
+    chirps = chirps.merge(popw.rename(columns={"precipitation_mm": "precipitation_popw_mm"}), on=KEYS, how="left")
     table = table.merge(chirps, on=KEYS, how="left")
     table["precipitation_source"] = np.where(table["precipitation_sum"].notna(), "chirps_v3", "")
 

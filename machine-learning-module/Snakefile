@@ -74,6 +74,7 @@ rule successor_training_table:
         training        = str(MERGED_DENGUE_ENV_DATA),
         env             = str(DATA_ROOT / "data" / "processed" / "env" / "SEA_env_monthly.csv"),
         chirps_v3       = _batch("CHIRPS_V3", 2011, 2018),
+        chirps_v3_popw  = _batch("CHIRPS_V3_POPW", 2011, 2018),
         viirs_lst_day   = _batch("VIIRS_LST_DAY", *CONVERSION_YEARS),
         viirs_lst_night = _batch("VIIRS_LST_NIGHT", *CONVERSION_YEARS),
         viirs_vi        = _batch("VIIRS_NDVI_EVI", *CONVERSION_YEARS),

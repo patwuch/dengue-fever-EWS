@@ -47,7 +47,7 @@ else:
         row.update({k: round(v, 3) for k, v in vals.items() if k not in ("country",)})
         rows.append(row)
     df = pd.DataFrame(rows).set_index("Region")
-    display_cols = ["Country", "precipitation_sum", "temperature_2m_mean",
+    display_cols = ["Country", "precipitation_mm", "temperature_2m_mean",
                     "LST_Day_1km_mean", "NDVI_mean", "EVI_mean"]
     display_cols = [c for c in display_cols if c in df.columns]
     df[display_cols].style.format(precision=3)

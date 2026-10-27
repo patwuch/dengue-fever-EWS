@@ -1,0 +1,26 @@
+{
+  "model": "climate_v2_rain_eval_s1",
+  "horizon": 2,
+  "test_windows": 14,
+  "leads": {
+    "1": {
+      "province_months": 1851,
+      "mse_model": 0.6507605910301208,
+      "mse_seasonal": 1.1094504972659982,
+      "mae_model": 0.5949230790138245,
+      "mae_seasonal": 0.6666115979911968,
+      "skill_vs_seasonal": 0.41343882162045065,
+      "anomaly_r": 0.6503251712914192
+    },
+    "2": {
+      "province_months": 1747,
+      "mse_model": 0.6497992277145386,
+      "mse_seasonal": 1.0890213168335026,
+      "mae_model": 0.6014353036880493,
+      "mae_seasonal": 0.6615909465535001,
+      "skill_vs_seasonal": 0.40331817415298166,
+      "anomaly_r": 0.648147295504771
+    }
+  },
+  "beats_seasonal_at_every_lead": true
+}
