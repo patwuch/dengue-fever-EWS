@@ -80,16 +80,20 @@ Both forecast one month ahead of the last input month. Risk index = (1 + predict
 
 **Producing a bundle.** Each model is shipped as an *inference bundle*: `best_model.pt`, `best_params.json`, and `bundle.json`, which holds the node order, scalers, seasonal means and risk baselines the runner needs instead of the training CSV. `export_inference_bundle` packs them into `inference_bundle_<bundle_label>.tar.gz`, named like the release asset.
 
-Bundles are built on the k3s cluster with the `profiles/k8s` profile. Every rule runs as a Job in `dengue-ews` and reads and writes the S3 store from `k8s/storage.yaml`. The store needs only two author-supplied inputs: `data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv` and `results/STGNN/cyclical_seasonal/best_params.json`.
+Bundles are built with the `profiles/k8s` profile on the laptop's single-node k3s cluster, the only cluster with a GPU and with `dengue-ews:k8s-v1` imported. Don't point it at tmu: since the GPU workstation was retired (2026-10-27) tmu is the NUC alone, so job pods there fail with ErrImagePull or, needing `gpu=1`, stay Pending. Every rule runs as a Job in `dengue-ews` and reads and writes the S3 store from `k8s/storage.yaml`, which stays on the NUC. The store needs only two author-supplied inputs: `data/interim/machine-learning/SEA_dengue_env_monthly_2011-2018.csv` and `results/STGNN/cyclical_seasonal/best_params.json`.
 
 The Snakemake controller runs from `ghcr.io/patwuch/dengue-ews-controller`, a small public image that holds only Snakemake and its Kubernetes and S3 plugins ([k8s/controller.Dockerfile](k8s/controller.Dockerfile)). It submits the Jobs, and the pods run the rules in `dengue-ews:k8s-v1`. It needs an env file with `SNAKEMAKE_STORAGE_S3_ACCESS_KEY` / `_SECRET_KEY` (no `export`), and a kubeconfig whose current context is the `snakemake` ServiceAccount from `k8s/rbac.yaml`.
+
+`ews` defaults to the laptop cluster's kubeconfig (`kubeconfig-laptop` from `k8s/sa-kubeconfig.sh`). `--add-host` lets the container resolve `desktop-ijgfcqd`, the name on the laptop API server's certificate. Set `EWS_KUBECONFIG=~/.config/dengue-ews/kubeconfig` to target tmu, which only monthly inference (`profiles/k8s-inference`) should use.
 
 ```bash
 ews() {   # ews <dir inside the repo> <snakemake args...>
   local dir=$1; shift
-  docker run --rm -it --user $(id -u):$(id -g) \
+  docker run --rm -it --user $(id -u):$(id -g) --network host \
+    --add-host desktop-ijgfcqd:host-gateway \
     --env-file ~/.config/dengue-ews/s3.docker.env \
-    -e KUBECONFIG=/kube/config -v ~/.config/dengue-ews/kubeconfig:/kube/config:ro \
+    -e KUBECONFIG=/kube/config \
+    -v "${EWS_KUBECONFIG:-$HOME/.config/dengue-ews/kubeconfig-laptop}":/kube/config:ro \
     -v "$PWD":/workspace -w /workspace/$dir ghcr.io/patwuch/dengue-ews-controller:v1 "$@"
 }
 # from the repo root

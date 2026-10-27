@@ -1,5 +1,7 @@
-# Snakemake profile for the tmu k3s cluster: every rule runs as a Job in dengue-ews, and
-# inputs/outputs go through the SeaweedFS S3 store (k8s/storage.yaml) instead of local disk.
+# Snakemake profile for the laptop's single-node k3s cluster: every rule runs as a Job in
+# dengue-ews, and inputs/outputs go through the SeaweedFS S3 store (k8s/storage.yaml) instead
+# of local disk. Not for tmu: since its GPU workstation was retired (2026-10-27) it has no GPU
+# and no copy of the job image, so pods would fail ErrImagePull or stay Pending.
 #
 #   snakemake <target> --configfile config/OpenDengue/<experiment>.yaml --profile profiles/k8s
 #
@@ -9,7 +11,8 @@
 
 executor: kubernetes
 kubernetes-namespace: dengue-ews
-# Not :latest; with that tag the kubelet always pulls from Docker Hub and misses the imported image.
+# Imported only into the laptop's k3s containerd. Not :latest; with that tag the kubelet
+# always pulls from Docker Hub and misses the imported image.
 container-image: dengue-ews:k8s-v1
 
 default-storage-provider: s3
@@ -23,6 +26,6 @@ config:
 
 jobs: 4
 resources:
-  - gpu=1        # one GPU in the cluster (the workstation's 1050 Ti)
+  - gpu=1        # one GPU in the cluster (the laptop's RTX 3050)
 retries: 1
 printshellcmds: true
