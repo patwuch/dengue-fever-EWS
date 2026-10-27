@@ -1,117 +1,5 @@
 [
   {
-    "objectID": "climate-projection-data.html",
-    "href": "climate-projection-data.html",
-    "title": "Climate Projection Data",
-    "section": "",
-    "text": "Climate projection data informs the SEA Provinces model:"
-  },
-  {
-    "objectID": "climate-projection-data.html#arm-1-southeast-asia-provinces-cmip6-gwl",
-    "href": "climate-projection-data.html#arm-1-southeast-asia-provinces-cmip6-gwl",
-    "title": "Climate Projection Data",
-    "section": "Arm 1 — Southeast Asia Provinces (CMIP6 / GWL)",
-    "text": "Arm 1 — Southeast Asia Provinces (CMIP6 / GWL)\n\nGlobal Warming Level Projections (SEA Domain)\nSummary of regional climate trajectories from the GWL dataset covering the SEA domain. These trajectories are used to compute the monthly bias correction applied before STGNN inference.\n\n\n\n\n⚠️  GWL TSV not found — run climate-projection-module pipeline first.\n\n\n\nFigure 1\n\n\n\n\n\nGWL Precipitation Projections (SEA Domain)\n\n\n\n\n⚠️  GWL TSV not found or empty — run climate-projection-module pipeline first.\n\n\n\nFigure 2\n\n\n\n\n\nCMIP6 SSP2-4.5 Bias Correction Baseline\nThe bias correction applied to operational inference computes the difference between the CMIP6 SSP2-4.5 projected climatology for the current calendar month and the 2011–2018 ERA5-Land training climatology. This delta is subtracted from current observations before they are passed to the STGNN.\n\n\nCMIP6 Multi-Model Spread (SEA)\n\n\n\n\n⚠️  CMIP6 ensemble spread TSV not found — run climate-projection-module/scripts/compute_cmip6_spread.py first.\n\n\n\nFigure 3\n\n\n\n\n\nNote on scenario alignment: The SEA Provinces model uses CMIP6 SSP2-4.5 for its operational bias correction. SSP5-8.5 projections are included for sensitivity analysis only."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "",
-    "text": "Last updated: 2026-10-17T12:52:00.201852Z  ·  Forecast months: 2026-10 and 2026-11  ·  SEA regions covered: 162"
-  },
-  {
-    "objectID": "index.html#study-overview",
-    "href": "index.html#study-overview",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "Study Overview",
-    "text": "Study Overview\nThis project combines two complementary prediction models targeting different geographic scales and use cases:\n\n\nArm 1 — Southeast Asia Provinces\nA spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin-1 provinces across 10 SEA countries (2011–2018). It captures international dengue risk dynamics using province-level historical infection data, monthly climatological data (ERA5-Land, VIIRS, CHIRPS v3 for the live climate model; MODIS and CHIRPS v2 in the study), and Shared Socioeconomic Pathways. Inference runs monthly; the climate-only risk map is bias-corrected for the observed post-2018 climate shift.\nView SEA Provinces Results →\n\n\nArm 2 — Taiwan Basic Statistics Area (BSA)\nA Taiwan-specific counterpart operating at the finer granularity of the Basic Statistics Area (BSA) — the smallest census unit tracked by the Taiwanese government. It jointly considers international mobility (using SEA risk states from Arm 1 as exporter signals), local mobility, BSA-level environmental suitability, and population demographics to predict elevated local dengue risk.\nIn development — results will be published here once the BSA pipeline is operational."
-  },
-  {
-    "objectID": "index.html#sea-provinces-current-risk-maps",
-    "href": "index.html#sea-provinces-current-risk-maps",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "SEA Provinces — Current Risk Maps",
-    "text": "SEA Provinces — Current Risk Maps\nRelative dengue risk index per admin-1 province from the climate-only model, for this month and next month. Both maps come from the same run and the same inputs, the 12 months up to last month; “next month” is one month further ahead. 1 is the province’s usual level for that calendar month in 2011–2018; 2 is twice it, 0.5 half.\n\n\n\n\n\n\nNoteModel update, October 2026: climate model v2\n\n\n\n\n\nNASA’s Terra MODIS has drifted from its orbit since 2022 (its daytime land surface temperature reads up to ~3 °C too cool by 2026) and stops in early 2027; CHIRPS v2 ends after 2026. The climate model was retrained on their successors, VIIRS land surface temperature and vegetation indices and CHIRPS v3 precipitation, and now predicts two months at once. Forecasts before October 2026 came from the previous model.\n\n\n\n\nThis monthNext month\n\n\n\n\n\n\n\n\n\n                            \n                                            \n\n\n(a) Risk index for this month, on a log scale centred on 1. Inputs are corrected for the shift between 2011–2018 and 2019–2025 climate. Grey: no model for that province.\n\n\n\n\n\n\nHeld-out test months (2017-11 → 2018-12): skill vs. each province’s usual level +0.43 (0 = no better than the usual level, 1 = perfect).\n\n\n(b)\n\n\n\n\n\nFigure 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n                            \n                                            \n\n\n(a) Risk index for next month, from the same run. One month further ahead, so less certain.\n\n\n\n\n\n\nHeld-out test months (2017-11 → 2018-12): skill vs. each province’s usual level +0.41 (0 = no better than the usual level, 1 = perfect).\n\n\n(b)\n\n\n\n\n\nFigure 2"
-  },
-  {
-    "objectID": "index.html#sea-provinces-incidence-based-forecasts",
-    "href": "index.html#sea-provinces-incidence-based-forecasts",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "SEA Provinces — Incidence-based Forecasts",
-    "text": "SEA Provinces — Incidence-based Forecasts\nThe study model, IR + environment (cyclical_seasonal), shares its architecture with the climate-only model above and forecasts next month’s incidence rate from the past 12 months of reported incidence plus climate and land use. It appears here when recent case data is supplied.\n\n\n\nTable 1: Predicted incidence rate (cases per 100,000) and risk index from the IR + environment model, highest predicted IR first.\n\n\n\nNo incidence-based forecasts yet — they need site/data/incidence/recent_incidence.csv (see site/data/incidence/README.md)."
-  },
-  {
-    "objectID": "index.html#sea-provinces-risk-index-trends",
-    "href": "index.html#sea-provinces-risk-index-trends",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "SEA Provinces — Risk Index Trends",
-    "text": "SEA Provinces — Risk Index Trends\nMean risk index across all SEA admin-1 regions over every month predictions have been archived.\n\n\n\n\n                            \n                                            \n\n\nFigure 3: Monthly mean relative risk index across all SEA admin-1 regions. Values &gt; 1 indicate elevated risk vs the 2011–2018 baseline."
-  },
-  {
-    "objectID": "index.html#about",
-    "href": "index.html#about",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "About",
-    "text": "About\nDengue fever’s transmission dynamics in Southeast Asia relies on human and vector mobility, displaying a high degree of non-linearity and unpredictability. Moreover, as dengue outbreaks in Taiwan are attributed to imported cases from Southeast Asia coinciding with windows of time where weather favors vector reproductability, preventative measures must be taken at the right time in the right places. To address the limits of considering dengue outbreak in isolation which ignores how circulating dengue serotypes confer patterns that may only be explained across multiple countries extended beyond neighboring years, this study creates a two-pronged experimental design that combines: (1) a Southeast Asian spatiotemporally-aware deep learning prediction model that captures international dengue risk dynamics based on province-level historical infection data, near-real-time climatological data, as well as Shared Socioeconomic Pathways data. (2) a Taiwan-only counterpart whose prediction works at a finer granularity, a Basic Statistics Area (BSA), and predicts based on individual case report, clinical diagnosis, demographic data, and environmental data.\n\n\nSEA Provinces Pipeline\n\nMonthly zonal statistics fetched from Google Earth Engine\nObservational climate delta (2019–2026 vs 2011–2018) applied to adjust for post-2018 climate shift\nSTGNN inference run on adjusted features\nResults published automatically via GitHub Actions\n\nArchitecture: ST-GAT + GRU (PyTorch Geometric) Training period: 2011–2018 Features: ERA5-Land, MODIS LST, NDVI/EVI, CHIRPS, LULC, WorldPop, SSP population Spatial scope: 162 admin-1 regions across 10 SEA countries Performance (test set): Huber 0.390 · MAE 1.214 · RMSE 2.460 (log IR, 14 held-out months)\n\n\n\n\nInterpretation note: SEA predictions are expressed as a relative risk index (predicted log IR normalised to the 2011–2018 baseline), not absolute case counts. This accounts for structural model uncertainty arising from the 8-year gap between training data and current conditions."
-  },
-  {
-    "objectID": "index.html#code",
-    "href": "index.html#code",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "Code",
-    "text": "Code\nSource code and pipeline configuration are available on GitHub under the GNU GPLv3 license."
-  },
-  {
-    "objectID": "index.html#contact",
-    "href": "index.html#contact",
-    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
-    "section": "Contact",
-    "text": "Contact\nFor questions or collaboration inquiries, please open an issue on the GitHub repository."
-  },
-  {
-    "objectID": "monthly-zonal-stats.html",
-    "href": "monthly-zonal-stats.html",
-    "title": "Monthly Environmental Data",
-    "section": "",
-    "text": "Environmental features for the SEA Provinces model are admin-1 zonal statistics. All zonal statistics between 2011 and 2026 have been computed with the Easy-Earth-Engine application, which provides a data-provenance pipeline ensuring reproducibility of the remote sensing extraction."
-  },
-  {
-    "objectID": "monthly-zonal-stats.html#arm-1-southeast-asia-provinces-admin-1-zonal-statistics",
-    "href": "monthly-zonal-stats.html#arm-1-southeast-asia-provinces-admin-1-zonal-statistics",
-    "title": "Monthly Environmental Data",
-    "section": "Arm 1 — Southeast Asia Provinces (Admin-1 Zonal Statistics)",
-    "text": "Arm 1 — Southeast Asia Provinces (Admin-1 Zonal Statistics)\nRemote sensing data fetched from Google Earth Engine for —. These are per-admin-1 spatial averages (zonal statistics) of the environmental features used by the SEA STGNN.\n\nLatest Monthly Zonal Statistics\n\n\n\nTable 1: Latest monthly zonal statistics by SEA admin-1 region (raw, pre-correction).\n\n\n\n⚠️  No zonal statistics found — the monthly zonal statistics now feed data/processed/env/SEA_env_monthly_v2.csv on the cluster (repo-root Snakefile, env_table_v2).\n\n\n\n\n\n\nApplied Climate Deltas (SEA)\nThe table below shows the bias correction delta applied to each SEA feature this month. A negative delta means the current climate is warmer/wetter than the 2011–2018 baseline, so the raw observation is shifted downward before model inference.\n\n\nGlobal Warming Level Projections (SEA Domain)\nSummary of regional climate trajectories from the GWL dataset covering the SEA domain.\n\n\n\n\n⚠️  GWL TSV not found — run climate-projection-module pipeline first.\n\n\n\nFigure 1"
-  },
-  {
-    "objectID": "shared-socioeconomic-pathways.html",
-    "href": "shared-socioeconomic-pathways.html",
-    "title": "Shared Socioeconomic Pathways",
-    "section": "",
-    "text": "Shared Socioeconomic Pathways (SSPs) are a set of five global scenarios describing plausible futures for societal development through 2100 (SSP1–SSP5). They were developed by the climate research community alongside the IPCC AR6 process and are widely used to contextualise climate impact projections. In this study:"
-  },
-  {
-    "objectID": "shared-socioeconomic-pathways.html#arm-1-southeast-asia-provinces",
-    "href": "shared-socioeconomic-pathways.html#arm-1-southeast-asia-provinces",
-    "title": "Shared Socioeconomic Pathways",
-    "section": "Arm 1 — Southeast Asia Provinces",
-    "text": "Arm 1 — Southeast Asia Provinces\n\nSSP Population Projections by Province\nPopulation projections at admin-1 level under SSP1 (sustainability), SSP2 (middle of the road), and SSP3 (regional rivalry) scenarios, derived from the CMIP6-aligned SSP database.\n\n\n\n\n⚠️  SEA SSP population data not found — run climate-projection-module/scripts/extract_ssp_population.py first.\n\n\n\nFigure 1\n\n\n\n\n\nSSP Urbanisation Rate by Province\nUrban fraction of population is a key driver of dengue vector density. SSP2 and SSP3 diverge substantially in projected urbanisation rates across SEA countries.\n\n\n\n\n⚠️  SEA SSP urbanisation data not found — run climate-projection-module/scripts/extract_ssp_urbanisation.py first.\n\n\n\nFigure 2\n\n\n\n\n\nSSP Feature Contribution to STGNN\nThe table below summarises how SSP variables are incorporated into the SEA STGNN feature set.\n\n\n\n\n\n\n\n\nSSP Variable\nScenario(s) Used\nRole in Model\n\n\n\n\nPopulation (total)\nSSP2 (baseline)\nNode feature — scales absolute case counts\n\n\nPopulation density\nSSP2\nNode feature — proxy for human-vector contact rate\n\n\nUrban fraction\nSSP1, SSP2, SSP3\nNode feature — affects vector habitat availability\n\n\nGDP per capita\nSSP2\nNode feature — proxy for healthcare access / reporting capacity\n\n\n\n\n\nNote on scenario selection: The SEA STGNN is trained and validated under historical conditions (2011–2018) and uses SSP2 population data as the primary covariate. SSP1 and SSP3 are included as sensitivity scenarios for prospective risk projections only. For operational monthly inference, SSP2-4.5 is used throughout for consistency with the AR6 climate delta correction."
-  },
-  {
-    "objectID": "dengue-data.html",
-    "href": "dengue-data.html",
-    "title": "Dengue Data",
-    "section": "",
-    "text": "This page presents the dengue case data underpinning the SEA Provinces model: the OpenDengue dataset used to train and evaluate it."
-  },
-  {
-    "objectID": "dengue-data.html#arm-1-southeast-asia-provinces-opendengue",
-    "href": "dengue-data.html#arm-1-southeast-asia-provinces-opendengue",
-    "title": "Dengue Data",
-    "section": "Arm 1 — Southeast Asia Provinces (OpenDengue)",
-    "text": "Arm 1 — Southeast Asia Provinces (OpenDengue)\nInteractive dashboards showing temporal and spatial dengue case trends by WHO region, generated from the OpenDengue dataset (SEA, 2011–2018).\n\nTemporal — SEAROTemporal — WPROSpatial — SEAROSpatial — WPRONational\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nData source: OpenDengue — a global open-access dengue surveillance database. Spatial imputation was performed using GAUL 2024 admin-1 boundaries. Spatial autocorrelation was assessed via Moran’s I.\n\n\n\n\n\n\n\n\n\n\nFigure 1: Moran’s I spatial autocorrelation across time slices.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: Moran’s I scatter plot."
-  },
-  {
     "objectID": "sea-provinces-study-results.html",
     "href": "sea-provinces-study-results.html",
     "title": "Model Results",
@@ -144,6 +32,125 @@
     "href": "sea-provinces-study-results.html#experiment-results",
     "title": "Model Results",
     "section": "Experiment Results",
-    "text": "Experiment Results\nWe show one experiment here: cyclical_seasonal. It predicts log incidence rate (log IR) from lagged IR plus climate and land-use covariates, encodes calendar month with the sin/cos cyclical encoding (rather than subtracting a fixed per-month training baseline — see the Bias Correction Note above for why that matters beyond the training window), and gives missing admin-1 nodes a learned trainable embedding rather than zeroed-out features (see Architecture above). Its hyperparameters are also the ones the climate-only model behind the live risk map is trained with.\nThe results below come from its config/training run under machine-learning-module/results/STGNN/: metrics, hyperparameters, training curves, and available plots.\n\n\n\n\n  Experiment:\n  \n    cyclical_seasonal\n  \n\n\ncyclical_seasonal\n\nTest Set Metrics\n\n\n\n\nMetric\nValue\n\n\n\n\nHuber loss\n0.0505\n\n\nMAE (IR)\n1.9868\n\n\nMSE (IR)\n20.0359\n\n\nRMSE (IR)\n4.4762\n\n\nBest val loss\n0.0386\n\n\n\n\n\nHyperparameters\n\n\n\n\nParameter\nValue\n\n\n\n\nInput window (months)\n12.0\n\n\nGAT layer 1 — hidden dim\n32.0\n\n\nGAT layer 1 — attention heads\n4.0\n\n\nGAT layer 2 — hidden dim\n64.0\n\n\nGAT layer 2 — attention heads\n2.0\n\n\nGRU hidden dim\n64.0\n\n\nMLP hidden dim\n64.0\n\n\nMLP layers\n2.0\n\n\nBatch size\n4.0\n\n\nDropout\n0.4\n\n\nLearning rate\n0.000137\n\n\n\n\n\nTraining Curves\n                                                \n\nScatter Plot\n\n\nChoropleth Maps — Predicted vs Actual"
+    "text": "Experiment Results\nWe show two experiments here. cyclical_seasonal predicts log incidence rate (log IR) from lagged IR plus climate and land-use covariates, encodes calendar month with the sin/cos cyclical encoding (rather than subtracting a fixed per-month training baseline — see the Bias Correction Note above for why that matters beyond the training window), and gives missing admin-1 nodes a learned trainable embedding rather than zeroed-out features (see Architecture above). Its hyperparameters are also the ones the climate-only model behind the live risk map is trained with. Alongside it is climate_v2_rain_eval_s1, the held-out evaluation copy of that climate-only model (training seed 1 of 3).\n\n\n\n\n\n\nWarning\n\n\n\nKnown issue with cyclical_seasonal’s rainfall input. It was trained on precipitation_sum, CHIRPS rainfall summed over each province’s pixels, which grows with province area instead of measuring millimetres. Scaled across provinces, a small province’s rainfall barely varies over time, so this model’s use of rainfall, and anything read from it about rainfall’s role, is unreliable. The climate model was retrained on monthly rainfall in mm on 21 October 2026; cyclical_seasonal has not been yet.\n\n\nThe results below come from each config/training run under machine-learning-module/results/STGNN/: metrics, hyperparameters, training curves, and available plots.\n\n\n\n\n  Experiment:\n  \n    cyclical_seasonalclimate_v2_rain_eval_s1\n  \n\n\ncyclical_seasonal\n\nTest Set Metrics\n\n\n\n\nMetric\nValue\n\n\n\n\nHuber loss\n0.0505\n\n\nMAE (IR)\n1.9868\n\n\nMSE (IR)\n20.0359\n\n\nRMSE (IR)\n4.4762\n\n\nBest val loss\n0.0386\n\n\n\n\n\nHyperparameters\n\n\n\n\nParameter\nValue\n\n\n\n\nInput window (months)\n12.0\n\n\nGAT layer 1 — hidden dim\n32.0\n\n\nGAT layer 1 — attention heads\n4.0\n\n\nGAT layer 2 — hidden dim\n64.0\n\n\nGAT layer 2 — attention heads\n2.0\n\n\nGRU hidden dim\n64.0\n\n\nMLP hidden dim\n64.0\n\n\nMLP layers\n2.0\n\n\nBatch size\n4.0\n\n\nDropout\n0.4\n\n\nLearning rate\n0.000137\n\n\n\n\n\nTraining Curves\n                                                \n\nScatter Plot\n\n\nChoropleth Maps — Predicted vs Actual\n\nAttention Mechanism\nAttention Graph\n\nclimate_v2_rain_eval_s1\n\nTraining Curves\n                                                \nAttention Mechanism\nAttention Graph\n\nAttention Shift\n\n\nFeature Attribution (SHAP Expected Gradients)"
+  },
+  {
+    "objectID": "monthly-zonal-stats.html",
+    "href": "monthly-zonal-stats.html",
+    "title": "Monthly Environmental Data",
+    "section": "",
+    "text": "Environmental features for the SEA Provinces model are admin-1 zonal statistics. All zonal statistics between 2011 and 2026 have been computed with the Easy-Earth-Engine application, which provides a data-provenance pipeline ensuring reproducibility of the remote sensing extraction."
+  },
+  {
+    "objectID": "monthly-zonal-stats.html#arm-1-southeast-asia-provinces-admin-1-zonal-statistics",
+    "href": "monthly-zonal-stats.html#arm-1-southeast-asia-provinces-admin-1-zonal-statistics",
+    "title": "Monthly Environmental Data",
+    "section": "Arm 1 — Southeast Asia Provinces (Admin-1 Zonal Statistics)",
+    "text": "Arm 1 — Southeast Asia Provinces (Admin-1 Zonal Statistics)\nRemote sensing data fetched from Google Earth Engine for —. These are per-admin-1 spatial averages (zonal statistics) of the environmental features used by the SEA STGNN.\n\nLatest Monthly Zonal Statistics\n\n\n\nTable 1: Latest monthly zonal statistics by SEA admin-1 region (raw, pre-correction).\n\n\n\n⚠️  No zonal statistics found — the monthly zonal statistics now feed data/processed/env/SEA_env_monthly_v2.csv on the cluster (repo-root Snakefile, env_table_v2).\n\n\n\n\n\n\nApplied Climate Deltas (SEA)\nThe table below shows the bias correction delta applied to each SEA feature this month. A negative delta means the current climate is warmer/wetter than the 2011–2018 baseline, so the raw observation is shifted downward before model inference.\n\n\nGlobal Warming Level Projections (SEA Domain)\nSummary of regional climate trajectories from the GWL dataset covering the SEA domain.\n\n\n\n\n⚠️  GWL TSV not found — run climate-projection-module pipeline first.\n\n\n\nFigure 1"
+  },
+  {
+    "objectID": "shared-socioeconomic-pathways.html",
+    "href": "shared-socioeconomic-pathways.html",
+    "title": "Shared Socioeconomic Pathways",
+    "section": "",
+    "text": "Shared Socioeconomic Pathways (SSPs) are a set of five global scenarios describing plausible futures for societal development through 2100 (SSP1–SSP5). They were developed by the climate research community alongside the IPCC AR6 process and are widely used to contextualise climate impact projections. In this study:"
+  },
+  {
+    "objectID": "shared-socioeconomic-pathways.html#arm-1-southeast-asia-provinces",
+    "href": "shared-socioeconomic-pathways.html#arm-1-southeast-asia-provinces",
+    "title": "Shared Socioeconomic Pathways",
+    "section": "Arm 1 — Southeast Asia Provinces",
+    "text": "Arm 1 — Southeast Asia Provinces\n\nSSP Population Projections by Province\nPopulation projections at admin-1 level under SSP1 (sustainability), SSP2 (middle of the road), and SSP3 (regional rivalry) scenarios, derived from the CMIP6-aligned SSP database.\n\n\n\n\n⚠️  SEA SSP population data not found — run climate-projection-module/scripts/extract_ssp_population.py first.\n\n\n\nFigure 1\n\n\n\n\n\nSSP Urbanisation Rate by Province\nUrban fraction of population is a key driver of dengue vector density. SSP2 and SSP3 diverge substantially in projected urbanisation rates across SEA countries.\n\n\n\n\n⚠️  SEA SSP urbanisation data not found — run climate-projection-module/scripts/extract_ssp_urbanisation.py first.\n\n\n\nFigure 2\n\n\n\n\n\nSSP Feature Contribution to STGNN\nThe table below summarises how SSP variables are incorporated into the SEA STGNN feature set.\n\n\n\n\n\n\n\n\nSSP Variable\nScenario(s) Used\nRole in Model\n\n\n\n\nPopulation (total)\nSSP2 (baseline)\nNode feature — scales absolute case counts\n\n\nPopulation density\nSSP2\nNode feature — proxy for human-vector contact rate\n\n\nUrban fraction\nSSP1, SSP2, SSP3\nNode feature — affects vector habitat availability\n\n\nGDP per capita\nSSP2\nNode feature — proxy for healthcare access / reporting capacity\n\n\n\n\n\nNote on scenario selection: The SEA STGNN is trained and validated under historical conditions (2011–2018) and uses SSP2 population data as the primary covariate. SSP1 and SSP3 are included as sensitivity scenarios for prospective risk projections only. For operational monthly inference, SSP2-4.5 is used throughout for consistency with the AR6 climate delta correction."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "",
+    "text": "Last updated: 2026-10-21T16:19:40.547052Z  ·  Forecast months: 2026-10 and 2026-11  ·  SEA regions covered: 162"
+  },
+  {
+    "objectID": "index.html#study-overview",
+    "href": "index.html#study-overview",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "Study Overview",
+    "text": "Study Overview\nThis project combines two complementary prediction models targeting different geographic scales and use cases:\n\n\nArm 1 — Southeast Asia Provinces\nA spatiotemporally-aware deep learning model (ST-GAT + GRU) trained on 162 admin-1 provinces across 10 SEA countries (2011–2018). It captures international dengue risk dynamics using province-level historical infection data, monthly climatological data (ERA5-Land, VIIRS, CHIRPS v3 for the live climate model; MODIS and CHIRPS v2 in the study), and Shared Socioeconomic Pathways. Inference runs monthly; the climate-only risk map is bias-corrected for the observed post-2018 climate shift.\nView SEA Provinces Results →\n\n\nArm 2 — Taiwan Basic Statistics Area (BSA)\nA Taiwan-specific counterpart operating at the finer granularity of the Basic Statistics Area (BSA) — the smallest census unit tracked by the Taiwanese government. It jointly considers international mobility (using SEA risk states from Arm 1 as exporter signals), local mobility, BSA-level environmental suitability, and population demographics to predict elevated local dengue risk.\nIn development — results will be published here once the BSA pipeline is operational."
+  },
+  {
+    "objectID": "index.html#sea-provinces-current-risk-maps",
+    "href": "index.html#sea-provinces-current-risk-maps",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "SEA Provinces — Current Risk Maps",
+    "text": "SEA Provinces — Current Risk Maps\nRelative dengue risk index per admin-1 province from the climate-only model, for this month and next month. Both maps come from the same run and the same inputs, the 12 months up to last month; “next month” is one month further ahead. 1 is the province’s usual level for that calendar month in 2011–2018; 2 is twice it, 0.5 half.\n\n\n\n\n\n\nNoteModel update, October 2026: climate model v2\n\n\n\n\n\nNASA’s Terra MODIS has drifted from its orbit since 2022 (its daytime land surface temperature reads up to ~3 °C too cool by 2026) and stops in early 2027; CHIRPS v2 ends after 2026. The climate model was retrained on their successors, VIIRS land surface temperature and vegetation indices and CHIRPS v3 precipitation, and now predicts two months at once. Forecasts before October 2026 came from the previous model.\n\n\n\n\n\n\n\n\n\nWarningCorrection, 21 October 2026: rainfall input\n\n\n\n\n\nUntil this date the climate models received rainfall as a sum over each province’s satellite pixels, which grows with the province’s area, instead of rainfall in millimetres. Scaled across provinces, a small province’s rainfall then barely changed from month to month, so the models could make little use of it. Climate model v2 now uses the monthly rainfall total in mm. Forecast skill on held-out months is unchanged within training noise; the input attributions below come from the corrected model and replace those published before this date, in which rainfall’s share was about 2% (now about 7%).\n\n\n\n\nThis monthNext month\n\n\n\n\n\n\n\n\n\n                            \n                                            \n\n\n(a) Risk index for this month, on a log scale centred on 1. Inputs are corrected for the shift between 2011–2018 and 2019–2025 climate. Grey: no model for that province.\n\n\n\n\n\n\nHeld-out test months (2017-11 → 2018-12): skill vs. each province’s usual level +0.43, +0.37 to +0.50 over training seeds (0 = no better than the usual level, 1 = perfect).\n\n\n(b)\n\n\n\n\n\nFigure 1\n\n\n\n\n\n\n\n\n\n\n\n\n\n                            \n                                            \n\n\n(a) Risk index for next month, from the same run. One month further ahead, so less certain.\n\n\n\n\n\n\nHeld-out test months (2017-11 → 2018-12): skill vs. each province’s usual level +0.42, +0.36 to +0.49 over training seeds (0 = no better than the usual level, 1 = perfect).\n\n\n(b)\n\n\n\n\n\nFigure 2"
+  },
+  {
+    "objectID": "index.html#sea-provinces-what-drives-the-forecast",
+    "href": "index.html#sea-provinces-what-drives-the-forecast",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "SEA Provinces — What Drives the Forecast",
+    "text": "SEA Provinces — What Drives the Forecast\nWhich inputs move the climate model’s predictions, measured with SHAP Expected Gradients on three evaluation copies of climate model v2 (same data and architecture, trained without the last 14 months, with training seeds 1–3) over those held-out months, 2017-11 to 2018-12, and averaged over the three. Each bar is an input group’s share of the total attribution to the predicted dengue burden summed over all provinces. These describe the model’s behaviour in general, not the reasons for this month’s map, and attribution is not causation.\n\nInput groupsHow far backWhere the model looks\n\n\n\n\n\n\n                            \n                                            \n\n\nFigure 3: Share of total |attribution| by input group, for this month’s and next month’s prediction. Hover for the individual inputs.\n\n\n\n\n\n\n\n\n\n\n                            \n                                            \n\n\nFigure 4: Share of total |attribution| by input month, across all inputs. t is the first predicted month; the model reads the 12 months before it.\n\n\n\n\n\n\n\n\nWhere the graph attention between neighbouring provinces concentrates over the held-out months: each trail follows the centre of a cluster of provinces that draw the most attention from their neighbours. Across the 14 held-out months the 2 hubs carry 72% and 28% of the attention and move at most 103 km: this model’s spatial focus is close to fixed, and month-to-month changes in its forecasts come from the inputs, not from where it looks. More detail on the Southeast Asia Provinces Study page."
+  },
+  {
+    "objectID": "index.html#sea-provinces-incidence-based-forecasts",
+    "href": "index.html#sea-provinces-incidence-based-forecasts",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "SEA Provinces — Incidence-based Forecasts",
+    "text": "SEA Provinces — Incidence-based Forecasts\nThe study model, IR + environment (cyclical_seasonal), shares its architecture with the climate-only model above and forecasts next month’s incidence rate from the past 12 months of reported incidence plus climate and land use. It appears here when recent case data is supplied.\n\n\n\nTable 1: Predicted incidence rate (cases per 100,000) and risk index from the IR + environment model, highest predicted IR first.\n\n\n\nNo incidence-based forecasts yet — they need site/data/incidence/recent_incidence.csv (see site/data/incidence/README.md)."
+  },
+  {
+    "objectID": "index.html#sea-provinces-risk-index-trends",
+    "href": "index.html#sea-provinces-risk-index-trends",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "SEA Provinces — Risk Index Trends",
+    "text": "SEA Provinces — Risk Index Trends\nMean risk index across all SEA admin-1 regions over every month predictions have been archived.\n\n\n\n\n                            \n                                            \n\n\nFigure 5: Monthly mean relative risk index across all SEA admin-1 regions. Values &gt; 1 indicate elevated risk vs the 2011–2018 baseline."
+  },
+  {
+    "objectID": "index.html#about",
+    "href": "index.html#about",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "About",
+    "text": "About\nDengue fever’s transmission dynamics in Southeast Asia relies on human and vector mobility, displaying a high degree of non-linearity and unpredictability. Moreover, as dengue outbreaks in Taiwan are attributed to imported cases from Southeast Asia coinciding with windows of time where weather favors vector reproductability, preventative measures must be taken at the right time in the right places. To address the limits of considering dengue outbreak in isolation which ignores how circulating dengue serotypes confer patterns that may only be explained across multiple countries extended beyond neighboring years, this study creates a two-pronged experimental design that combines: (1) a Southeast Asian spatiotemporally-aware deep learning prediction model that captures international dengue risk dynamics based on province-level historical infection data, near-real-time climatological data, as well as Shared Socioeconomic Pathways data. (2) a Taiwan-only counterpart whose prediction works at a finer granularity, a Basic Statistics Area (BSA), and predicts based on individual case report, clinical diagnosis, demographic data, and environmental data.\n\n\nSEA Provinces Pipeline\n\nMonthly zonal statistics fetched from Google Earth Engine\nObservational climate delta (2019–2026 vs 2011–2018) applied to adjust for post-2018 climate shift\nSTGNN inference run on adjusted features\nResults published automatically via GitHub Actions\n\nArchitecture: ST-GAT + GRU (PyTorch Geometric) Training period: 2011–2018 Features: ERA5-Land, MODIS LST, NDVI/EVI, CHIRPS, LULC, WorldPop, SSP population Spatial scope: 162 admin-1 regions across 10 SEA countries Performance (test set): Huber 0.390 · MAE 1.214 · RMSE 2.460 (log IR, 14 held-out months)\n\n\n\n\nInterpretation note: SEA predictions are expressed as a relative risk index (predicted log IR normalised to the 2011–2018 baseline), not absolute case counts. This accounts for structural model uncertainty arising from the 8-year gap between training data and current conditions."
+  },
+  {
+    "objectID": "index.html#code",
+    "href": "index.html#code",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "Code",
+    "text": "Code\nSource code and pipeline configuration are available on GitHub under the GNU GPLv3 license."
+  },
+  {
+    "objectID": "index.html#contact",
+    "href": "index.html#contact",
+    "title": "Spatiotemporal Dengue Risk Prediction in Southeast Asia and Taiwan",
+    "section": "Contact",
+    "text": "Contact\nFor questions or collaboration inquiries, please open an issue on the GitHub repository."
+  },
+  {
+    "objectID": "climate-projection-data.html",
+    "href": "climate-projection-data.html",
+    "title": "Climate Projection Data",
+    "section": "",
+    "text": "Climate projection data informs the SEA Provinces model:"
+  },
+  {
+    "objectID": "climate-projection-data.html#arm-1-southeast-asia-provinces-cmip6-gwl",
+    "href": "climate-projection-data.html#arm-1-southeast-asia-provinces-cmip6-gwl",
+    "title": "Climate Projection Data",
+    "section": "Arm 1 — Southeast Asia Provinces (CMIP6 / GWL)",
+    "text": "Arm 1 — Southeast Asia Provinces (CMIP6 / GWL)\n\nGlobal Warming Level Projections (SEA Domain)\nSummary of regional climate trajectories from the GWL dataset covering the SEA domain. These trajectories are used to compute the monthly bias correction applied before STGNN inference.\n\n\n\n\n⚠️  GWL TSV not found — run climate-projection-module pipeline first.\n\n\n\nFigure 1\n\n\n\n\n\nGWL Precipitation Projections (SEA Domain)\n\n\n\n\n⚠️  GWL TSV not found or empty — run climate-projection-module pipeline first.\n\n\n\nFigure 2\n\n\n\n\n\nCMIP6 SSP2-4.5 Bias Correction Baseline\nThe bias correction applied to operational inference computes the difference between the CMIP6 SSP2-4.5 projected climatology for the current calendar month and the 2011–2018 ERA5-Land training climatology. This delta is subtracted from current observations before they are passed to the STGNN.\n\n\nCMIP6 Multi-Model Spread (SEA)\n\n\n\n\n⚠️  CMIP6 ensemble spread TSV not found — run climate-projection-module/scripts/compute_cmip6_spread.py first.\n\n\n\nFigure 3\n\n\n\n\n\nNote on scenario alignment: The SEA Provinces model uses CMIP6 SSP2-4.5 for its operational bias correction. SSP5-8.5 projections are included for sensitivity analysis only."
+  },
+  {
+    "objectID": "dengue-data.html",
+    "href": "dengue-data.html",
+    "title": "Dengue Data",
+    "section": "",
+    "text": "This page presents the dengue case data underpinning the SEA Provinces model: the OpenDengue dataset used to train and evaluate it."
+  },
+  {
+    "objectID": "dengue-data.html#arm-1-southeast-asia-provinces-opendengue",
+    "href": "dengue-data.html#arm-1-southeast-asia-provinces-opendengue",
+    "title": "Dengue Data",
+    "section": "Arm 1 — Southeast Asia Provinces (OpenDengue)",
+    "text": "Arm 1 — Southeast Asia Provinces (OpenDengue)\nInteractive dashboards showing temporal and spatial dengue case trends by WHO region, generated from the OpenDengue dataset (SEA, 2011–2018).\n\nTemporal — SEAROTemporal — WPROSpatial — SEAROSpatial — WPRONational\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nData source: OpenDengue — a global open-access dengue surveillance database. Spatial imputation was performed using GAUL 2024 admin-1 boundaries. Spatial autocorrelation was assessed via Moran’s I.\n\n\n\n\n\n\n\n\n\n\nFigure 1: Moran’s I spatial autocorrelation across time slices.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: Moran’s I scatter plot."
   }
 ]

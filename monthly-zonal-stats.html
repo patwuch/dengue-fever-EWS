@@ -82,9 +82,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-3821ddb69565ad29f28acf34e18e8c49.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-64ce9470b5c207186356e1f14878d843.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-3821ddb69565ad29f28acf34e18e8c49.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-431248b8c7171e253c28e4abe2856e53.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -940,7 +940,7 @@ Figure&nbsp;1
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>        row.update({k: <span class="bu">round</span>(v, <span class="dv">3</span>) <span class="cf">for</span> k, v <span class="kw">in</span> vals.items() <span class="cf">if</span> k <span class="kw">not</span> <span class="kw">in</span> (<span class="st">"country"</span>,)})</span>
 <span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        rows.append(row)</span>
 <span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(rows).set_index(<span class="st">"Region"</span>)</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [<span class="st">"Country"</span>, <span class="st">"precipitation_sum"</span>, <span class="st">"temperature_2m_mean"</span>,</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [<span class="st">"Country"</span>, <span class="st">"precipitation_mm"</span>, <span class="st">"temperature_2m_mean"</span>,</span>
 <span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"LST_Day_1km_mean"</span>, <span class="st">"NDVI_mean"</span>, <span class="st">"EVI_mean"</span>]</span>
 <span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    display_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> display_cols <span class="cf">if</span> c <span class="kw">in</span> df.columns]</span>
 <span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    df[display_cols].style.<span class="bu">format</span>(precision<span class="op">=</span><span class="dv">3</span>)</span>
