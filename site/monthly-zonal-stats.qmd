@@ -1,6 +1,6 @@
 ---
 title: "Monthly Environmental Data"
-subtitle: "Per-region environmental indicators derived from Google Earth Engine and TCCIP, used as features for both study arms"
+subtitle: "Per-region environmental indicators derived from Google Earth Engine, used as features for the SEA Provinces model"
 ---
 
 ```{python}
@@ -19,8 +19,7 @@ deltas = json.loads(deltas_path.read_text()) if deltas_path.exists() else {}
 target_month = stats.get("target_month", "—")
 ```
 
-Environmental features feed both study arms, but at different spatial granularities: admin-1 zonal statistics
-for the SEA Provinces model, and BSA-level indicators for the Taiwan model. All zonal statistics between 2011
+Environmental features for the SEA Provinces model are admin-1 zonal statistics. All zonal statistics between 2011
 and 2026 have been computed with the Easy-Earth-Engine application, which provides a data-provenance pipeline
 ensuring reproducibility of the remote sensing extraction.
 
@@ -111,51 +110,4 @@ else:
         legend_title="GWL Scenario", height=400,
     )
     fig.show()
-```
-
----
-
-## Arm 2 — Taiwan Basic Statistics Area (BSA-Level Environmental Data)
-
-Environmental features for the Taiwan BSA model are derived from TCCIP (Taiwan Climate Change Projection
-Information and Adaptation Knowledge Platform) and local remote sensing products, aggregated to BSA granularity.
-These complement the individual case report data from Taiwan MoH.
-
-### Latest Monthly BSA Zonal Statistics
-
-::: {.callout-warning}
-**Placeholder** — BSA-level zonal statistics for Taiwan are not yet available. This table will show
-per-BSA averages of temperature, precipitation, NDVI, and other suitability indicators once the
-taiwan-bsa-module environmental pipeline is operational.
-:::
-
-```{python}
-#| echo: false
-#| label: tbl-taiwan-zonal-stats
-#| tbl-cap: "Placeholder: Monthly zonal statistics by Taiwan BSA (temperature, precipitation, NDVI, EVI)."
-
-print("⚠️  Taiwan BSA zonal statistics not yet available — implement taiwan-bsa-module/data/gee_bsa_pipeline.py first.")
-```
-
-### Applied Climate Deltas (Taiwan)
-
-```{python}
-#| echo: false
-#| label: tbl-taiwan-deltas
-#| tbl-cap: "Placeholder: Per-variable TCCIP climate deltas applied to Taiwan BSA features this month."
-
-print("⚠️  Taiwan BSA climate deltas not yet available — requires TCCIP baseline computation.")
-```
-
-### Vegetation and Urban Heat Island Indicators (Taiwan BSA)
-
-BSA-level NDVI and LST are particularly important for identifying urban heat island effects that
-increase vector reproduction rates in dense Taiwanese cities.
-
-```{python}
-#| echo: false
-#| label: fig-taiwan-lst
-#| fig-cap: "Placeholder: Land surface temperature and NDVI distribution across Taiwan BSAs for the current month."
-
-print("⚠️  Taiwan BSA LST/NDVI data not yet available.")
 ```

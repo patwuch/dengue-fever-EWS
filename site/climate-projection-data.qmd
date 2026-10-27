@@ -1,6 +1,6 @@
 ---
 title: "Climate Projection Data"
-subtitle: "CMIP6 climate projections for the SEA Provinces model and TCCIP projections for the Taiwan BSA model"
+subtitle: "CMIP6 climate projections for the SEA Provinces model"
 ---
 
 ```{python}
@@ -12,14 +12,11 @@ import pandas as pd
 climate_dir = pathlib.Path("../climate-projection-module/data/processed")
 ```
 
-Climate projection data informs both study arms, but from different sources suited to each geography:
+Climate projection data informs the SEA Provinces model:
 
 - **Arm 1 (SEA Provinces):** CMIP6 multi-model ensemble projections and Global Warming Level (GWL) datasets
   are used to compute the bias correction delta that adjusts current ERA5-Land observations back into the
   model's 2011–2018 training distribution.
-- **Arm 2 (Taiwan BSA):** TCCIP (Taiwan Climate Change Projection Information and Adaptation Knowledge
-  Platform) provides high-resolution downscaled projections specifically for Taiwan, used to quantify future
-  dengue suitability under different warming scenarios.
 
 ---
 
@@ -145,92 +142,5 @@ else:
 
 ---
 
-## Arm 2 — Taiwan Basic Statistics Area (TCCIP)
-
-TCCIP provides high-resolution statistically and dynamically downscaled climate projections specifically
-covering Taiwan. The projections are used to characterise future dengue suitability at BSA level under
-different warming scenarios.
-
-### TCCIP Temperature Projections (Taiwan)
-
-::: {.callout-warning}
-**Placeholder** — TCCIP temperature projections for Taiwan are not yet integrated into the site pipeline.
-This section will display county- and BSA-level temperature trajectories under RCP4.5 and RCP8.5 (TCCIP
-uses RCP rather than SSP nomenclature for its downscaled products) once the
-climate-projection-module/scripts/extract_tccip.py pipeline is operational.
-:::
-
-```{python}
-#| echo: false
-#| label: fig-tccip-temp
-#| fig-cap: "Placeholder: TCCIP mean temperature projections for Taiwan counties under RCP4.5 and RCP8.5, 2020–2099."
-
-tccip_path = climate_dir / "TSV/TCCIP/tccip_county_temperature.tsv"
-if not tccip_path.exists():
-    print("⚠️  TCCIP temperature TSV not found — run climate-projection-module/scripts/extract_tccip.py first.")
-else:
-    df = pd.read_csv(tccip_path, sep="\t", parse_dates=["year"])
-    if df.empty or "scenario" not in df.columns:
-        print("⚠️  TCCIP temperature TSV is empty or missing expected columns.")
-    else:
-        fig = go.Figure()
-        for scenario in df["scenario"].unique():
-            subset = df[df["scenario"] == scenario]
-            fig.add_trace(go.Scatter(
-                x=subset["year"], y=subset["temp_mean"],
-                mode="lines", name=scenario,
-            ))
-        fig.update_layout(
-            title="TCCIP Mean Temperature Projections — Taiwan",
-            xaxis_title="Year", yaxis_title="Temperature (°C)",
-            legend_title="Scenario", height=400,
-        )
-        fig.show()
-```
-
-### TCCIP Precipitation Projections (Taiwan)
-
-```{python}
-#| echo: false
-#| label: fig-tccip-precip
-#| fig-cap: "Placeholder: TCCIP mean precipitation projections for Taiwan under RCP4.5 and RCP8.5."
-
-tccip_precip_path = climate_dir / "TSV/TCCIP/tccip_county_precipitation.tsv"
-if not tccip_precip_path.exists():
-    print("⚠️  TCCIP precipitation TSV not found — run climate-projection-module/scripts/extract_tccip.py first.")
-else:
-    df = pd.read_csv(tccip_precip_path, sep="\t")
-    if df.empty:
-        print("⚠️  TCCIP precipitation TSV is empty.")
-    else:
-        print(df.head())
-```
-
-### Dengue Suitability Index — Taiwan Future Projections
-
-The climate suitability index for *Aedes aegypti* and *Aedes albopictus* transmission is computed from
-TCCIP temperature and precipitation projections using the Mordecai et al. thermal performance curve framework.
-
-```{python}
-#| echo: false
-#| label: fig-tccip-suitability
-#| fig-cap: "Placeholder: Projected dengue vector suitability index for Taiwan BSAs under RCP4.5 and RCP8.5."
-
-print("⚠️  TCCIP suitability index not yet computed — implement climate-projection-module/scripts/compute_suitability_taiwan.py first.")
-```
-
-### Comparison: SEA vs Taiwan Climate Trajectories
-
-```{python}
-#| echo: false
-#| label: fig-comparison
-#| fig-cap: "Placeholder: Side-by-side temperature anomaly trajectories for SEA (CMIP6 SSP2-4.5) and Taiwan (TCCIP RCP4.5), relative to 2011–2018 baseline."
-
-print("⚠️  Comparison figure not yet available — requires both CMIP6 and TCCIP pipelines to be complete.")
-```
-
----
-
 > **Note on scenario alignment:** The SEA Provinces model uses CMIP6 SSP2-4.5 for its operational bias
-> correction. The Taiwan BSA model uses TCCIP RCP4.5 as the primary scenario, which is approximately
-> equivalent in radiative forcing. SSP5-8.5 / RCP8.5 projections are included for sensitivity analysis only.
+> correction. SSP5-8.5 projections are included for sensitivity analysis only.

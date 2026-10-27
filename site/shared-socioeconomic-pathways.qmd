@@ -1,6 +1,6 @@
 ---
 title: "Shared Socioeconomic Pathways"
-subtitle: "SSP scenario data used as socioeconomic covariates in the SEA Provinces model and as future projection context for the Taiwan BSA model"
+subtitle: "SSP scenario data used as socioeconomic covariates in the SEA Provinces model"
 ---
 
 ```{python}
@@ -19,9 +19,6 @@ alongside the IPCC AR6 process and are widely used to contextualise climate impa
 - **Arm 1 (SEA Provinces):** Population projections from SSP1, SSP2, and SSP3 scenarios are used directly
   as node-level covariates in the STGNN, capturing how demographic change modulates dengue transmission
   dynamics across provinces.
-- **Arm 2 (Taiwan BSA):** SSP population and urbanisation trajectories provide future projection context
-  for evaluating dengue risk under different development pathways, combined with TCCIP regional climate
-  projections.
 
 ---
 
@@ -88,50 +85,6 @@ The table below summarises how SSP variables are incorporated into the SEA STGNN
 | Population density | SSP2 | Node feature — proxy for human-vector contact rate |
 | Urban fraction | SSP1, SSP2, SSP3 | Node feature — affects vector habitat availability |
 | GDP per capita | SSP2 | Node feature — proxy for healthcare access / reporting capacity |
-
----
-
-## Arm 2 — Taiwan Basic Statistics Area
-
-### TCCIP Population Projections (Taiwan BSA)
-
-::: {.callout-warning}
-**Placeholder** — Taiwan BSA population projections from the TCCIP dataset are not yet integrated.
-This section will display BSA-level demographic trajectories under different SSP scenarios once the
-taiwan-bsa-module/data/tccip_ssp_pipeline.py is operational.
-:::
-
-```{python}
-#| echo: false
-#| label: fig-taiwan-ssp-population
-#| fig-cap: "Placeholder: Population projections at Taiwan BSA level under SSP1, SSP2, and SSP5 (TCCIP)."
-
-print("⚠️  Taiwan BSA SSP population data not yet available — implement taiwan-bsa-module/data/tccip_ssp_pipeline.py first.")
-```
-
-### Ageing Population and Dengue Vulnerability (Taiwan)
-
-Taiwan's rapidly ageing population is an important modulator of dengue severity. Older adults face higher
-hospitalisation and case fatality rates. SSP projections indicate Taiwan's median age rising significantly
-through 2050, which will be incorporated as a BSA-level demographic covariate.
-
-```{python}
-#| echo: false
-#| label: fig-taiwan-age-pyramid
-#| fig-cap: "Placeholder: Age pyramid projections for Taiwan under SSP2, 2025–2050, with dengue vulnerability overlay."
-
-print("⚠️  Taiwan age structure projections not yet available.")
-```
-
-### Urbanisation and Heat Island Risk (Taiwan BSA)
-
-```{python}
-#| echo: false
-#| label: fig-taiwan-ssp-urban
-#| fig-cap: "Placeholder: Urban fraction projections across Taiwan BSAs under SSP1 and SSP3, with LST correlation."
-
-print("⚠️  Taiwan BSA urbanisation SSP data not yet available.")
-```
 
 ---
 

@@ -19,8 +19,6 @@ website:
         text: Home
       - href: sea-provinces-study-results.qmd
         text: Southeast Asia Provinces Study
-      - href: taiwan-bsa-study-results.qmd
-        text: Taiwan Basic Statistics Area Study
       - href: dengue-data.qmd
         text: Dengue Data
       - href: monthly-zonal-stats.qmd
