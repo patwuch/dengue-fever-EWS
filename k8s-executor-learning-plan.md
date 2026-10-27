@@ -1,5 +1,9 @@
 # Learning plan: Snakemake Kubernetes executor (Snakemake 9)
 
+> **Historical.** The GPU workstation this plan was built around (`chuang-hp-z4-g4-workstation`)
+> was retired on 2026-10-27. Training and bundle builds now run on the laptop's single-node
+> k3s; the tmu cluster (NUC only) runs monthly inference and the S3 store. See the README.
+
 Not a project requirement — the pipeline runs fine today with `docker run --gpus all` on a
 single GPU workstation. This is a scoped learning exercise to get hands-on with the
 Kubernetes primitives that tools like Kubeflow Pipelines/Argo Workflows are built on, without

@@ -1,6 +1,6 @@
 # Constraints for the Docker image's pip install — exact versions of everything requirements.txt
 # adds on top of pytorch/pytorch:2.5.1-cuda12.1-cudnn9-runtime, so builds on different machines
-# (laptop, GPU workstation) produce the same Python environment. Used with pip's -c flag, so it
+# produce the same Python environment. Used with pip's -c flag, so it
 # pins versions without adding packages. Regenerate after changing requirements.txt:
 #   comm -13 <(docker run --rm --entrypoint pip <base> list --format=freeze | sort) \
 #            <(docker run --rm --entrypoint pip <new image> list --format=freeze | sort)

@@ -4,9 +4,11 @@
 #
 #   k8s/sa-kubeconfig.sh <admin kubeconfig> <api server URL> <output> [duration]
 #
-#   tmu:     KUBE_CONTEXT=tmu k8s/sa-kubeconfig.sh ~/.kube/k3s-tmu.yaml https://tmu-clhm-nuc15crhu5:6443 \
+#   tmu (monthly inference, CPU only):
+#            KUBE_CONTEXT=tmu k8s/sa-kubeconfig.sh ~/.kube/k3s-tmu.yaml https://tmu-clhm-nuc15crhu5:6443 \
 #                ~/.config/dengue-ews/kubeconfig
-#   laptop:  sudo k8s/sa-kubeconfig.sh /etc/rancher/k3s/k3s.yaml https://desktop-ijgfcqd:6443 \
+#   laptop (training, bundles, xAI; the only cluster with a GPU):
+#            sudo k8s/sa-kubeconfig.sh /etc/rancher/k3s/k3s.yaml https://desktop-ijgfcqd:6443 \
 #                ~/.config/dengue-ews/kubeconfig-laptop
 #            (launch the controller with --add-host desktop-ijgfcqd:host-gateway: the name is on
 #            the API server's certificate and resolves to the WSL host from inside the container)
