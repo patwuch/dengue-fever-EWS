@@ -82,9 +82,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-431248b8c7171e253c28e4abe2856e53.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-3821ddb69565ad29f28acf34e18e8c49.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-64ce9470b5c207186356e1f14878d843.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-3821ddb69565ad29f28acf34e18e8c49.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -308,10 +308,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Southeast Asia Provinces Study</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./taiwan-bsa-study-results.html"> 
-<span class="menu-text">Taiwan Basic Statistics Area Study</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./dengue-data.html"> 
 <span class="menu-text">Dengue Data</span></a>
   </li>  
@@ -357,12 +353,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ssp-urbanisation-rate-by-province" id="toc-ssp-urbanisation-rate-by-province" class="nav-link" data-scroll-target="#ssp-urbanisation-rate-by-province">SSP Urbanisation Rate by Province</a></li>
   <li><a href="#ssp-feature-contribution-to-stgnn" id="toc-ssp-feature-contribution-to-stgnn" class="nav-link" data-scroll-target="#ssp-feature-contribution-to-stgnn">SSP Feature Contribution to STGNN</a></li>
   </ul></li>
-  <li><a href="#arm-2-taiwan-basic-statistics-area" id="toc-arm-2-taiwan-basic-statistics-area" class="nav-link" data-scroll-target="#arm-2-taiwan-basic-statistics-area">Arm 2 — Taiwan Basic Statistics Area</a>
-  <ul class="collapse">
-  <li><a href="#tccip-population-projections-taiwan-bsa" id="toc-tccip-population-projections-taiwan-bsa" class="nav-link" data-scroll-target="#tccip-population-projections-taiwan-bsa">TCCIP Population Projections (Taiwan BSA)</a></li>
-  <li><a href="#ageing-population-and-dengue-vulnerability-taiwan" id="toc-ageing-population-and-dengue-vulnerability-taiwan" class="nav-link" data-scroll-target="#ageing-population-and-dengue-vulnerability-taiwan">Ageing Population and Dengue Vulnerability (Taiwan)</a></li>
-  <li><a href="#urbanisation-and-heat-island-risk-taiwan-bsa" id="toc-urbanisation-and-heat-island-risk-taiwan-bsa" class="nav-link" data-scroll-target="#urbanisation-and-heat-island-risk-taiwan-bsa">Urbanisation and Heat Island Risk (Taiwan BSA)</a></li>
-  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -373,7 +363,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <div class="quarto-title-block"><div><h1 class="title">Shared Socioeconomic Pathways</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
-<p class="subtitle lead">SSP scenario data used as socioeconomic covariates in the SEA Provinces model and as future projection context for the Taiwan BSA model</p>
+<p class="subtitle lead">SSP scenario data used as socioeconomic covariates in the SEA Provinces model</p>
 </div>
 
 
@@ -393,7 +383,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Shared Socioeconomic Pathways (SSPs) are a set of five global scenarios describing plausible futures for societal development through 2100 (SSP1–SSP5). They were developed by the climate research community alongside the IPCC AR6 process and are widely used to contextualise climate impact projections. In this study:</p>
 <ul>
 <li><strong>Arm 1 (SEA Provinces):</strong> Population projections from SSP1, SSP2, and SSP3 scenarios are used directly as node-level covariates in the STGNN, capturing how demographic change modulates dengue transmission dynamics across provinces.</li>
-<li><strong>Arm 2 (Taiwan BSA):</strong> SSP population and urbanisation trajectories provide future projection context for evaluating dengue risk under different development pathways, combined with TCCIP regional climate projections.</li>
 </ul>
 <hr>
 <section id="arm-1-southeast-asia-provinces" class="level2">
@@ -469,69 +458,6 @@ Figure&nbsp;2
 </tr>
 </tbody>
 </table>
-<hr>
-</section>
-</section>
-<section id="arm-2-taiwan-basic-statistics-area" class="level2">
-<h2 class="anchored" data-anchor-id="arm-2-taiwan-basic-statistics-area">Arm 2 — Taiwan Basic Statistics Area</h2>
-<section id="tccip-population-projections-taiwan-bsa" class="level3">
-<h3 class="anchored" data-anchor-id="tccip-population-projections-taiwan-bsa">TCCIP Population Projections (Taiwan BSA)</h3>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Placeholder</strong> — Taiwan BSA population projections from the TCCIP dataset are not yet integrated. This section will display BSA-level demographic trajectories under different SSP scenarios once the taiwan-bsa-module/data/tccip_ssp_pipeline.py is operational.</p>
-</div>
-</div>
-<div id="fig-taiwan-ssp-population" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="4">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-taiwan-ssp-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-stdout">
-<pre><code>⚠️  Taiwan BSA SSP population data not yet available — implement taiwan-bsa-module/data/tccip_ssp_pipeline.py first.</code></pre>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-taiwan-ssp-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="ageing-population-and-dengue-vulnerability-taiwan" class="level3">
-<h3 class="anchored" data-anchor-id="ageing-population-and-dengue-vulnerability-taiwan">Ageing Population and Dengue Vulnerability (Taiwan)</h3>
-<p>Taiwan’s rapidly ageing population is an important modulator of dengue severity. Older adults face higher hospitalisation and case fatality rates. SSP projections indicate Taiwan’s median age rising significantly through 2050, which will be incorporated as a BSA-level demographic covariate.</p>
-<div id="fig-taiwan-age-pyramid" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="5">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-taiwan-age-pyramid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-stdout">
-<pre><code>⚠️  Taiwan age structure projections not yet available.</code></pre>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-taiwan-age-pyramid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="urbanisation-and-heat-island-risk-taiwan-bsa" class="level3">
-<h3 class="anchored" data-anchor-id="urbanisation-and-heat-island-risk-taiwan-bsa">Urbanisation and Heat Island Risk (Taiwan BSA)</h3>
-<div id="fig-taiwan-ssp-urban" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="6">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-taiwan-ssp-urban-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-stdout">
-<pre><code>⚠️  Taiwan BSA urbanisation SSP data not yet available.</code></pre>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-taiwan-ssp-urban-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5
-</figcaption>
-</figure>
-</div>
 <hr>
 <blockquote class="blockquote">
 <p><strong>Note on scenario selection:</strong> The SEA STGNN is trained and validated under historical conditions (2011–2018) and uses SSP2 population data as the primary covariate. SSP1 and SSP3 are included as sensitivity scenarios for prospective risk projections only. For operational monthly inference, SSP2-4.5 is used throughout for consistency with the AR6 climate delta correction.</p>
@@ -1008,147 +934,100 @@ Figure&nbsp;5
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Shared Socioeconomic Pathways"</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "SSP scenario data used as socioeconomic covariates in the SEA Provinces model and as future projection context for the Taiwan BSA model"</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#| output: false</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>ssp_dir <span class="op">=</span> pathlib.Path(<span class="st">"../climate-projection-module/data/processed/SSP"</span>)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>Shared Socioeconomic Pathways (SSPs) are a set of five global scenarios describing plausible futures for</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>societal development through 2100 (SSP1–SSP5). They were developed by the climate research community</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>alongside the IPCC AR6 process and are widely used to contextualise climate impact projections. In this study:</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Arm 1 (SEA Provinces):** Population projections from SSP1, SSP2, and SSP3 scenarios are used directly</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  as node-level covariates in the STGNN, capturing how demographic change modulates dengue transmission</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  dynamics across provinces.</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Arm 2 (Taiwan BSA):** SSP population and urbanisation trajectories provide future projection context</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  for evaluating dengue risk under different development pathways, combined with TCCIP regional climate</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  projections.</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 1 — Southeast Asia Provinces</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSP Population Projections by Province</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>Population projections at admin-1 level under SSP1 (sustainability), SSP2 (middle of the road), and</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>SSP3 (regional rivalry) scenarios, derived from the CMIP6-aligned SSP database.</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-ssp-sea-population</span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "SSP population projections for SEA admin-1 provinces, 2010–2100, under SSP1, SSP2, and SSP3."</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>ssp_sea_path <span class="op">=</span> ssp_dir <span class="op">/</span> <span class="st">"sea_admin1_population.tsv"</span></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> ssp_sea_path.exists():</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  SEA SSP population data not found — run climate-projection-module/scripts/extract_ssp_population.py first."</span>)</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(ssp_sea_path, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> go.Figure()</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> scenario <span class="kw">in</span> df[<span class="st">"scenario"</span>].unique():</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>        subset <span class="op">=</span> df[df[<span class="st">"scenario"</span>] <span class="op">==</span> scenario]</span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>        fig.add_trace(go.Scatter(</span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span>subset[<span class="st">"year"</span>], y<span class="op">=</span>subset[<span class="st">"population_mean"</span>],</span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>            mode<span class="op">=</span><span class="st">"lines"</span>, name<span class="op">=</span>scenario,</span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>        ))</span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>    fig.update_layout(</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Mean Admin-1 Population by SSP Scenario — SEA"</span>,</span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>        xaxis_title<span class="op">=</span><span class="st">"Year"</span>, yaxis_title<span class="op">=</span><span class="st">"Population"</span>,</span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>        legend_title<span class="op">=</span><span class="st">"SSP Scenario"</span>, height<span class="op">=</span><span class="dv">400</span>,</span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>    fig.show()</span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSP Urbanisation Rate by Province</span></span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>Urban fraction of population is a key driver of dengue vector density. SSP2 and SSP3 diverge substantially</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>in projected urbanisation rates across SEA countries.</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-ssp-sea-urban</span></span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: SSP urbanisation rate projections for SEA admin-1 provinces."</span></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>ssp_urban_path <span class="op">=</span> ssp_dir <span class="op">/</span> <span class="st">"sea_admin1_urbanisation.tsv"</span></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> ssp_urban_path.exists():</span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  SEA SSP urbanisation data not found — run climate-projection-module/scripts/extract_ssp_urbanisation.py first."</span>)</span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(ssp_urban_path, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(df.head())</span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSP Feature Contribution to STGNN</span></span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>The table below summarises how SSP variables are incorporated into the SEA STGNN feature set.</span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> SSP Variable <span class="pp">|</span> Scenario(s) Used <span class="pp">|</span> Role in Model <span class="pp">|</span></span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Population (total) <span class="pp">|</span> SSP2 (baseline) <span class="pp">|</span> Node feature — scales absolute case counts <span class="pp">|</span></span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Population density <span class="pp">|</span> SSP2 <span class="pp">|</span> Node feature — proxy for human-vector contact rate <span class="pp">|</span></span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Urban fraction <span class="pp">|</span> SSP1, SSP2, SSP3 <span class="pp">|</span> Node feature — affects vector habitat availability <span class="pp">|</span></span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> GDP per capita <span class="pp">|</span> SSP2 <span class="pp">|</span> Node feature — proxy for healthcare access / reporting capacity <span class="pp">|</span></span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 2 — Taiwan Basic Statistics Area</span></span>
-<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a><span class="fu">### TCCIP Population Projections (Taiwan BSA)</span></span>
-<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
-<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>**Placeholder** — Taiwan BSA population projections from the TCCIP dataset are not yet integrated.</span>
-<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>This section will display BSA-level demographic trajectories under different SSP scenarios once the</span>
-<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>taiwan-bsa-module/data/tccip_ssp_pipeline.py is operational.</span>
-<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-taiwan-ssp-population</span></span>
-<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: Population projections at Taiwan BSA level under SSP1, SSP2, and SSP5 (TCCIP)."</span></span>
-<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA SSP population data not yet available — implement taiwan-bsa-module/data/tccip_ssp_pipeline.py first."</span>)</span>
-<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ageing Population and Dengue Vulnerability (Taiwan)</span></span>
-<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>Taiwan's rapidly ageing population is an important modulator of dengue severity. Older adults face higher</span>
-<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a>hospitalisation and case fatality rates. SSP projections indicate Taiwan's median age rising significantly</span>
-<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a>through 2050, which will be incorporated as a BSA-level demographic covariate.</span>
-<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-taiwan-age-pyramid</span></span>
-<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: Age pyramid projections for Taiwan under SSP2, 2025–2050, with dengue vulnerability overlay."</span></span>
-<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan age structure projections not yet available."</span>)</span>
-<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a><span class="fu">### Urbanisation and Heat Island Risk (Taiwan BSA)</span></span>
-<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-taiwan-ssp-urban</span></span>
-<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: Urban fraction projections across Taiwan BSAs under SSP1 and SSP3, with LST correlation."</span></span>
-<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"⚠️  Taiwan BSA urbanisation SSP data not yet available."</span>)</span>
-<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Note on scenario selection:** The SEA STGNN is trained and validated under historical conditions (2011–2018)</span></span>
-<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; and uses SSP2 population data as the primary covariate. SSP1 and SSP3 are included as sensitivity</span></span>
-<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; scenarios for prospective risk projections only. For operational monthly inference, SSP2-4.5 is used</span></span>
-<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; throughout for consistency with the AR6 climate delta correction.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Shared Socioeconomic Pathways"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "SSP scenario data used as socioeconomic covariates in the SEA Provinces model"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#| output: false</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>ssp_dir <span class="op">=</span> pathlib.Path(<span class="st">"../climate-projection-module/data/processed/SSP"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>Shared Socioeconomic Pathways (SSPs) are a set of five global scenarios describing plausible futures for</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>societal development through 2100 (SSP1–SSP5). They were developed by the climate research community</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>alongside the IPCC AR6 process and are widely used to contextualise climate impact projections. In this study:</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Arm 1 (SEA Provinces):** Population projections from SSP1, SSP2, and SSP3 scenarios are used directly</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  as node-level covariates in the STGNN, capturing how demographic change modulates dengue transmission</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  dynamics across provinces.</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arm 1 — Southeast Asia Provinces</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSP Population Projections by Province</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>Population projections at admin-1 level under SSP1 (sustainability), SSP2 (middle of the road), and</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>SSP3 (regional rivalry) scenarios, derived from the CMIP6-aligned SSP database.</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-ssp-sea-population</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "SSP population projections for SEA admin-1 provinces, 2010–2100, under SSP1, SSP2, and SSP3."</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>ssp_sea_path <span class="op">=</span> ssp_dir <span class="op">/</span> <span class="st">"sea_admin1_population.tsv"</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> ssp_sea_path.exists():</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  SEA SSP population data not found — run climate-projection-module/scripts/extract_ssp_population.py first."</span>)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(ssp_sea_path, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> go.Figure()</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> scenario <span class="kw">in</span> df[<span class="st">"scenario"</span>].unique():</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>        subset <span class="op">=</span> df[df[<span class="st">"scenario"</span>] <span class="op">==</span> scenario]</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        fig.add_trace(go.Scatter(</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span>subset[<span class="st">"year"</span>], y<span class="op">=</span>subset[<span class="st">"population_mean"</span>],</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>            mode<span class="op">=</span><span class="st">"lines"</span>, name<span class="op">=</span>scenario,</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    fig.update_layout(</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Mean Admin-1 Population by SSP Scenario — SEA"</span>,</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>        xaxis_title<span class="op">=</span><span class="st">"Year"</span>, yaxis_title<span class="op">=</span><span class="st">"Population"</span>,</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>        legend_title<span class="op">=</span><span class="st">"SSP Scenario"</span>, height<span class="op">=</span><span class="dv">400</span>,</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    fig.show()</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSP Urbanisation Rate by Province</span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>Urban fraction of population is a key driver of dengue vector density. SSP2 and SSP3 diverge substantially</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>in projected urbanisation rates across SEA countries.</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-ssp-sea-urban</span></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Placeholder: SSP urbanisation rate projections for SEA admin-1 provinces."</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>ssp_urban_path <span class="op">=</span> ssp_dir <span class="op">/</span> <span class="st">"sea_admin1_urbanisation.tsv"</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> ssp_urban_path.exists():</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"⚠️  SEA SSP urbanisation data not found — run climate-projection-module/scripts/extract_ssp_urbanisation.py first."</span>)</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(ssp_urban_path, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(df.head())</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="fu">### SSP Feature Contribution to STGNN</span></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>The table below summarises how SSP variables are incorporated into the SEA STGNN feature set.</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> SSP Variable <span class="pp">|</span> Scenario(s) Used <span class="pp">|</span> Role in Model <span class="pp">|</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Population (total) <span class="pp">|</span> SSP2 (baseline) <span class="pp">|</span> Node feature — scales absolute case counts <span class="pp">|</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Population density <span class="pp">|</span> SSP2 <span class="pp">|</span> Node feature — proxy for human-vector contact rate <span class="pp">|</span></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Urban fraction <span class="pp">|</span> SSP1, SSP2, SSP3 <span class="pp">|</span> Node feature — affects vector habitat availability <span class="pp">|</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> GDP per capita <span class="pp">|</span> SSP2 <span class="pp">|</span> Node feature — proxy for healthcare access / reporting capacity <span class="pp">|</span></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Note on scenario selection:** The SEA STGNN is trained and validated under historical conditions (2011–2018)</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; and uses SSP2 population data as the primary covariate. SSP1 and SSP3 are included as sensitivity</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; scenarios for prospective risk projections only. For operational monthly inference, SSP2-4.5 is used</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; throughout for consistency with the AR6 climate delta correction.</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

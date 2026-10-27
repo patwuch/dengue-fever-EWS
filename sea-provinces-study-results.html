@@ -82,9 +82,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-431248b8c7171e253c28e4abe2856e53.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-c38973a47e5296e20ed65e5cfa16cd78.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-3821ddb69565ad29f28acf34e18e8c49.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-64ce9470b5c207186356e1f14878d843.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-3821ddb69565ad29f28acf34e18e8c49.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -311,10 +311,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Southeast Asia Provinces Study</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./taiwan-bsa-study-results.html"> 
-<span class="menu-text">Taiwan Basic Statistics Area Study</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./dengue-data.html"> 
 <span class="menu-text">Dengue Data</span></a>
   </li>  
@@ -412,7 +408,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="experiment-results">Experiment Results</h2>
 <p>We show one experiment here: <strong><code>cyclical_seasonal</code></strong>. It predicts log incidence rate (log IR) from lagged IR plus climate and land-use covariates, encodes calendar month with the sin/cos cyclical encoding (rather than subtracting a fixed per-month training baseline — see the <a href="#bias-correction-note">Bias Correction Note</a> above for why that matters beyond the training window), and gives missing admin-1 nodes a learned trainable embedding rather than zeroed-out features (see <a href="#architecture">Architecture</a> above). Its hyperparameters are also the ones the climate-only model behind the live risk map is trained with.</p>
 <p>The results below come from its config/training run under <code>machine-learning-module/results/STGNN/</code>: metrics, hyperparameters, training curves, and available plots.</p>
-<div id="fac98144" class="cell" data-execution_count="2">
+<div id="69055fed" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display no-overflow-x" data-execution_count="2">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <div style="margin-bottom:16px;">
