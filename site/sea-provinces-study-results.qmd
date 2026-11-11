@@ -414,7 +414,7 @@ same ERA5-Land / CHIRPS / MODIS products minus the 2011–2018 training-period m
 This shifts current observations back into the model's training feature
 distribution, so the risk index reflects how unusual a month is for today's
 climate rather than the long-term shift itself.  See
-[site/scripts/apply_climate_delta.py](https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS/blob/main/site/scripts/apply_climate_delta.py)
+[site/scripts/apply_climate_delta.py](https://github.com/patwuch/dengue-fever-EWS/blob/main/site/scripts/apply_climate_delta.py)
 for implementation.
 
 ## Experiment Results

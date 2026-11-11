@@ -4,7 +4,7 @@
 
 Dengue is a mosquito-borne disease, and its outbreaks tend to follow the weather: rain leaves standing water where mosquitoes breed, and heat speeds up both the mosquitoes and the virus. This project uses that link to forecast where dengue risk is likely to rise across Southeast Asia, province by province, before the cases arrive.
 
-**[See the latest forecast on the project website →](https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS)**
+**[See the latest forecast on the project website →](https://patwuch.github.io/dengue-fever-EWS)**
 
 ## What it does
 
@@ -23,7 +23,7 @@ A second arm of the project, forecasting at a much finer scale within Taiwan, is
 | Folder | What it holds |
 |---|---|
 | [dengue-infection-module](dengue-infection-module/) | Cleans and standardises dengue case data from OpenDengue and the Indonesian Ministry of Health. |
-| [zonal-statistics-module](zonal-statistics-module/) | Pulls satellite data per province from Google Earth Engine (a copy of [EZGEE](https://github.com/chuang-lab-DMPTD-TMU/Google-Earth-Engine-Zonal-Statistics-App)). |
+| [zonal-statistics-module](zonal-statistics-module/) | Pulls satellite data per province from Google Earth Engine (a copy of [EZGEE](https://github.com/patwuch/EASY-EARTH-ENGINE)). |
 | [climate-projection-module](climate-projection-module/) | Prepares future climate scenarios (Shared Socioeconomic Pathways) for longer-range projections. |
 | [machine-learning-module](machine-learning-module/) | Trains, tests, and explains the models: a graph neural network (STGNN), plus Random Forest and XGBoost baselines. |
 | [site](site/) | The project website, built with Quarto. |
@@ -33,7 +33,7 @@ A second arm of the project, forecasting at a much finer scale within Taiwan, is
 Clone with the satellite-data module included:
 
 ```bash
-git clone --recurse-submodules https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS.git
+git clone --recurse-submodules https://github.com/patwuch/dengue-fever-EWS.git
 ```
 
 (In a clone that already exists, run `git submodule update --init`.)

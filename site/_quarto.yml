@@ -8,8 +8,8 @@ project:
 website:
   title: "Chuang Lab, Dept. of Molecular Parasitology and Tropical Diseasess"
   description: "Investigating spatial epidemiology of dengue in Southeast Asia through explainable AI"
-  site-url: "https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS"
-  repo-url: "https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS"
+  site-url: "https://patwuch.github.io/dengue-fever-EWS"
+  repo-url: "https://github.com/patwuch/dengue-fever-EWS"
   repo-actions: [issue]
 
   navbar:
@@ -32,7 +32,7 @@ website:
         text: Climate Projection
     right:
       - icon: github
-        href: https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS
+        href: https://github.com/patwuch/dengue-fever-EWS
 
   page-footer:
     center: |

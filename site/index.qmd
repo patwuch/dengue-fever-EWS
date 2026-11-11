@@ -400,10 +400,10 @@ predicts based on individual case report, clinical diagnosis, demographic data, 
 ## Code
 
 Source code and pipeline configuration are available on
-[GitHub](https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS)
+[GitHub](https://github.com/patwuch/dengue-fever-EWS)
 under the GNU GPLv3 license.
 
 ## Contact
 
 For questions or collaboration inquiries, please open an issue on the
-[GitHub repository](https://github.com/chuang-lab-DMPTD-TMU/dengue-fever-EWS/issues).
+[GitHub repository](https://github.com/patwuch/dengue-fever-EWS/issues).
