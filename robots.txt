@@ -1,1 +1,1 @@
-Sitemap: https://chuang-lab-dmptd-tmu.github.io/dengue-fever-EWS/sitemap.xml
+Sitemap: https://patwuch.github.io/dengue-fever-EWS/sitemap.xml
